@@ -1,0 +1,23 @@
+{
+  "name": "Crescent",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bot.js",
+  "scripts": {
+    "main": "node ./src/bot.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "discord.js": "^14.13.0",
+    "dotenv": "^16.0.0",
+    "moment": "^2.29.1",
+    "mongodb": "^4.4.0",
+    "mongoose": "^6.2.0",
+    "pagination.djs": "^4.0.12",
+    "reconlx": "^2.5.2",
+    "string-progressbar": "^1.0.4"
+  }
+}
