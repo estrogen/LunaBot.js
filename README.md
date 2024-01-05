@@ -23,7 +23,7 @@
 
 # Overview
 
-Wizard was a bot which fully managed all of the Anime Empire discord. One of the biggest warframe clans which contained over 7,000 in game players with an additional 70k discord community. The bot handled everything such as each staff teams shop and wallets, staff team applications, clan applications, moderation, and much much more. Sadly the departure from the group wasn't the best but I decided it'd be best to publish this project, it might not be the best code base due to this basically being my learning project to nodejs but I hope someone will have a use for it.
+Wizard was a bot which fully managed all of the Anime Empire discord. One of the biggest warframe clans which contained over 7,000 in game players with an additional 70k discord community. The bot handled everything such as each staff teams shop and wallets, staff team applications, clan applications, moderation, and much much more. I decided it'd be best to publish this project due to my time working on the project has come to an end, it might not be the best code base due to this basically being my learning project to nodejs but I hope someone will have a use for it.
 
 # Features
 
