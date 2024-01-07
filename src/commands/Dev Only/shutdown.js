@@ -9,7 +9,7 @@ module.exports = {
         .setDefaultPermission(false),
    
     async execute(i, bot) {
-        if(!i.member.id === '640629972817543195') 
+        if(!(i.member.id === '640629972817543195')) 
             return i.reply({ content: "You're not ally", ephemeral: true});
 
         i.reply({ content: "Restarting bot..." })
