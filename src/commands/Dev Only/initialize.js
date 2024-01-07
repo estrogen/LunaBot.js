@@ -12,14 +12,12 @@ module.exports = {
             .setRequired(true)
             .addChoices(
                 {name: 'Welcome Embed', value: 'we'},
-                {name: 'Donation Embed', value: 'de'},
-                {name: 'Recruiter Test', value: 'rt'},
                 {name: 'Parse Test', value: 'pe'}
             ))
         .setDefaultPermission(false),
    
     async execute(i, bot) {
-        if(!(i.member.id === '640629972817543195')) 
+        if (i.user.id !== '640629972817543195')
             return i.reply({ content: "You're not ally", ephemeral: true});
 
         const option = i.options.getString('embed');
@@ -53,17 +51,6 @@ module.exports = {
                     ])
                     .setImage(i.guild.bannerURL({ dynamic: true, format: "png", size: 2048}))
                 i.channel.send({ embeds: [embed], components: [row] });
-                break;
-
-            case 'de':
-                const donate = new ActionRowBuilder()
-					.addComponents(
-						new ButtonBuilder()
-							.setLabel("Support our dev!")
-							.setURL("https://ko-fi.com/feminine")
-							.setStyle(ButtonStyle.Link)
-					);
-				i.channel.send({ content: 'Feel free to donate and support our dev!', components: [donate]});
                 break;
 
             case 'pe':
