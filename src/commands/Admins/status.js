@@ -11,16 +11,19 @@ module.exports = {
         .setDefaultPermission(false),
    
     async execute(i, bot) {
-        if (i.user.id !== '640629972817543195')
-            return i.reply({ content: "You're not ally", ephemeral: true});
+        if(!i.member.roles.cache.some(r => cc.Roles.Admin.includes(r.id)))
+            return i.reply({ content: "You're not a admin", ephemeral: true});
+
+        const status = i.options.getString('status');
 
         bot.user.setPresence({
             activities: [{
                 type: ActivityType.Custom,
-                name: "custom", // name is exposed through the API but not shown in the client for ActivityType.Custom
-                state: `${i.options.getString('status')}`
+                name: "custom",
+                state: `${status}`
             }],
             status: "online"
         })
+        await i.reply({ content: `Status has been changed to ${status}` });
     },
 };
