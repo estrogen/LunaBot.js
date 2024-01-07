@@ -16,7 +16,7 @@ module.exports = async (bot, messageReaction, user) => {
                 }
             })
             .catch( (error) => {
-                console.log('[Crescent]'.blue, error)
+                console.log('[Luna]'.blue, error)
             })
 
     }

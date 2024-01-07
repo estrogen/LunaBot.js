@@ -21,7 +21,7 @@ module.exports = async (bot, interaction) => {
             }
         }).join(', ');
 
-        console.log('[Crescent]'.blue, `Interaction: ${interaction.commandName} | Args: ${options} | User: ${interaction.user.tag} | Guild: ${interaction.guild.name} (${interaction.guild.id})`);
+        console.log('[Luna]'.blue, `Interaction: ${interaction.commandName} | Args: ${options} | User: ${interaction.user.tag} | Guild: ${interaction.guild.name} (${interaction.guild.id})`);
 
         try {
             await command.execute(interaction, bot);
@@ -33,7 +33,7 @@ module.exports = async (bot, interaction) => {
             })
         }
     } else if (interaction.isButton()) {
-        console.log('[Crescent]'.blue, `Button: ${interaction.customId} | ${interaction.user.tag} | ${interaction.guild.name} (${interaction.guild.id})`);
+        console.log('[Luna]'.blue, `Button: ${interaction.customId} | ${interaction.user.tag} | ${interaction.guild.name} (${interaction.guild.id})`);
 
         const button = (interaction.customId.includes("apply")) ? bot.buttons.get('apply') : bot.buttons.get(interaction.customId);
         if (!button) return;
@@ -71,5 +71,7 @@ module.exports = async (bot, interaction) => {
                 ephemeral: true
             })
         }
+    } else if (interaction.isModalSubmit()) {
+        console.log('[Luna]'.blue, `Modal: ${interaction.customId} | ${interaction.user.tag} | ${interaction.guild.name} (${interaction.guild.id})`);
     }
 };

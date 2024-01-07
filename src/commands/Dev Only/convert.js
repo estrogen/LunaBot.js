@@ -24,7 +24,7 @@ module.exports = {
                 serverJoin: moment(doc.serverJoin).unix() },
                 { rawResult: true }
             );
-            console.log('[Crescent]'.blue, res.modifiedCount);
+            console.log('[Luna]'.blue, res.modifiedCount);
         });
     },
 
