@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
+const userBaseSchema = require("../userBaseSchema.js");
 
 const recruitData = mongoose.Schema({
-	userID: String,
-	guildID: String,
+	...userBaseSchema,
 	kingdom: String,
 	recruiter: String,
 	clanJoin: String,

@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
+const userBaseSchema = require("../userBaseSchema.js");
 
 const walletSchema = mongoose.Schema({
-	userID: String,
-	guildID: String,
+	...userBaseSchema,
 	lifetime: {
 		type: Number,
 		default: 0

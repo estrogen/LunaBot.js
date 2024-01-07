@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
+const userBaseSchema = require("../userBaseSchema.js");
 
 const stfu = mongoose.Schema({
-	userID: String,
-	guildID: String
+	...userBaseSchema
 });
 
 module.exports = mongoose.model("Stfu", stfu)

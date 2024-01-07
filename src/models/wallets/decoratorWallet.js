@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
+const userBaseSchema = require("../userBaseSchema.js");
 
 const decoWallet = mongoose.Schema({
-	userID: String,
-	guildID: String,
+	...userBaseSchema,
 	tokens: {
 		type: Number,
 		default: 0
