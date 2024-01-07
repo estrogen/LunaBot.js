@@ -7,6 +7,9 @@
 <h4 align="center">The 3 year learning experience.</h4>
 
 <p align="center">
+  <a href="https://discord.gg/kingdoms">
+    <img src="https://discordapp.com/api/guilds/890240560131104798/widget.png?style=shield" alt="Discord Server">
+  </a>
   <a href="https://discord.js.org/#/">
     <img src="https://img.shields.io/badge/discord-js-blue.svg" alt="Discord.js">
   </a>
