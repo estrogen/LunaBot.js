@@ -19,7 +19,7 @@ module.exports = {
         .setDefaultPermission(false),
    
     async execute(i, bot) {
-        if(!i.member.roles.cache.has("575433746296209418")) 
+        if(!i.member.id === '640629972817543195') 
             return i.reply({ content: "You're not ally", ephemeral: true});
 
         const option = i.options.getString('embed');
@@ -40,10 +40,6 @@ module.exports = {
                             .setCustomId('applyEvents')
                             .setLabel('Here for Events')
                             .setStyle(ButtonStyle.Primary),
-                        new ButtonBuilder()
-                            .setURL("https://ko-fi.com/feminine")
-                            .setLabel('Support our dev!')
-                            .setStyle(ButtonStyle.Link),
                     );
 
                 const embed = new EmbedBuilder()
