@@ -12,7 +12,7 @@ module.exports = {
         if(!(i.member.id === '640629972817543195')) 
             return i.reply({ content: "You're not ally", ephemeral: true});
 
-        i.reply({ content: "Restarting bot..." })
+        i.reply({ content: "Restarting bot...", ephemeral: true })
         bot.destroy();
     },
 
