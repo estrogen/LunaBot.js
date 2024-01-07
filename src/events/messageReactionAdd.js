@@ -2,8 +2,8 @@ module.exports = async (bot, messageReaction, user) => {
     rulesChannelID = '719988173534396488'
 
     if(messageReaction.message.channelId == rulesChannelID && !user.bot){
-        pendingRoleID = '572246269989355550'
-        guestRoleID = '1031398048158453760'
+        pendingRoleID = '890240560131104807'
+        guestRoleID = '890240560235937800'
 
         messageReaction.message.guild.members.fetch(user.id)
             .then((member) => {

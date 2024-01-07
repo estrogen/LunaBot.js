@@ -17,40 +17,40 @@ module.exports = {
             .setCustomId('recruitClan')
             .setPlaceholder('Clan to recruit to')
             .addOptions(
-                new StringSelectMenuOptionBuilder()
+/*               new StringSelectMenuOptionBuilder()
                     .setLabel( 'Anime Kingdom')
                     .setDescription( "They'll be joining Anime Kingdom")
                     .setValue( '521854159390113793'),
-
+*/
                 new StringSelectMenuOptionBuilder()
                     .setLabel( 'Imouto Kingdom')
                     .setDescription( "They'll be joining Imouto Kingdom")
-                    .setValue( '566032412618784768'),
+                    .setValue( '890240560248524858'),
 
                 new StringSelectMenuOptionBuilder()
-                    .setLabel( 'Heavens Kingdom')
-                    .setDescription( "They'll be joining Heavens Kingdom")
-                    .setValue( '604195078973554698'),
+                    .setLabel( 'Tsuki Kingdom')
+                    .setDescription( "They'll be joining Tsuki Kingdom")
+                    .setValue( '1193510188955746394'),
 
                 new StringSelectMenuOptionBuilder()
                     .setLabel( 'Waifu Kingdom')
                     .setDescription( "They'll be joining Waifu Kingdom")
-                    .setValue( '606538892547457027'),
+                    .setValue( '890240560248524856'),
 
                 new StringSelectMenuOptionBuilder()
                     .setLabel( 'Yuri Kingdom')
                     .setDescription( "They'll be joining Yuri Kingdom")
-                    .setValue( '874903017445535754'),
+                    .setValue( '890240560273702932'),
 
                 new StringSelectMenuOptionBuilder()
                     .setLabel( 'Cowaii Kingdom')
                     .setDescription( "They'll be joining Cowaii Kingdom")
-                    .setValue( '931364353213595709'),
+                    .setValue( '1192922910751473736'),
 
                 new StringSelectMenuOptionBuilder()
                     .setLabel( 'Manga Kingdom')
                     .setDescription( "They'll be joining Manga Kingdom")
-                    .setValue( '937244226721300532'),
+                    .setValue( '1192923627419619419'),
             )
 
         const row = new ActionRowBuilder().addComponents(select);
@@ -61,7 +61,7 @@ module.exports = {
 
         const member = await i.guild.members.fetch(id);
         if (!member) return i.reply({ content: 'Unable to find member.', ephemeral: true });
-        const general = await i.guild.channels.cache.get('521850636887916595');
+        const general = await i.guild.channels.cache.get('890240569165639771');
         const wal = await wallet.findOne({ userID: i.member.id });
         const data = await recruit.findOne({ userID: member.id });
         const welmsg = await welcomes.findOne({ team: "recruiter" });
@@ -70,7 +70,7 @@ module.exports = {
             await m.update({ content: `<@${id}> has been recruited to <@&${m.values[0]}>`, components: [], ephemeral: true })
             const kingdom = await i.guild.roles.cache.find(r => r.id === m.values[0]);
             const recruitEmbed = new EmbedBuilder()
-                .setAuthor({ name: `Successful Recruit (Click to go to app)`, url: `https://discord.com/channels/521850636321423371/${i.channel.id}/${i.message.id}` })
+                .setAuthor({ name: `Successful Recruit (Click to go to app)`, url: `https://discord.com/channels/890240560131104798/${i.channel.id}/${i.message.id}` })
                 .setColor(kingdom.color)
                 .setDescription(`${ign} was recruited to ${kingdom.name}!`)
                 .setThumbnail(i.user.avatarURL({ dynamic: true, format: "png", size: 4096 }))

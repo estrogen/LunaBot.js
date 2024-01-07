@@ -13,11 +13,11 @@ const walletByDepartment = {
 };
 
 // Configurable channel IDs for purchases and logs
-const degenChannelId = "783086315758813205"; // Channel for 'degen' purchases
-const degenLogChannelId = "787429845495316562"; // Log channel for 'degen' purchase announcements
+const degenChannelId = "890240568339341338"; // Channel for 'degen' purchases
+const degenLogChannelId = "1193512882944610335"; // Log channel for 'degen' purchase announcements
 const purchaseLogChannelIds = { // Log channels for each department's purchase announcements
-    events: "872857557490880512", // Channel ID for 'events' purchases
-    default: "872857557490880512", // Default channel ID for other purchases
+    events: "1193512882944610335", // Channel ID for 'events' purchases
+    default: "1193512882944610335", // Default channel ID for other purchases
 };
 
 module.exports = {

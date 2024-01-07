@@ -55,8 +55,8 @@ module.exports = {
 
             case 'pe':
                 const management = {
-                    "549230892309020685" : "594982795194138626",
-                    "674505282168160276" : "674509654801252402"
+                    "890240560319856720" : "890240560542134274", //Recruiter Team : Recruiter Manager
+                    "890240560319856711" : "890240560496017476" //Treasury Team : Treasury Manager
                 }
                 
                 const parse = i.member.roles.cache.filter(r => cc.Roles.Staff.includes(r.id));
