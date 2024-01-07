@@ -69,7 +69,7 @@ module.exports = {
                 serverJoin: moment(member.joinedAt).unix()
             });
             newRecruit.save();
-            wallet.tokens += 0.1;
+            wallet.tokens += 0.5;
             wallet.save();
 
             const wEmbed = new EmbedBuilder()

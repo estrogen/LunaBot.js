@@ -52,7 +52,7 @@ module.exports = {
                 await i.reply({ content: `Removed **${blocked}** from the block list of ${target}`, ephemeral: true });
                 break;
             case 'bulk':
-                roleList.blocked.push(blocked.split(','))
+                roleList.blocked.push(...blocked.split(','))
                 roleList.save();
                 await i.reply({ content: `Bulk added **${blocked.split(',')}** into the block list of ${target}`, ephemeral: true });
                 break;

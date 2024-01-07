@@ -95,7 +95,7 @@ module.exports = {
                     serverJoin: moment(member.joinedAt).unix()
                 });
                 newRecruit.save();
-                wal.tokens += 0.1;
+                wal.tokens += 0.5;
                 wal.save();
     
                 const wEmbed = new EmbedBuilder()
