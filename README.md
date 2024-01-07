@@ -23,7 +23,7 @@
 
 # Overview
 
-Luna was a bot which fully managed all of the Anime Empire discord. One of the biggest warframe clans which contained over 7,000 in game players with an additional 70k discord community. The bot handled everything such as each staff teams shop and wallets, staff team applications, clan applications, moderation, and much much more. I decided it'd be best to publish this project due to my time working on the project has come to an end, it might not be the best code base due to this basically being my learning project to nodejs but I hope someone will have a use for it.
+Luna is the bot used to manage the kingdoms warframe server. One of the biggest warframe clans which contains over 5,000 in game players. The bot handles everything such as each staff teams shop and wallets, staff team applications, clan applications, moderation, and much much more. The team has decided that itd be better if we had a public directory for the project which will allow for user contributions, but also transparency among the community aswell. This project might not be the best code base due to this basically being my learning project to nodejs but I hope this project will continue to flourish.
 
 # Features
 
