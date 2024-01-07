@@ -6,11 +6,11 @@ let scamData;
 let logsChannel;
 
 module.exports = async (bot, m) => {
-    if (m.author.bot || !['938938015621992498', '940009363320504410'].includes(m.channel.id)) return;
+    if (m.author.bot || !['1193540893693710417'].includes(m.channel.id)) return;
 
     // Initialize the cache if not already done
     if (!scamData) scamData = await bl.findOne({ "name": "scam" });
-    if (!logsChannel) logsChannel = await m.guild.channels.cache.get('940538703556780052');
+    if (!logsChannel) logsChannel = await m.guild.channels.cache.get('890240562970624026');
 
     const stfu = await off.findOne({ userID: m.author.id });
     if (stfu) return m.delete();
