@@ -1,4 +1,5 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { SlashCommandBuilder, ActivityType } = require('discord.js');
+const cc = require('../../../config.json');
 
 module.exports = {
     data: new SlashCommandBuilder()

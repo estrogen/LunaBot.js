@@ -1,5 +1,4 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const off = require('../../models/moderation/stfu');
 const cc = require('../../../config.json');
 
 module.exports = {
