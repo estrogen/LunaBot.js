@@ -15,13 +15,13 @@ module.exports = {
             .setDescription('Which clan theyll be joining.')
             .setRequired(true)
             .addChoices(
-                {name: 'Anime', value: '521854159390113793'},
-                {name: 'Imouto', value: '566032412618784768'},
-                {name: 'Heavens', value: '604195078973554698'},
-                {name: 'Waifu', value: '606538892547457027'},
-                {name: 'Yuri', value: '874903017445535754'},
-                {name: 'Cowaii', value: '931364353213595709'},
-                {name: 'Manga', value: '937244226721300532'}
+                //{name: 'Anime', value: '890240560248524859'},
+                {name: 'Imouto', value: '890240560248524858'},
+                {name: 'Tsuki', value: '1193510188955746394'},
+                {name: 'Waifu', value: '890240560248524856'},
+                {name: 'Yuri', value: '890240560273702932'},
+                {name: 'Cowaii', value: '1192922910751473736'},
+                {name: 'Manga', value: '1192923627419619419'}
             ))
         .addStringOption(option => option.setName('name').setDescription('Warframe players name').setRequired(true))
         .setDefaultPermission(false),
@@ -38,7 +38,7 @@ module.exports = {
         if (!member) 
             return i.reply({ content: 'Unable to find member.', ephemeral: true });
 
-        const general = await i.guild.channels.cache.get('521850636887916595');
+        const general = await i.guild.channels.cache.get('890240569165639771');
         const wallet = await rwal.findOne({ userID: i.member.id });
         const data = await recruit.findOne({ userID: member.id });
         const welmsg = await welcomes.findOne({ team: "recruiter" });

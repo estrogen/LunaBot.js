@@ -23,7 +23,7 @@ module.exports = {
 			if (target.roles.cache.some(r => (cc.Roles.Guestban).concat(cc.Roles.Kingdoms, cc.Roles.Admin).includes(r.id)))
 				return i.reply({ content: "You're unable to ban this user!", ephemeral: true});
 		
-			const logs = await i.guild.channels.cache.get('535613990546702341');
+			const logs = await i.guild.channels.cache.get('890240562970624026');
 			const bEmbed = new EmbedBuilder()
 				.setColor('#FF6961')
 				.setThumbnail(i.user.avatarURL({ dynamic: false, format: "png", size: 4096 }))
