@@ -1,6 +1,6 @@
 module.exports = {
     name: 'disconnected',
     async execute() {
-        console.log('[Bot]'.blue, 'Disconnected'.red);
+        console.log('[Luna]'.blue, 'Disconnected'.red);
     },
 };
