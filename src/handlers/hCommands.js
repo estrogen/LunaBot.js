@@ -1,5 +1,5 @@
 const { readdirSync } = require("fs")
-console.log(`[COMMAND HANDLER]`.green, `Command Handler Was Successfully Enabled.`.white)
+console.log(`[Luna]`.green, `Command Handler Was Successfully Enabled.`.white)
 
 module.exports = (bot) => {
     bot.hCommands = async (commands, path) => {

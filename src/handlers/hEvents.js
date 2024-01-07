@@ -1,5 +1,5 @@
 const { readdirSync, read } = require("fs")
-console.log(`[EVENT HANDLER]`.green, `Loading Events`.white)
+console.log(`[Luna]`.green, `Loading Events`.white)
 let eventCount = 0;
 
 module.exports = (bot) => {
