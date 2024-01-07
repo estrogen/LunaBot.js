@@ -5,7 +5,7 @@ module.exports = {
         name: 'deleteMessage'
     },
     async execute(i, bot) {
-        if (!i.member.roles.cache.some(r=>["890240560458244176", "890240560542134274"].concat(cc.Roles.Mods).includes(r.id)))
+        if (!i.member.roles.cache.some(r=>["664541384799289380", "594982795194138626"].concat(cc.Roles.Mods).includes(r.id)))
             return await i.reply({ content: "You lack the permissions", ephemeral: true });
 
         if (i.channel.id !== "725883088281796698")  {
