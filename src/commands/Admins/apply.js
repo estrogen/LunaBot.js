@@ -33,6 +33,4 @@ module.exports = {
         await i.reply({ content: "Button getting deployed", ephemeral: true});
         await i.channel.send({ content: '\u200B', components: [row] })
     },
-
-    rolePerms: cc.Roles.Admin,
 };

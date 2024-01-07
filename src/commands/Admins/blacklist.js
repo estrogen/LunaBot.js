@@ -87,6 +87,4 @@ module.exports = {
                 break;
         }
     },
-
-    rolePerms: cc.Roles.Admin,
 };

@@ -70,6 +70,4 @@ module.exports = {
                 break;
         }
     },
-
-    rolePerms: ["575433746296209418"],
 };

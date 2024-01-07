@@ -45,5 +45,4 @@ module.exports = {
         await i.channel.send({ embeds: [embed] });
     },
 
-    rolePerms: cc.Roles.Staff,
 };

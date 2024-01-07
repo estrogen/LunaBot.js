@@ -72,5 +72,4 @@ module.exports = {
         pagination.setEmbeds(embeds).render();
     },
 
-    rolePerms: cc.Roles.Staff,
 };

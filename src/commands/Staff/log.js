@@ -32,5 +32,4 @@ module.exports = {
         await i.reply({ embeds: [embed] });
     },
 
-    rolePerms: cc.Roles.Staff,
 };

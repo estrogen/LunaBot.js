@@ -28,5 +28,4 @@ module.exports = {
         });
     },
 
-    rolePerms: cc.Roles.Recruiter,
 };

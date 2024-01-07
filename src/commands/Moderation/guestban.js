@@ -41,6 +41,5 @@ module.exports = {
 			i.reply({ content: "An error has unfortunately occured", ephemeral: true});
 		}
 	},
-	
-	rolePerms: cc.Roles.Mods,
+
 };

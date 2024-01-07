@@ -32,6 +32,4 @@ module.exports = {
             stfu.deleteOne();
         }
     },
-
-    rolePerms: cc.Roles.Admin,
 };

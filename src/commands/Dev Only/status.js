@@ -23,6 +23,4 @@ module.exports = {
             status: "online"
         })
     },
-
-    rolePerms: ["575433746296209418"],
 };

@@ -41,5 +41,4 @@ module.exports = {
         }
     },
 
-    rolePerms: cc.Roles.Admin,
 };

@@ -87,5 +87,4 @@ module.exports = {
         await i.channel.send({ content: `Recruiter: <@${i.user.id}>\nRecruit: <@${member.id}> (${name})`});
     },
 
-    rolePerms: cc.Roles.Recruiter,
 };

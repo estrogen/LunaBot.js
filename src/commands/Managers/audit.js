@@ -74,7 +74,6 @@ module.exports = {
         }
     },
 
-    rolePerms: cc.Roles.Management.concat(cc.Roles.Admin),
 };
 
 async function auditWallet(department, userId, amount, mode, interaction) {

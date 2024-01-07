@@ -85,7 +85,6 @@ module.exports = {
         await interaction.reply({ embeds: [embed] });
     },
 
-    rolePerms: cc.Roles.Staff,
 };
 
 function getProgressInfo(recruitCount) {
