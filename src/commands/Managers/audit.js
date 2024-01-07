@@ -10,11 +10,11 @@ const wallets = {
 };
 
 const departmentManagers = {
-    't': "890240560496017476", //Treasury manager
-    'd': "890240560496017477", //Desigenr Manager
-    'r': "890240560542134274", //Recruiter Manager
-    'e': "890240560496017474", //Community Manager
-    'c': "890240560542134272", //Decorator Manager
+    't': "674509654801252402",
+    'd': "594982828866011186",
+    'r': "594982795194138626",
+    'e': "857546600284946432",
+    'c': "613717285718327306",
 };
 
 module.exports = {

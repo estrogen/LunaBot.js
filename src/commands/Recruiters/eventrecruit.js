@@ -25,7 +25,7 @@ module.exports = {
         const imember = await i.guild.members.fetch(inviter);
         if (!imember) return i.reply({ content: 'Unable to find inviter.', ephemeral: true });
 
-        const general = await i.guild.channels.cache.get('890240569165639771');
+        const general = await i.guild.channels.cache.get('521850636887916595');
         const eventlog = await i.guild.channels.cache.get('1067154532301279283');
 
         const wallet = await ewal.findOne({ userID: i.member.id }); // Change to event wallet
