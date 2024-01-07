@@ -1,7 +1,6 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ButtonStyle } = require('discord.js');
 const apps = require('../../models/guild/applications');
 const applyDb = require("../../models/guild/apply");
-const blacklistDb = require("../../models/guild/blacklist");
 
 module.exports = {
     data: {
@@ -11,9 +10,6 @@ module.exports = {
         try {
             const applicationData = await apps.findOne({ name: i.customId });
             const applicationChannel = await i.guild.channels.cache.get(applicationData.output);
-
-            const isBlacklisted = await blacklistDb.findOne({ "name": "recruiters", "userID": i.user.id });
-            if (isBlacklisted) return await i.reply({ content: `You're blacklisted from applying.`, ephemeral: true });
 
             const modal = new ModalBuilder()
                 .setCustomId(`${i.customId}-${i.user.id}`)
@@ -37,7 +33,6 @@ module.exports = {
 
             const welcomeBtns = new ActionRowBuilder()
                 .addComponents(
-                    new ButtonBuilder().setCustomId("blacklistUser").setLabel("Blacklist User").setStyle(ButtonStyle.Danger),
                     new ButtonBuilder().setCustomId("deleteMessage").setLabel("Delete Message").setStyle(ButtonStyle.Danger),
                     new ButtonBuilder().setCustomId('recruitment').setLabel('Recruit User').setStyle(ButtonStyle.Success),
                 );
