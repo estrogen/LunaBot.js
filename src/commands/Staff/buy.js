@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const shop = require('../../models/shop/shop');
+const orderHistory = require('../../models/shop/orderhistory');
 const cc = require('../../../config.json');
 
 // Wallet models mapped by department for easy reference
@@ -90,6 +91,13 @@ async function handleDegenPurchase(interaction, itemName, quantity, store, item)
     if (!data)
         return await interaction.reply({ content: "Error: Item not found in the store.", ephemeral: true });
 
+    const userOrderHistory = await orderHistory.findOne({ userID: interaction.user.id });
+    let hasOrderedBefore = false;
+    if (userOrderHistory)
+        hasOrderedBefore = userOrderHistory.history.some(order => order.itemName === itemName);
+
+    const additionalMessage = hasOrderedBefore ? `:warning: Buyer previously ordered this item.` : '';
+
     const index = data.items.findIndex(i => i.name === itemName);
     data.items[index].price = Math.max(0, data.items[index].price - quantity);
     await data.save();
@@ -103,6 +111,7 @@ async function handleDegenPurchase(interaction, itemName, quantity, store, item)
     const degenLogChannel = interaction.guild.channels.cache.get(degenLogChannelId);
     const embed = new EmbedBuilder()
         .setTitle("Degen Discount Order")
+        .setDescription(`${additionalMessage}`)
         .addFields([
             { name: "Item", value: `${itemName}`, inline: false}, 
             { name: "Buyer", value: `<@${interaction.user.id}> (${interaction.user.tag})`, inline: false},
