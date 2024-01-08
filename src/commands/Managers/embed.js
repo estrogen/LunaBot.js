@@ -16,7 +16,7 @@ module.exports = {
         const text = i.options.getString('json');
         const json = JSON.parse(text);
         const message = i.options.getString('id');
-        const embed = new EmbedBuilder(json);
+        const embed = new EmbedBuilder.from(json);
         try {
             if (message) {
                 await i.reply({ content: "Editing your custom embed...", ephemeral: true });

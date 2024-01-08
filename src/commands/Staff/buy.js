@@ -14,7 +14,7 @@ const walletByDepartment = {
 
 // Configurable channel IDs for purchases and logs
 const degenChannelId = "1193672601579565157"; // Channel for 'degen' purchases
-const degenLogChannelId = "1193512882944610335"; // Log channel for 'degen' purchase announcements
+const degenLogChannelId = "890240568339341341"; // Log channel for 'degen' purchase announcements
 const purchaseLogChannelIds = { // Log channels for each department's purchase announcements
     events: "1193512882944610335", // Channel ID for 'events' purchases
     default: "1193512882944610335", // Default channel ID for other purchases
@@ -46,23 +46,23 @@ module.exports = {
         const amount = i.options.getNumber('amount');
 
         if (amount <= 0) {
-            return i.reply({ content: "Can't purchase a negative or zero amount of an item.", ephemeral: true });
+            return await i.reply({ content: "Can't purchase a negative or zero amount of an item.", ephemeral: true });
         }
 
         if (department !== "degen" && department !== "events" && !i.member.roles.cache.some(r => cc.Roles.Staff.includes(r.id))) {
-            return i.reply({ content: "You're not authorized to make purchases from this department.", ephemeral: true });
+            return await i.reply({ content: "You're not authorized to make purchases from this department.", ephemeral: true });
         }
 
         const storeItem = await findItemInShop(department, itemName);
 
         if (!storeItem) {
-            return i.reply({ content: "The item you're trying to purchase doesn't exist.", ephemeral: true });
+            return await i.reply({ content: "The item you're trying to purchase doesn't exist.", ephemeral: true });
         }
 
         if (department === "degen") {
-            await handleDegenPurchase(i, itemName, amount, storeItem);
+            await handleDegenPurchase(i, itemName, amount, storeItem.store, storeItem.item);
         } else {
-            await handleRegularPurchase(i, department, itemName, amount, storeItem);
+            await handleRegularPurchase(i, department, itemName, amount, storeItem.item);
         }
     },
 };
@@ -73,30 +73,45 @@ async function findItemInShop(department, itemName) {
     if (!store) return null;
     const itemIndex = store.items.findIndex(item => item.name === normalizedItemName);
     if (itemIndex === -1) return null;
-    return store.items[itemIndex];
+    return { store, item: store.items[itemIndex] };
 }
 
-async function handleDegenPurchase(interaction, itemName, quantity, item) {
+async function handleDegenPurchase(interaction, itemName, quantity, store, item) {
     if (interaction.channel.id !== degenChannelId) {
-        return interaction.reply({ content: "You can only purchase 'degen' items in the specified 'degen' channel.", ephemeral: true });
+        return await interaction.reply({ content: "You can only purchase 'degen' items in the specified 'degen' channel.", ephemeral: true });
     }
 
     if (item.price === 0) {
-        return interaction.reply({ content: "This item is currently out of stock!", ephemeral: true });
+        return await interaction.reply({ content: "This item is currently out of stock!", ephemeral: true });
     }
+    
 
-    item.stock = Math.max(0, item.stock - quantity);
-    await shop.updateOne({ _id: store._id, "items._id": item._id }, { "$set": { "items.$.stock": item.stock } });
+    const data = await shop.findOne({ _id: store._id, "items.name": itemName });
+    if (!data)
+        return await interaction.reply({ content: "Error: Item not found in the store.", ephemeral: true });
+
+    const index = data.items.findIndex(i => i.name === itemName);
+    data.items[index].price = Math.max(0, data.items[index].price - quantity);
+    await data.save();
+
+    const row = new ActionRowBuilder()
+            .addComponents(
+                new ButtonBuilder().setCustomId('confirmDegen').setLabel('Confirm').setStyle(ButtonStyle.Success),
+                new ButtonBuilder().setCustomId('cancelDegen').setLabel('Cancel').setStyle(ButtonStyle.Danger),
+        );
 
     const degenLogChannel = interaction.guild.channels.cache.get(degenLogChannelId);
     const embed = new EmbedBuilder()
-        .setTitle("Degen Item Purchased")
-        .setDescription(`**Item**: ${itemName}\n**Quantity**: ${quantity}\n**Price Each**: ${item.price} tokens`)
+        .setTitle("Degen Discount Order")
+        .addFields([
+            { name: "Item", value: `${itemName}`, inline: false}, 
+            { name: "Buyer", value: `<@${interaction.user.id}> (${interaction.user.tag})`, inline: false},
+        ])
         .setColor("#ffb347")
         .setTimestamp();
 
-    await degenLogChannel.send({ embeds: [embed] });
-    return interaction.reply({ content: `You've successfully purchased ${quantity} of ${itemName}.`, ephemeral: true });
+    await degenLogChannel.send({ embeds: [embed], components: [row] });
+    return await interaction.reply({ content: `You've successfully purchased ${quantity} of ${itemName}.`, ephemeral: true });
 }
 
 async function handleRegularPurchase(interaction, department, itemName, quantity, item) {
@@ -104,7 +119,7 @@ async function handleRegularPurchase(interaction, department, itemName, quantity
     const userWallet = await walletModel.findOne({ userID: interaction.user.id });
 
     if (userWallet.tokens < item.price * quantity) {
-        return interaction.reply({ content: "You have insufficient tokens to make this purchase.", ephemeral: true });
+        return await interaction.reply({ content: "You have insufficient tokens to make this purchase.", ephemeral: true });
     }
 
     userWallet.tokens -= item.price * quantity;

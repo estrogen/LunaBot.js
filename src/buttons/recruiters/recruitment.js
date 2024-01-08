@@ -60,7 +60,7 @@ module.exports = {
         const collector = new InteractionCollector(bot, { filter, max: 2, time: 30000 })
 
         const member = await i.guild.members.fetch(id);
-        if (!member) return i.reply({ content: 'Unable to find member.', ephemeral: true });
+        if (!member) return await i.reply({ content: 'Unable to find member.', ephemeral: true });
         const general = await i.guild.channels.cache.get('890240569165639771');
         const wal = await wallet.findOne({ userID: i.member.id });
         const data = await recruit.findOne({ userID: member.id });

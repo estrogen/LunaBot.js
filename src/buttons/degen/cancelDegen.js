@@ -12,10 +12,10 @@ module.exports = {
         data.save()
 
         if (i.channel.id !== "725883088281796698") {
-            i.reply({ content: "Order has been canceled", ephemeral: true })
+            await i.reply({ content: "Order has been canceled", ephemeral: true })
             i.message.delete();
         } else {
-            i.reply({ content: "Error", ephemeral: true })
+            await i.reply({ content: "Error", ephemeral: true })
         }
     },
 }
