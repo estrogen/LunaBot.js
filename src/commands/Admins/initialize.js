@@ -1,5 +1,4 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const off = require('../../models/moderation/stfu');
 const cc = require('../../../config.json');
 
 module.exports = {
@@ -17,8 +16,8 @@ module.exports = {
         .setDefaultPermission(false),
    
     async execute(i, bot) {
-        if (i.user.id !== '640629972817543195')
-            return i.reply({ content: "You're not ally", ephemeral: true});
+        if(!i.member.roles.cache.some(r => cc.Roles.Admin.includes(r.id)))
+            return i.reply({ content: "You're not a admin", ephemeral: true});
 
         const option = i.options.getString('embed');
         i.reply({ content: "Embed getting created!", ephemeral: true});
@@ -30,14 +29,6 @@ module.exports = {
                             .setCustomId('applyWarframe')
                             .setLabel('Here for Warframe')
                             .setStyle(ButtonStyle.Success),
-                        new ButtonBuilder()
-                            .setCustomId('joinGuest')
-                            .setLabel("I'm just Visiting")
-                            .setStyle(ButtonStyle.Danger),
-                        new ButtonBuilder()
-                            .setCustomId('applyEvents')
-                            .setLabel('Here for Events')
-                            .setStyle(ButtonStyle.Primary),
                     );
 
                 const embed = new EmbedBuilder()

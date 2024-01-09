@@ -12,6 +12,18 @@ module.exports = async (bot, oldMember, newMember) => {
       console.error(`[RoleBlock Error]: ${error.message}`);
     }
   }
+
+
+  if (!oldMember.roles.cache.has("1193605190759227392") && newMember.roles.cache.has("1193605190759227392")) {
+    console.log('[Luna]'.blue, `Onboarding complete, ghost pinging user.`);
+    try {
+      const applyChannel = await bot.channels.cache.get("1193605095296876605");
+      const msg = await applyChannel.send({ content: `<@${newMember.id}>` })
+      await msg.delete();
+    } catch (err) {
+      console.error('[Error]'.red, err);
+    }
+  }
 };
 
 async function preventBlockedRoles(oldMember, newMember, addedRoles) {
