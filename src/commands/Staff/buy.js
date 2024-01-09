@@ -61,7 +61,7 @@ module.exports = {
         }
 
         if (department === "degen") {
-            await handleDegenPurchase(i, itemName, amount, storeItem.store, storeItem.item);
+            await handleDegenPurchase(i, itemName, storeItem.store, storeItem.item);
         } else {
             await handleRegularPurchase(i, department, itemName, amount, storeItem.item);
         }
@@ -77,7 +77,7 @@ async function findItemInShop(department, itemName) {
     return { store, item: store.items[itemIndex] };
 }
 
-async function handleDegenPurchase(interaction, itemName, quantity, store, item) {
+async function handleDegenPurchase(interaction, itemName, store, item) {
     if (interaction.channel.id !== degenChannelId) {
         return await interaction.reply({ content: "You can only purchase 'degen' items in the specified 'degen' channel.", ephemeral: true });
     }
@@ -96,10 +96,10 @@ async function handleDegenPurchase(interaction, itemName, quantity, store, item)
     if (userOrderHistory)
         hasOrderedBefore = userOrderHistory.history.some(order => order.itemName === itemName);
 
-    const additionalMessage = hasOrderedBefore ? `:warning: Buyer previously ordered this item.` : '';
+    const additionalMessage = hasOrderedBefore ? `:warning: Buyer previously ordered this item.` : '.';
 
     const index = data.items.findIndex(i => i.name === itemName);
-    data.items[index].price = Math.max(0, data.items[index].price - quantity);
+    data.items[index].price = Math.max(0, data.items[index].price - 1);
     await data.save();
 
     const row = new ActionRowBuilder()
@@ -120,7 +120,7 @@ async function handleDegenPurchase(interaction, itemName, quantity, store, item)
         .setTimestamp();
 
     await degenLogChannel.send({ embeds: [embed], components: [row] });
-    return await interaction.reply({ content: `You've successfully purchased ${quantity} of ${itemName}.`, ephemeral: true });
+    return await interaction.reply({ content: `You've successfully ordered ${itemName}.`, ephemeral: true });
 }
 
 async function handleRegularPurchase(interaction, department, itemName, quantity, item) {

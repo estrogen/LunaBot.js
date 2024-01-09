@@ -17,17 +17,13 @@ module.exports = {
         const json = JSON.parse(text);
         const message = i.options.getString('id');
         const embed = new EmbedBuilder(json);
-        try {
-            if (message) {
-                await i.reply({ content: "Editing your custom embed...", ephemeral: true });
-                const msg = await i.channel.messages.fetch(message);
-                await msg.edit({ embeds: [embed] });
-            } else {
-                await i.reply({ content: "Sending your custom embed...", ephemeral: true });
-                await i.channel.send({ embeds: [embed] });
-            }
-        } catch(e) {
-            await i.reply({ content: `${e}`, ephemeral: true });
+        if (message) {
+            await i.reply({ content: "Editing your custom embed...", ephemeral: true });
+            const msg = await i.channel.messages.fetch(message);
+            await msg.edit({ embeds: [embed] });
+        } else {
+            await i.reply({ content: "Sending your custom embed...", ephemeral: true });
+            await i.channel.send({ embeds: [embed] });
         }
     },
 
