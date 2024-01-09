@@ -61,6 +61,9 @@ module.exports = {
         }
 
         if (department === "degen") {
+            if(amount > 1){
+                return await interaction.reply({ content: "You can only purchase one 'degen' item at a time.", ephemeral: true });
+            }
             await handleDegenPurchase(i, itemName, storeItem.store, storeItem.item);
         } else {
             await handleRegularPurchase(i, department, itemName, amount, storeItem.item);
