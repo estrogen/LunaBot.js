@@ -134,12 +134,27 @@ async function handleRegularPurchase(interaction, department, itemName, quantity
         return await interaction.reply({ content: "You have insufficient tokens to make this purchase.", ephemeral: true });
     }
 
+    const mangaerPing = 0;
+    switch(department){
+        case recruiter:
+            managerPing = 890240560542134274;
+        case treasury:
+            managerPing = 890240560542134274;
+        case designer:
+            managerPing = 890240560496017477;
+        case decorator:
+            managerPing = 890240560542134272;
+        case events:
+            managerPing = 890240560496017474;
+    };
+
+
     userWallet.tokens -= item.price * quantity;
     await userWallet.save();
 
     const embed = new EmbedBuilder()
         .setTitle(`Purchase Confirmation for ${itemName}`)
-        .setDescription(`**Amount**: ${quantity}\n**Total Cost**: ${item.price * quantity} tokens\n**New Balance**: ${userWallet.tokens} tokens`)
+        .setDescription(`**Amount**: ${quantity}\n**Total Cost**: ${item.price * quantity} tokens\n**New Balance**: ${userWallet.tokens} tokens \n <@${managerPing}>`)
         .setColor("#ffb347")
         .setThumbnail(interaction.user.avatarURL({ dynamic: true, format: "png", size: 4096 }))
         .setTimestamp();
