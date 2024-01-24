@@ -13,6 +13,15 @@ const walletByDepartment = {
     // Assuming 'degen' uses a separate or same wallet model, which should be created accordingly
 };
 
+// Manangers of each department
+const managerByDepartment = {
+    treasury: '890240560496017476',
+    recruiter: '890240560542134274',
+    designer: '890240560496017477',
+    decorator: '890240560542134272',
+    events: '890240560496017474',
+}
+
 // Configurable channel IDs for purchases and logs
 const degenChannelId = "1193672601579565157"; // Channel for 'degen' purchases
 const degenLogChannelId = "890240568339341341"; // Log channel for 'degen' purchase announcements
@@ -145,5 +154,5 @@ async function handleRegularPurchase(interaction, department, itemName, quantity
 
     const logChannelId = department === "events" ? purchaseLogChannelIds.events : purchaseLogChannelIds.default;
     const logChannel = interaction.guild.channels.cache.get(logChannelId);
-    await logChannel.send({ content: `New purchase by <@${interaction.user.id}>`, embeds: [embed] });
+    await logChannel.send({ content: `New purchase by <@${interaction.user.id}>, <@&${managerByDepartment[department]}>`, embeds: [embed] });
 }

@@ -21,7 +21,7 @@ module.exports = {
 
         const clan = i.guild.roles.cache.find(r => r.id === data.kingdom);
         const embed = new EmbedBuilder()
-            .setColor(clan.hexColor)
+            .setColor(clan.hexColor || '#ffb347')
             .addFields([
                 { name: 'User', value: `<@${user.id}>`, inline: true },
                 { name: 'Kingdom', value: `${clan.name}`, inline: true },
