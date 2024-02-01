@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const progress = require('string-progressbar');
 const cc = require('../../../config.json');
+const wait = require('node:timers/promises').setTimeout;
 
 // Models
 const recruits = require('../../models/recruitment/recruit');
@@ -13,7 +14,7 @@ const walletModels = {
 };
 
 const clans = {
-    //"AK": "890240560248524859",
+    "AK": "890240560248524859",
     "IK": "890240560248524858",
     "TK": "1193510188955746394",
     "WK": "890240560248524856",
@@ -66,10 +67,11 @@ module.exports = {
             .setColor(color)
             .setThumbnail(avatarURL);
 
+        await interaction.deferReply();
         // Specific handling for recruiter type
         if (type === 'r') {
             const totalRecruits = await recruits.find({ recruiter: user.id }).exec();
-            let breakdown = totalRecruits.length >= 2000 ? "Skipped due to recruit amount" : getRecruitBreakdown(totalRecruits, clans);
+            let breakdown = await getRecruitBreakdown(totalRecruits, clans);
             const progressInfo = getProgressInfo(totalRecruits.length); // Get the progress information
 
             embed.setDescription(progressInfo.description)
@@ -81,8 +83,7 @@ module.exports = {
         } else {
             embed.addFields({ name: 'Tokens', value: `${data.tokens} :gem:`, inline: true });
         }
-
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
     },
 
 };
@@ -103,7 +104,7 @@ function getProgressInfo(recruitCount) {
     };
 }
 
-function getRecruitBreakdown(recruits, clans) {
+async function getRecruitBreakdown(recruits, clans) {
     // Construct the breakdown string for recruits by clan
     let breakdown = "";
     for (let clan in clans) {

@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const cc = require('../../../config.json');
+const recruits = require('../../models/recruitment/recruit');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -11,7 +12,8 @@ module.exports = {
             .setRequired(true)
             .addChoices(
                 {name: 'Welcome Embed', value: 'we'},
-                {name: 'Parse Test', value: 'pe'}
+                {name: 'Parse Test', value: 'pe'},
+                {name: 'Update Kingdom IDs', value: 'uk'}
             ))
         .setDefaultPermission(false),
    
@@ -20,7 +22,7 @@ module.exports = {
             return i.reply({ content: "You're not a admin", ephemeral: true});
 
         const option = i.options.getString('embed');
-        i.reply({ content: "Embed getting created!", ephemeral: true});
+        await i.reply({ content: "Embed getting created!", ephemeral: true});
         switch (option) {
             case 'we':
                 const row = new ActionRowBuilder()
@@ -59,6 +61,24 @@ module.exports = {
                     .setDescription(`${i.member.tag} has left the server | ${i.member.id}\n\n**Affected teams:** ${teams}`)
                 await msg.edit({ content: `\u200B`, embeds: [notify] });
                 break;
+
+            case 'uk':
+                const idMappings = {
+                    "521854159390113793": "890240560248524859", // AK
+                    "566032412618784768": "890240560248524858", // IK
+                    "604195078973554698": "1193510188955746394", // TK
+                    "606538892547457027": "890240560248524856", // WK
+                    "874903017445535754": "890240560273702932", // YK
+                    "931364353213595709": "11929229107514737369", // CK
+                    "937244226721300532": "1192923627419619419", // MK
+                };
+
+                for (const [oldId, newId] of Object.entries(idMappings)) {
+                    await recruits.updateMany({ kingdom: oldId }, { $set: { kingdom: newId } });
+                }
+
+                break;
         }
+        console.log("Done.")
     },
 };
