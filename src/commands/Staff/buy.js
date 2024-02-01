@@ -46,10 +46,44 @@ module.exports = {
                 {name: 'Events', value: 'events'},
                 {name: 'Decorator', value: 'decorator'}
             ))
-        .addStringOption(option => option.setName('item').setDescription('Item you want to buy (Case Sensitive)').setRequired(true))
-        .addNumberOption(option => option.setName('amount').setDescription('Amount you want to buy').setRequired(true))
-        .setDefaultPermission(true),
+        .addStringOption(option => 
+            option.setName('item')
+                .setDescription('Item you want to buy')
+                .setRequired(true)
+                .setAutocomplete(true))
+        .addNumberOption(option => option.setName('amount').setDescription('Amount you want to buy').setRequired(true)),
+    async autocomplete(i, bot) {
+        const focusedOption = i.options.getFocused(true);
 
+        if (focusedOption.name === 'item') {
+            const department = i.options.getString('department');
+            if (!department) {
+                return await i.respond([]);
+            }
+
+            const focusedValue = focusedOption.value.toLowerCase();
+            let items = [];
+            
+            console.log(`Autocomplete triggered for department: ${department}`);
+            console.log(`Focused value: ${focusedValue}`);
+            
+            try {
+                const store = await shop.findOne({ "team": department });
+                if (store && store.items && store.items.length > 0) {
+                    items = store.items
+                        .filter(item => item.name.toLowerCase().startsWith(focusedValue))
+                        .slice(0, 25)
+                        .map(item => ({ name: item.name, value: item.name })); 
+                }
+            } catch (error) {
+                console.error(`Error fetching items for department ${department}:`, error);
+            }
+            
+            console.log(`Items found: ${items.length}`);
+
+            await i.respond(items);
+        }
+    },
     async execute(i, bot) {
         const department = i.options.getString('department');
         const itemName = i.options.getString('item');
