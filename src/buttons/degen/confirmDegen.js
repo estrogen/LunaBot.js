@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const orderHistory = require('../../models/shop/orderhistory');
+const pendingOrders = require('../../models/shop/pendingOrders');
 const moment = require("moment");
 
 module.exports = {
@@ -24,6 +25,10 @@ module.exports = {
                     $setOnInsert: { guildID: i.guild.id, userID: buyerId }
                 },
                 { upsert: true }
+            );
+            await pendingOrders.findOneAndUpdate(
+                { guildID: i.guild.id, userID: buyerId },
+                { $pull: { pending: { itemName: itemName } } } 
             );
             console.log("Order history updated successfully.");
         } catch (error) {

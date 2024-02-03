@@ -1,7 +1,9 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const shop = require('../../models/shop/shop');
 const orderHistory = require('../../models/shop/orderhistory');
+const pendingOrders = require('../../models/shop/pendingOrders');
 const cc = require('../../../config.json');
+const moment = require("moment");
 
 // Wallet models mapped by department for easy reference
 const walletByDepartment = {
@@ -64,9 +66,6 @@ module.exports = {
             const focusedValue = focusedOption.value.toLowerCase();
             let items = [];
             
-            console.log(`Autocomplete triggered for department: ${department}`);
-            console.log(`Focused value: ${focusedValue}`);
-            
             try {
                 const store = await shop.findOne({ "team": department });
                 if (store && store.items && store.items.length > 0) {
@@ -78,8 +77,6 @@ module.exports = {
             } catch (error) {
                 console.error(`Error fetching items for department ${department}:`, error);
             }
-            
-            console.log(`Items found: ${items.length}`);
 
             await i.respond(items);
         }
@@ -163,6 +160,12 @@ async function handleDegenPurchase(interaction, itemName, store, item) {
         .setTimestamp();
 
     await degenLogChannel.send({ embeds: [embed], components: [row] });
+    const orderDate = moment(interaction.createdAt).unix().toString();
+    await pendingOrders.findOneAndUpdate(
+        { guildID: interaction.guild.id, userID: interaction.user.id },
+        { $push: { pending: { itemName: itemName, orderDate: orderDate } } },
+        { upsert: true, new: true }
+    );
     return await interaction.reply({ content: `You've successfully ordered ${itemName}.`, ephemeral: true });
 }
 

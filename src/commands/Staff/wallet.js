@@ -40,9 +40,9 @@ module.exports = {
                 ))
         .addUserOption(option => option.setName('user').setDescription('Mentioned user').setRequired(true))
         .setDefaultPermission(false),
-    async execute(interaction, bot) {
-        const type = interaction.options.getString('department')
-        const user = interaction.options.getUser('user');
+    async execute(i, bot) {
+        const type = i.options.getString('department')
+        const user = i.options.getUser('user');
         const avatarURL = user.avatarURL({ dynamic: true, format: "png", size: 4096 });
         const color = '#ffb347'; // Use a constant for the color to maintain consistency
 
@@ -53,12 +53,12 @@ module.exports = {
         if (!data) {
             data = new walletModel({
                 userID: user.id,
-                guildID: interaction.guild.id,
+                guildID: i.guild.id,
                 tokens: 0,
                 ...(type === 'd' && { sheet: "None", support: "None" }) // Only add extra fields for the 'd' type
             });
             await data.save();
-            return interaction.reply({ content: "User's Wallet has been initialized", ephemeral: true });
+            return i.reply({ content: "User's Wallet has been initialized", ephemeral: true });
         }
 
         // Construct the embed based on the department
@@ -67,7 +67,7 @@ module.exports = {
             .setColor(color)
             .setThumbnail(avatarURL);
 
-        await interaction.deferReply();
+        await i.deferReply();
         // Specific handling for recruiter type
         if (type === 'r') {
             const totalRecruits = await recruits.find({ recruiter: user.id }).exec();
@@ -83,7 +83,7 @@ module.exports = {
         } else {
             embed.addFields({ name: 'Tokens', value: `${data.tokens} :gem:`, inline: true });
         }
-        await interaction.editReply({ embeds: [embed] });
+        await i.editReply({ embeds: [embed] });
     },
 
 };
