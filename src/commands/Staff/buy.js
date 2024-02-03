@@ -136,7 +136,18 @@ async function handleDegenPurchase(interaction, itemName, store, item) {
     if (userOrderHistory)
         hasOrderedBefore = userOrderHistory.history.some(order => order.itemName === itemName);
 
-    const additionalMessage = hasOrderedBefore ? `:warning: Buyer previously ordered this item.` : '.';
+    const userPendingOrders = await pendingOrders.findOne({ userID: interaction.user.id });
+    let hasPendingOrder = false;
+    if (userPendingOrders)
+        hasPendingOrder = userPendingOrders.pending.some(order => order.itemName === itemName);
+    
+    let additionalMessage = '.';
+    if (hasOrderedBefore) {
+        additionalMessage = ':warning: Buyer previously ordered this item.';
+    }
+    if (hasPendingOrder) {
+        additionalMessage += ' :hourglass_flowing_sand: Buyer currently has a pending order for this item.';
+    }
 
     const index = data.items.findIndex(i => i.name === itemName);
     data.items[index].price = Math.max(0, data.items[index].price - 1);
