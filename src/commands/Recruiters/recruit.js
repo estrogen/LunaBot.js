@@ -1,8 +1,9 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const welcomes = require("../../models/guild/welcome");
 const cc = require('../../../config.json');
-const rwal = require('../../models/wallets/recruiterWallet');
-const recruit = require('../../models/recruitment/recruit');
+const wallet = require('../../models/dbv2/tokens_recruit');
+const users = require('../../models/dbv2/usersSchema');
+const recruit = require('../../models/dbv2/wf_recruitData');
 const moment = require("moment");
 
 module.exports = {
@@ -39,8 +40,6 @@ module.exports = {
             return i.reply({ content: 'Unable to find member.', ephemeral: true });
 
         const general = await i.guild.channels.cache.get('890240569165639771');
-        const wallet = await rwal.findOne({ userID: i.member.id });
-        const data = await recruit.findOne({ userID: member.id });
         const welmsg = await welcomes.findOne({ team: "recruiter" });
         const kingdom = await i.guild.roles.cache.find(r => r.id === clan);
         const nEmbed = new EmbedBuilder()
@@ -54,23 +53,37 @@ module.exports = {
         await member.setNickname(name, `Recruited into the clan by ${i.user.tag}`);
         await member.roles.add(kingdom.id, `Recruited into the clan by ${i.user.tag}`);
 
-        if (!wallet) {
-            const newR = new rwal({ userID: i.user.id, guildID: i.guild.id, tokens: 0.5});
-            newR.save();
+        let recruiterWallet = await wallet.findOne({ userID: i.member.id });
+        if (!recruiterWallet) {
+            recruiterWallet = new wallet({
+                userID: i.user.id,
+                guildID: i.guild.id,
+                tokens: 0.5
+            });
+            await recruiterWallet.save();
         }
 
-        if (!data) {
-            const newRecruit = new recruit({
+        let recruitData = await recruit.findOne({ userID: member.id });
+        let userData = await users.findOne({ userID: member.id });
+        if (!recruitData) {
+            recruitData = new recruit({
                 userID: member.id,
-                guildID: i.guild.id,
-                kingdom: clan,
                 recruiter: i.user.id,
-                clanJoin: moment(i.createdAt).unix(),
-                serverJoin: moment(member.joinedAt).unix()
+                joinDate: moment.unix(i.createdAt).toDate(),
+                kingdom: clan
             });
-            newRecruit.save();
-            wallet.tokens += 0.5;
-            wallet.save();
+            await recruitData.save();
+            if (!userData) {
+                userData = new users({
+                    userID: member.id, 
+                    serverJoinDate: moment.unix(member.joinedAt).toDate(),
+                    wfIGN: name,
+                    wfPastIGN: []
+                });
+                await userData.save();
+            }
+            recruiterWallet.tokens += 0.5;
+            await recruiterWallet.save();
 
             const wEmbed = new EmbedBuilder()
                 .setColor(kingdom.hexColor)
@@ -79,10 +92,9 @@ module.exports = {
                 .setFooter({ text: `Recruited by ${i.user.username}` });
             const welcome = await general.send({ content: `Incoming recruit... <@!${member.id}>`});
             await welcome.edit({ content: "\u200B", embeds: [wEmbed] });
-
         } else {
-            data.kingdom = kingdom.id;
-            data.save();
+            recruitData.kingdom = kingdom.id;
+            recruitData.save();
         }
         await i.channel.send({ content: `Recruiter: <@${i.user.id}>\nRecruit: <@${member.id}> (${name})`});
     },

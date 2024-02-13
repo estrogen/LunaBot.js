@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const tokensBaseSchema = require("./tokensBaseSchema.js");
 
-const tokensDesign = {
+const tokens_design = {
     ...tokensBaseSchema
 };
 

@@ -2,8 +2,9 @@ const { InteractionCollector, EmbedBuilder, StringSelectMenuBuilder, StringSelec
 
 const welcomes = require("../../models/guild/welcome");
 const cc = require('../../../config.json');
-const wallet = require('../../models/wallets/recruiterWallet');
-const recruit = require('../../models/recruitment/recruit');
+const wallet = require('../../models/dbv2/tokens_recruit');
+const users = require('../../models/dbv2/usersSchema');
+const recruit = require('../../models/dbv2/wf_recruitData');
 const moment = require("moment");
 
 module.exports = {
@@ -17,11 +18,6 @@ module.exports = {
             .setCustomId('recruitClan')
             .setPlaceholder('Clan to recruit to')
             .addOptions(
-/*               new StringSelectMenuOptionBuilder()
-                    .setLabel( 'Anime Kingdom')
-                    .setDescription( "They'll be joining Anime Kingdom")
-                    .setValue( '521854159390113793'),
-*/
                 new StringSelectMenuOptionBuilder()
                     .setLabel( 'Imouto Kingdom')
                     .setDescription( "They'll be joining Imouto Kingdom")
@@ -54,64 +50,65 @@ module.exports = {
             )
 
         const row = new ActionRowBuilder().addComponents(select);
-
         await i.reply({ content: `Which kingdom will ${ign} be joining?`, components: [row], ephemeral: true });
+
         const filter = m => m.isSelectMenu() && m.member.id === i.member.id;
         const collector = new InteractionCollector(bot, { filter, max: 2, time: 30000 })
 
-        const member = await i.guild.members.fetch(id);
-        if (!member) return await i.reply({ content: 'Unable to find member.', ephemeral: true });
-        const general = await i.guild.channels.cache.get('890240569165639771');
-        const wal = await wallet.findOne({ userID: i.member.id });
-        const data = await recruit.findOne({ userID: member.id });
-        const welmsg = await welcomes.findOne({ team: "recruiter" });
-
         collector.on("collect", async (m) => {
-            await m.update({ content: `<@${id}> has been recruited to <@&${m.values[0]}>`, components: [], ephemeral: true })
+            const member = await i.guild.members.fetch(id);
+            if (!member) return await m.reply({ content: 'Unable to find member.', ephemeral: true });
+
             const kingdom = await i.guild.roles.cache.find(r => r.id === m.values[0]);
-            const recruitEmbed = new EmbedBuilder()
-                .setAuthor({ name: `Successful Recruit (Click to go to app)`, url: `https://discord.com/channels/890240560131104798/${i.channel.id}/${i.message.id}` })
-                .setColor(kingdom.color)
-                .setDescription(`${ign} was recruited to ${kingdom.name}!`)
-                .setThumbnail(i.user.avatarURL({ dynamic: true, format: "png", size: 4096 }))
-            await m.channel.send({ embeds: [recruitEmbed] })
-
-            await member.roles.remove(cc.Roles.Recruit, `Recruited into the clan by ${i.user.tag}`);
+            await member.roles.set([kingdom.id], `Recruited into the clan by ${i.user.tag}`);
             await member.setNickname(ign, `Recruited into the clan by ${i.user.tag}`);
-            await member.roles.add(kingdom.id, `Recruited into the clan by ${i.user.tag}`);
 
-            if (!wal) {
-                const newR = new wallet({ userID: i.user.id, guildID: i.guild.id, tokens: 0.0});
-                newR.save();
-            }
-    
-            if (!data) {
-                const newRecruit = new recruit({
-                    userID: member.id,
+            let recruiterWallet = await wallet.findOne({ userID: i.user.id });
+            if (!recruiterWallet) {
+                recruiterWallet = new Wallet({
+                    userID: i.user.id,
                     guildID: i.guild.id,
-                    kingdom: m.values[0],
-                    recruiter: i.user.id,
-                    clanJoin: moment(i.createdAt).unix(),
-                    serverJoin: moment(member.joinedAt).unix()
+                    tokens: 0.5
                 });
-                newRecruit.save();
-                wal.tokens += 0.5;
-                wal.save();
-    
+                await recruiterWallet.save();
+            }
+
+            let recruitData = await recruit.findOne({ userID: member.id });
+            let userData = await users.findOne({ userID: member.id });
+            if (!recruitData) {
+                recruitData = new recruit({
+                    userID: member.id,
+                    recruiter: i.user.id,
+                    joinDate: moment.unix(i.createdAt).toDate(),
+                    kingdom: clan
+                });
+                await recruitData.save();
+                if (!userData) {
+                    userData = new users({
+                        userID: member.id, 
+                        serverJoinDate: moment.unix(member.joinedAt).toDate(),
+                        wfIGN: name,
+                        wfPastIGN: []
+                    });
+                    await userData.save();
+                }
+                recruiterWallet.tokens += 0.5;
+                await recruiterWallet.save();
+
                 const wEmbed = new EmbedBuilder()
-                    .setColor(kingdom.color)
-                    .setTitle(`Welcome to ${kingdom.name}, ${ign}`)
+                    .setColor(kingdom.hexColor)
+                    .setTitle(`Welcome to ${kingdom.name}, ${name}`)
                     .setDescription(`<@!${member.id}>, ${welmsg.message}`)
                     .setFooter({ text: `Recruited by ${i.user.username}` });
                 const welcome = await general.send({ content: `Incoming recruit... <@!${member.id}>`});
                 await welcome.edit({ content: "\u200B", embeds: [wEmbed] });
-    
             } else {
-                data.kingdom = kingdom.id;
-                data.save();
+                recruitData.kingdom = kingdom.id;
+                recruitData.save();
             }
-            await m.channel.send({ content: `Recruiter: <@${i.user.id}>\nRecruit: <@${member.id}> (${ign})`});
-        })
+
+            await m.update({ content: `Recruiter: <@${i.user.id}>\nRecruit: <@${member.id}> (${ign})`, components: [], ephemeral: true });
+        });
 
     },
 }
