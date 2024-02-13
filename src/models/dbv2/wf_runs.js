@@ -6,6 +6,7 @@ const wf_runs = {
     runType: { type: String, required: true},
     mission: { type: String, required: false},
     rewards: { type: [String], required: false},
+    date: {type: Date, required: true, index: true},
     screenshot: {type: String, required: false}
 
 
