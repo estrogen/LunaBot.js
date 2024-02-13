@@ -12,4 +12,4 @@ const wf_runs = {
 
 };
 
-module.exports = mongoose.model("WFRuns", wf_runs);
+module.exports = mongoose.model("WF_Runs", wf_runs);

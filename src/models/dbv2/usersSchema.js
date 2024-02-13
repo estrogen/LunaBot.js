@@ -7,4 +7,4 @@ const usersSchema = {
     wfPastIGN: { type: [String], required:false}
 };
 
-module.exports = usersSchema;
+module.exports = mongoose.model("users", usersSchema);

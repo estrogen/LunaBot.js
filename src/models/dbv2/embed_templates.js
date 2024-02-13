@@ -6,4 +6,4 @@ const embed_templates = {
 
 };
 
-module.exports = embed_templates;
+module.exports = mongoose.model("embed_templates", embed_templates);
