@@ -5,4 +5,4 @@ const tokensTreasure = {
     ...tokensBaseSchema
 };
 
-module.exports = mongoose.model("tokensTreasure", toekns_treasure);
+module.exports = mongoose.model("tokensTreasure", tokens_treasure);
