@@ -7,4 +7,4 @@ const wf_farmerContributions = {
     screenshot: { type: String, required: false }
 };
 
-module.exports = mongoose.model("WFFarmerContributions", wf_farmerContributions);
+module.exports = mongoose.model("wf_farmerContributions", wf_farmerContributions);

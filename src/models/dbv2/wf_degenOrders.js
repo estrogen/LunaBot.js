@@ -7,4 +7,4 @@ const wf_degenOrders = {
     date: { type: Date, required: true }
 };
 
-module.exports = mongoose.model("WFDegenOrders", wf_degenOrders);
+module.exports = mongoose.model("wf_degenOrders", wf_degenOrders);

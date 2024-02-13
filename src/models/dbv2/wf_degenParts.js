@@ -6,4 +6,4 @@ const wf_degenParts = {
 
 };
 
-module.exports = mongoose.model("WFDegenParts", wf_degenParts);
+module.exports = mongoose.model("wf_degenParts", wf_degenParts);

@@ -5,4 +5,4 @@ const tokens_deco = {
     ...tokensBaseSchema
 };
 
-module.exports = mongoose.model("tokensDeco", tokens_deco);
+module.exports = mongoose.model("tokens_deco", tokens_deco);
