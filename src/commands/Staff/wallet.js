@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const progress = require('string-progressbar');
 const cc = require('../../../config.json');
+const wait = require('node:timers/promises').setTimeout;
 
 // Models
 const recruits = require('../../models/recruitment/recruit');
@@ -13,7 +14,7 @@ const walletModels = {
 };
 
 const clans = {
-    //"AK": "890240560248524859",
+    "AK": "890240560248524859",
     "IK": "890240560248524858",
     "TK": "1193510188955746394",
     "WK": "890240560248524856",
@@ -39,9 +40,9 @@ module.exports = {
                 ))
         .addUserOption(option => option.setName('user').setDescription('Mentioned user').setRequired(true))
         .setDefaultPermission(false),
-    async execute(interaction, bot) {
-        const type = interaction.options.getString('department')
-        const user = interaction.options.getUser('user');
+    async execute(i, bot) {
+        const type = i.options.getString('department')
+        const user = i.options.getUser('user');
         const avatarURL = user.avatarURL({ dynamic: true, format: "png", size: 4096 });
         const color = '#ffb347'; // Use a constant for the color to maintain consistency
 
@@ -52,12 +53,12 @@ module.exports = {
         if (!data) {
             data = new walletModel({
                 userID: user.id,
-                guildID: interaction.guild.id,
+                guildID: i.guild.id,
                 tokens: 0,
                 ...(type === 'd' && { sheet: "None", support: "None" }) // Only add extra fields for the 'd' type
             });
             await data.save();
-            return interaction.reply({ content: "User's Wallet has been initialized", ephemeral: true });
+            return i.reply({ content: "User's Wallet has been initialized", ephemeral: true });
         }
 
         // Construct the embed based on the department
@@ -66,10 +67,11 @@ module.exports = {
             .setColor(color)
             .setThumbnail(avatarURL);
 
+        await i.deferReply();
         // Specific handling for recruiter type
         if (type === 'r') {
             const totalRecruits = await recruits.find({ recruiter: user.id }).exec();
-            let breakdown = totalRecruits.length >= 2000 ? "Skipped due to recruit amount" : getRecruitBreakdown(totalRecruits, clans);
+            let breakdown = await getRecruitBreakdown(totalRecruits, clans);
             const progressInfo = getProgressInfo(totalRecruits.length); // Get the progress information
 
             embed.setDescription(progressInfo.description)
@@ -81,8 +83,7 @@ module.exports = {
         } else {
             embed.addFields({ name: 'Tokens', value: `${data.tokens} :gem:`, inline: true });
         }
-
-        await interaction.reply({ embeds: [embed] });
+        await i.editReply({ embeds: [embed] });
     },
 
 };
@@ -103,7 +104,7 @@ function getProgressInfo(recruitCount) {
     };
 }
 
-function getRecruitBreakdown(recruits, clans) {
+async function getRecruitBreakdown(recruits, clans) {
     // Construct the breakdown string for recruits by clan
     let breakdown = "";
     for (let clan in clans) {

@@ -21,10 +21,10 @@ module.exports = {
 
         const clan = i.guild.roles.cache.find(r => r.id === data.kingdom);
         const embed = new EmbedBuilder()
-            .setColor(clan.hexColor)
+            .setColor(clan ? clan.hexColor || '#ffb347' : '#ffb347')
             .addFields([
                 { name: 'User', value: `<@${user.id}>`, inline: true },
-                { name: 'Kingdom', value: `${clan.name}`, inline: true },
+                { name: 'Kingdom', value: `${clan ? clan.name || 'Unknown' : 'Unknown'}`, inline: true },
                 { name: 'Recruiter', value: `<@${data.recruiter}>`, inline: true },
                 { name: 'Clan Join Date', value: `<t:${data.clanJoin}>`, inline: true },
                 { name: 'Server Join Date', value: `<t:${data.serverJoin}>`, inline: true },

@@ -15,7 +15,7 @@ module.exports = async (bot, member) => {
 
 	if (!member.roles.cache.has("595045402143752212")) { //NO IDEA
 		if (member.roles.cache.some(r=>cc.Roles.Kingdoms.includes(r.id))) {
-			const log = await bot.channels.cache.get("728725582602436649");
+			const log = await bot.channels.cache.get("890240564589629544");
 			const leaveEmbed = new Discord.EmbedBuilder()
 				.setAuthor({ name: `${member.user.username}#${member.user.discriminator} | ${kingdom.name}`, iconURL: member.user.displayAvatarURL() })
 				.setColor(kingdom.color)

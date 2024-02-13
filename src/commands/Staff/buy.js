@@ -1,7 +1,9 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const shop = require('../../models/shop/shop');
 const orderHistory = require('../../models/shop/orderhistory');
+const pendingOrders = require('../../models/shop/pendingOrders');
 const cc = require('../../../config.json');
+const moment = require("moment");
 
 // Wallet models mapped by department for easy reference
 const walletByDepartment = {
@@ -12,6 +14,15 @@ const walletByDepartment = {
     decorator: require('../../models/wallets/decoratorWallet'),
     // Assuming 'degen' uses a separate or same wallet model, which should be created accordingly
 };
+
+// Manangers of each department
+const managerByDepartment = {
+    treasury: '890240560496017476',
+    recruiter: '890240560542134274',
+    designer: '890240560496017477',
+    decorator: '890240560542134272',
+    events: '890240560496017474',
+}
 
 // Configurable channel IDs for purchases and logs
 const degenChannelId = "1193672601579565157"; // Channel for 'degen' purchases
@@ -37,10 +48,39 @@ module.exports = {
                 {name: 'Events', value: 'events'},
                 {name: 'Decorator', value: 'decorator'}
             ))
-        .addStringOption(option => option.setName('item').setDescription('Item you want to buy (Case Sensitive)').setRequired(true))
-        .addNumberOption(option => option.setName('amount').setDescription('Amount you want to buy').setRequired(true))
-        .setDefaultPermission(true),
+        .addStringOption(option => 
+            option.setName('item')
+                .setDescription('Item you want to buy')
+                .setRequired(true)
+                .setAutocomplete(true))
+        .addNumberOption(option => option.setName('amount').setDescription('Amount you want to buy').setRequired(true)),
+    async autocomplete(i, bot) {
+        const focusedOption = i.options.getFocused(true);
 
+        if (focusedOption.name === 'item') {
+            const department = i.options.getString('department');
+            if (!department) {
+                return await i.respond([]);
+            }
+
+            const focusedValue = focusedOption.value.toLowerCase();
+            let items = [];
+            
+            try {
+                const store = await shop.findOne({ "team": department });
+                if (store && store.items && store.items.length > 0) {
+                    items = store.items
+                        .filter(item => item.name.toLowerCase().startsWith(focusedValue))
+                        .slice(0, 25)
+                        .map(item => ({ name: item.name, value: item.name })); 
+                }
+            } catch (error) {
+                console.error(`Error fetching items for department ${department}:`, error);
+            }
+
+            await i.respond(items);
+        }
+    },
     async execute(i, bot) {
         const department = i.options.getString('department');
         const itemName = i.options.getString('item');
@@ -99,7 +139,18 @@ async function handleDegenPurchase(interaction, itemName, store, item) {
     if (userOrderHistory)
         hasOrderedBefore = userOrderHistory.history.some(order => order.itemName === itemName);
 
-    const additionalMessage = hasOrderedBefore ? `:warning: Buyer previously ordered this item.` : '.';
+    const userPendingOrders = await pendingOrders.findOne({ userID: interaction.user.id });
+    let hasPendingOrder = false;
+    if (userPendingOrders)
+        hasPendingOrder = userPendingOrders.pending.some(order => order.itemName === itemName);
+    
+    let additionalMessage = '.';
+    if (hasOrderedBefore) {
+        additionalMessage = ':warning: Buyer previously ordered this item.';
+    }
+    if (hasPendingOrder) {
+        additionalMessage += ' :hourglass_flowing_sand: Buyer currently has a pending order for this item.';
+    }
 
     const index = data.items.findIndex(i => i.name === itemName);
     data.items[index].price = Math.max(0, data.items[index].price - 1);
@@ -123,6 +174,12 @@ async function handleDegenPurchase(interaction, itemName, store, item) {
         .setTimestamp();
 
     await degenLogChannel.send({ embeds: [embed], components: [row] });
+    const orderDate = moment(interaction.createdAt).unix().toString();
+    await pendingOrders.findOneAndUpdate(
+        { guildID: interaction.guild.id, userID: interaction.user.id },
+        { $push: { pending: { itemName: itemName, orderDate: orderDate } } },
+        { upsert: true, new: true }
+    );
     return await interaction.reply({ content: `You've successfully ordered ${itemName}.`, ephemeral: true });
 }
 
@@ -163,5 +220,5 @@ async function handleRegularPurchase(interaction, department, itemName, quantity
 
     const logChannelId = department === "events" ? purchaseLogChannelIds.events : purchaseLogChannelIds.default;
     const logChannel = interaction.guild.channels.cache.get(logChannelId);
-    await logChannel.send({ content: `New purchase by <@${interaction.user.id}>`, embeds: [embed] });
+    await logChannel.send({ content: `New purchase by <@${interaction.user.id}>, <@&${managerByDepartment[department]}>`, embeds: [embed] });
 }
