@@ -98,7 +98,7 @@ module.exports = {
                 const welmsg = await welcomes.findOne({ team: "recruiter" });
                 const wEmbed = new EmbedBuilder()
                     .setColor(kingdom.hexColor)
-                    .setTitle(`Welcome to ${kingdom.name}, ${name}`)
+                    .setTitle(`Welcome to ${kingdom.name}, ${ign}`)
                     .setDescription(`<@!${member.id}>, ${welmsg.message}`)
                     .setFooter({ text: `Recruited by ${i.user.username}` });
                 const welcome = await general.send({ content: `Incoming recruit... <@!${member.id}>`});
