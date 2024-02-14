@@ -1,6 +1,11 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const axios = require('axios');
 const cc = require('../../../config.json');
 const recruits = require('../../models/dbv2/wf_recruitData');
+const relicDataModel = require('../../models/dbv2/wf_relicData');
+
+const relicTypes = ['Lith', 'Meso', 'Neo', 'Axi'];
+const baseUrl = 'https://api.warframestat.us/items/search/';
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -12,8 +17,7 @@ module.exports = {
             .setRequired(true)
             .addChoices(
                 {name: 'Welcome Embed', value: 'we'},
-                {name: 'Parse Test', value: 'pe'},
-                {name: 'Update Kingdom IDs', value: 'uk'}
+                {name: 'Update Relic Data', value: 'rd'}
             ))
         .setDefaultPermission(false),
    
@@ -22,9 +26,10 @@ module.exports = {
             return i.reply({ content: "You're not a admin", ephemeral: true});
 
         const option = i.options.getString('embed');
-        await i.reply({ content: "Embed getting created!", ephemeral: true});
+        await i.deferReply();
         switch (option) {
             case 'we':
+                await i.editReply({ content: "Embed getting created!", ephemeral: true});
                 const row = new ActionRowBuilder()
                     .addComponents(
                         new ButtonBuilder()
@@ -46,39 +51,69 @@ module.exports = {
                 i.channel.send({ embeds: [embed], components: [row] });
                 break;
 
-            case 'pe':
-                const management = {
-                    "890240560319856720" : "890240560542134274", //Recruiter Team : Recruiter Manager
-                    "890240560319856711" : "890240560496017476" //Treasury Team : Treasury Manager
+            case 'rd':
+                for (const type of relicTypes) {
+                    const relicsData = await getRelicsDataForType(type);
+                    await updateDatabaseWithRelics(type, relicsData);
                 }
-                
-                const parse = i.member.roles.cache.filter(r => cc.Roles.Staff.includes(r.id));
-                const teams = parse.map(r => `${r.name},`).join(" ");
-                const managers = parse.map(r => `<@&${management[r.id]}>`).join(" ");
-                const msg = await i.channel.send({ content: `${managers}` })
-                const notify = new EmbedBuilder()
-                    .setTitle("Department Notices")
-                    .setDescription(`${i.member.tag} has left the server | ${i.member.id}\n\n**Affected teams:** ${teams}`)
-                await msg.edit({ content: `\u200B`, embeds: [notify] });
-                break;
-
-            case 'uk':
-                const idMappings = {
-                    "521854159390113793": "890240560248524859", // AK
-                    "566032412618784768": "890240560248524858", // IK
-                    "604195078973554698": "1193510188955746394", // TK
-                    "606538892547457027": "890240560248524856", // WK
-                    "874903017445535754": "890240560273702932", // YK
-                    "931364353213595709": "11929229107514737369", // CK
-                    "937244226721300532": "1192923627419619419", // MK
-                };
-
-                for (const [oldId, newId] of Object.entries(idMappings)) {
-                    await recruits.updateMany({ kingdom: oldId }, { $set: { kingdom: newId } });
-                }
-
+                i.editReply({ content: "Relic data updated successfully.", ephemeral: true});
                 break;
         }
         console.log("Done.")
     },
+};
+
+const updateDatabaseWithRelics = async (type, relicsData) => {
+    let relicTypeEntry = await relicDataModel.findOne({ type: type });
+
+    if (!relicTypeEntry) {
+        relicTypeEntry = new relicDataModel({ type: type, relics: [] });
+    }
+
+    for (const relic of relicsData) {
+        const existingRelic = relicTypeEntry.relics.find(r => r.name === relic.name);
+
+        if (!existingRelic) {
+            relicTypeEntry.relics.push(relic);
+        }
+    }
+
+    await relicTypeEntry.save();
+};
+
+const getRelicsDataForType = async (type) => {
+    try {
+        const response = await axios.get(`${baseUrl}${type.toLowerCase()}`);
+        const data = response.data;
+
+        return data
+            .filter(item => item.category === 'Relics' && item.name.includes('Intact') && item.tradable)
+            .map(relic => {
+                const sortedRewards = relic.rewards.sort((a, b) => b.chance - a.chance);
+                const categorizedRewards = sortedRewards.map((reward, index) => {
+                    let rarity;
+                    if (index < 3) {
+                        rarity = 'Common';
+                    } else if (index < 5) {
+                        rarity = 'Uncommon';
+                    } else {
+                        rarity = 'Rare';
+                    }
+
+                    return {
+                        part: reward.item.name || 'Unknown Part', 
+                        rarity: rarity,
+                    };
+                });
+
+                return {
+                    name: relic.name.split(' ')[1],
+                    vaulted: relic.vaulted || false,
+                    rewards: categorizedRewards,
+                };
+            });
+    } catch (error) {
+        console.error(`Error fetching ${type} relics:`, error);
+        return [];
+    }
 };

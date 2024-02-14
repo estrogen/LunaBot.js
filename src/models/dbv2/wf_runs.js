@@ -8,8 +8,6 @@ const wf_runs = {
     rewards: { type: [String], required: false },
     date: { type: Date, required: true, index: true },
     screenshot: { type: String, required: false }
-
-
 };
 
 module.exports = mongoose.model("WF_Runs", wf_runs);
