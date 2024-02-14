@@ -61,8 +61,9 @@ module.exports = {
             
             const general = await i.guild.channels.cache.get('890240569165639771');
             const kingdom = await i.guild.roles.cache.find(r => r.id === m.values[0]);
-            await member.roles.set([kingdom.id], `Recruited into the clan by ${i.user.tag}`);
+            await member.roles.remove(cc.Roles.Recruit, `Recruited into the clan by ${i.user.tag}`);
             await member.setNickname(ign, `Recruited into the clan by ${i.user.tag}`);
+            await member.roles.add(kingdom.id, `Recruited into the clan by ${i.user.tag}`);
 
             let recruiterWallet = await wallet.findOne({ userID: i.user.id });
             if (!recruiterWallet) {
