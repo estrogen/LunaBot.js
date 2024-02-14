@@ -80,7 +80,7 @@ module.exports = {
                     userID: member.id,
                     recruiter: i.user.id,
                     joinDate: i.createdAt,
-                    kingdom: clan
+                    kingdom: m.values[0]
                 });
                 await recruitData.save();
                 if (!userData) {
