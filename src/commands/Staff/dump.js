@@ -1,8 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
 const cc = require('../../../config.json');
-const recruits = require('../../models/recruitment/recruit');
-const orderHistory = require('../../models/shop/orderhistory');
-const pendingOrders = require('../../models/shop/pendingOrders');
+const recruits = require('../../models/dbv2/wf_recruitData');
+const orders = require('../../models/dbv2/wf_degenOrders');
 const medals = [":first_place:", ":second_place:", ":third_place:"]
 
 module.exports = {
@@ -26,69 +25,99 @@ module.exports = {
 
         const type = i.options.getString('information')
         const days = i.options.getInteger('days');
-        const calc = Math.round(new Date().getTime() / 1000) - (days * 86400);
+        const startDate = new Date(Date.now() - days * 86400 * 1000);
+
         await i.deferReply();
+
         if (type === 'r') {
-            var db = recruits.find();
-            var total = [];
-            (await db).forEach(async function (doc) {
-                let clan = parseInt(doc.clanJoin);
-                if (clan >= calc) {
-                    const check = total.find(e => e.name === `<@${doc.recruiter}>`);
-                    if (check) {
-                        check.total += 1;
-                    } else {
-                        total.push({
-                            name: `<@${doc.recruiter}>`,
-                            total: 1
-                        })
-                    }
+            const recruitsInPeriod = await recruits.find({
+                joinDate: { $gte: startDate } // Use joinDate to filter documents
+            });
+    
+            let total = [];
+    
+            recruitsInPeriod.forEach(doc => {
+                const check = total.find(e => e.name === `<@${doc.recruiter}>`);
+                if (check) {
+                    check.total += 1;
+                } else {
+                    total.push({
+                        name: `<@${doc.recruiter}>`,
+                        total: 1
+                    });
                 }
             });
-            total.sort(function (a, b) {
-                return b.total - a.total;
-            })
-            const info = await total.slice(0, 10);
-            const data = await info.map((user, i) => `${medals[i] ? medals[i]+" | " : ''}${user.name} - Total Recruits: ${user.total}`).join('\n');
+    
+            total.sort((a, b) => b.total - a.total);
+            const topRecruiters = total.slice(0, 10);
+            const data = topRecruiters.map((user, i) => `${medals[i] ? medals[i] + " | " : ''}${user.name} - Total Recruits: ${user.total}`).join('\n');
+    
             const embed = new EmbedBuilder()
-                .setTitle(`Recruit Leaderboard for past ${days} days`)
+                .setTitle(`Recruit Leaderboard for the past ${days} days`)
                 .setColor(`#FFB347`)
-                .setDescription(`${data}`)
+                .setDescription(data);
+    
             await i.editReply({ embeds: [embed] });
         } else {
-            const now = Math.round(new Date().getTime() / 1000);
-            const startDate = now - (days * 86400);
-
-            const aggregatedOrders = await orderHistory.aggregate([
-                { $unwind: "$history" },
-                { $match: { "history.orderDate": { $gte: startDate.toString() } } },
-                { $group: { _id: "$history.itemName", totalSales: { $sum: 1 } } },
-                { $sort: { totalSales: -1 } }
+            const aggregatedFulfilledOrders = await orders.aggregate([
+                {
+                    $match: {
+                        date: { $gte: startDate },
+                        fulfilled: true
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$part",
+                        totalFulfilled: { $sum: 1 }
+                    }
+                },
+                {
+                    $sort: { totalFulfilled: -1 }
+                }
             ]);
 
-            const aggregatedPending = await pendingOrders.aggregate([
-                { $unwind: "$pending" },
-                { $match: { "pending.orderDate": { $gte: startDate.toString() } } },
-                { $group: { _id: "$pending.itemName", totalPending: { $sum: 1 } } },
-                { $sort: { totalPending: -1 } }
+            const aggregatedPendingOrders = await orders.aggregate([
+                {
+                    $match: {
+                        date: { $gte: startDate },
+                        fulfilled: false
+                    }
+                },
+                {
+                    $group: {
+                        _id: "$part",
+                        totalPending: { $sum: 1 }
+                    }
+                },
+                {
+                    $sort: { totalPending: -1 }
+                }
             ]);
-
-            const pendingMap = aggregatedPending.reduce((acc, cur) => {
-                acc[cur._id] = cur.totalPending;
+    
+            let combinedOrders = aggregatedFulfilledOrders.reduce((acc, order) => {
+                acc[order._id] = { ...order, totalPending: 0 };
                 return acc;
             }, {});
-            
-            aggregatedOrders.forEach(order => {
-                order.totalPending = pendingMap[order._id] || 0;
+    
+            aggregatedPendingOrders.forEach(order => {
+                if (combinedOrders[order._id]) {
+                    combinedOrders[order._id].totalPending = order.totalPending;
+                } else {
+                    combinedOrders[order._id] = { ...order, totalFulfilled: 0 };
+                }
             });
+    
+            let ordersArray = Object.values(combinedOrders);
+            ordersArray.sort((a, b) => b.totalFulfilled - a.totalFulfilled);
 
-            let csvContent = "Set Name, Pending, Total Sales\n";
-            aggregatedOrders.forEach(order => {
-                csvContent += `${order._id}, ${order.totalPending}, ${order.totalSales}\n`;
+            let csvContent = "Part Name, Total Fulfilled, Total Pending\n";
+            ordersArray.forEach(order => {
+                csvContent += `${order._id}, ${order.totalFulfilled}, ${order.totalPending}\n`;
             });
-
-            const attachment = new AttachmentBuilder(Buffer.from(csvContent, 'utf-8'), { name: 'DegenDump.csv' });
-            await i.editReply({ files: [attachment], ephemeral: true });
+    
+            const attachment = new AttachmentBuilder(Buffer.from(csvContent, 'utf-8'), { name: 'OrderDump.csv' });
+            await i.editReply({ files: [attachment] });
         }
     },
 

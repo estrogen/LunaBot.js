@@ -5,4 +5,4 @@ const tokens_recruit = {
     ...tokensBaseSchema
 };
 
-module.exports = mongoose.model("tokens_recruit", tokens_recruit);
+module.exports = mongoose.model("tokens_recruit", tokens_recruit, "tokens_recruit");

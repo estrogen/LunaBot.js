@@ -1,34 +1,27 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const shop = require('../../models/shop/shop');
-const orderHistory = require('../../models/shop/orderhistory');
-const pendingOrders = require('../../models/shop/pendingOrders');
+const shop = require('../../models/dbv2/tokens_shop');
+const orders = require('../../models/dbv2/wf_degenOrders');
 const cc = require('../../../config.json');
 const moment = require("moment");
 
-// Wallet models mapped by department for easy reference
 const walletByDepartment = {
-    treasury: require('../../models/wallets/treasuryWallet'),
-    recruiter: require('../../models/wallets/recruiterWallet'),
-    designer: require('../../models/wallets/designerWallet'),
-    events: require('../../models/wallets/eventWallet'),
-    decorator: require('../../models/wallets/decoratorWallet'),
-    // Assuming 'degen' uses a separate or same wallet model, which should be created accordingly
+    recruiter: require('../../models/dbv2/tokens_recruit'),
+    treasury: require('../../models/dbv2/tokens_treasure'),
+    designer: require('../../models/dbv2/tokens_design'),
+    decorator: require('../../models/dbv2/tokens_deco')
 };
 
-// Manangers of each department
 const managerByDepartment = {
     treasury: '890240560496017476',
     recruiter: '890240560542134274',
     designer: '890240560496017477',
-    decorator: '890240560542134272',
-    events: '890240560496017474',
+    decorator: '890240560542134272'
 }
 
 // Configurable channel IDs for purchases and logs
 const degenChannelId = "1193672601579565157"; // Channel for 'degen' purchases
 const degenLogChannelId = "890240568339341341"; // Log channel for 'degen' purchase announcements
 const purchaseLogChannelIds = { // Log channels for each department's purchase announcements
-    events: "1193512882944610335", // Channel ID for 'events' purchases
     default: "1193512882944610335", // Default channel ID for other purchases
 };
 
@@ -45,7 +38,6 @@ module.exports = {
                 {name: 'Treasury', value: 'treasury'},
                 {name: 'Designer', value: 'designer'},
                 {name: 'Degen', value: 'degen'},
-                {name: 'Events', value: 'events'},
                 {name: 'Decorator', value: 'decorator'}
             ))
         .addStringOption(option => 
@@ -90,7 +82,7 @@ module.exports = {
             return await i.reply({ content: "Can't purchase a negative or zero amount of an item.", ephemeral: true });
         }
 
-        if (department !== "degen" && department !== "events" && !i.member.roles.cache.some(r => cc.Roles.Staff.includes(r.id))) {
+        if (department !== "degen" && !i.member.roles.cache.some(r => cc.Roles.Staff.includes(r.id))) {
             return await i.reply({ content: "You're not authorized to make purchases from this department.", ephemeral: true });
         }
 
@@ -134,15 +126,21 @@ async function handleDegenPurchase(interaction, itemName, store, item) {
     if (!data)
         return await interaction.reply({ content: "Error: Item not found in the store.", ephemeral: true });
 
-    const userOrderHistory = await orderHistory.findOne({ userID: interaction.user.id });
+    const userOrderHistory = await orders.find({ userID: interaction.user.id });
     let hasOrderedBefore = false;
-    if (userOrderHistory)
-        hasOrderedBefore = userOrderHistory.history.some(order => order.itemName === itemName);
-
-    const userPendingOrders = await pendingOrders.findOne({ userID: interaction.user.id });
     let hasPendingOrder = false;
-    if (userPendingOrders)
-        hasPendingOrder = userPendingOrders.pending.some(order => order.itemName === itemName);
+    if (userOrderHistory.length > 0) {
+        userOrderHistory.forEach(order => {
+            if (order.part === itemName) {
+                if (!order.fulfilled) {
+                    hasPendingOrder = true;
+                } else {
+                    hasOrderedBefore = true;
+                }
+            }
+        });
+    }
+        
     
     let additionalMessage = '.';
     if (hasOrderedBefore) {
@@ -174,12 +172,13 @@ async function handleDegenPurchase(interaction, itemName, store, item) {
         .setTimestamp();
 
     await degenLogChannel.send({ embeds: [embed], components: [row] });
-    const orderDate = moment(interaction.createdAt).unix().toString();
-    await pendingOrders.findOneAndUpdate(
-        { guildID: interaction.guild.id, userID: interaction.user.id },
-        { $push: { pending: { itemName: itemName, orderDate: orderDate } } },
-        { upsert: true, new: true }
-    );
+    newOrder = new orders({
+        userID: interaction.user.id,
+        part: itemName,
+        fulfilled: false,
+        date: interaction.createdAt,
+    });
+    await newOrder.save();
     return await interaction.reply({ content: `You've successfully ordered ${itemName}.`, ephemeral: true });
 }
 
@@ -191,7 +190,7 @@ async function handleRegularPurchase(interaction, department, itemName, quantity
         return await interaction.reply({ content: "You have insufficient tokens to make this purchase.", ephemeral: true });
     }
 
-    const mangaerPing = 0;
+    const managerPing = 0;
     switch(department){
         case recruiter:
             managerPing = 890240560542134274;
@@ -201,10 +200,7 @@ async function handleRegularPurchase(interaction, department, itemName, quantity
             managerPing = 890240560496017477;
         case decorator:
             managerPing = 890240560542134272;
-        case events:
-            managerPing = 890240560496017474;
     };
-
 
     userWallet.tokens -= item.price * quantity;
     await userWallet.save();
@@ -218,7 +214,6 @@ async function handleRegularPurchase(interaction, department, itemName, quantity
 
     await interaction.reply({ embeds: [embed], ephemeral: true });
 
-    const logChannelId = department === "events" ? purchaseLogChannelIds.events : purchaseLogChannelIds.default;
-    const logChannel = interaction.guild.channels.cache.get(logChannelId);
+    const logChannel = interaction.guild.channels.cache.get(purchaseLogChannelIds.default);
     await logChannel.send({ content: `New purchase by <@${interaction.user.id}>, <@&${managerByDepartment[department]}>`, embeds: [embed] });
 }

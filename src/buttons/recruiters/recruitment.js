@@ -1,6 +1,6 @@
 const { InteractionCollector, EmbedBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder } = require('discord.js');
 
-const welcomes = require("../../models/guild/welcome");
+const welcomes = require("../../models/dbv2/embed_templates");
 const cc = require('../../../config.json');
 const wallet = require('../../models/dbv2/tokens_recruit');
 const users = require('../../models/dbv2/usersSchema');
@@ -79,14 +79,14 @@ module.exports = {
                 recruitData = new recruit({
                     userID: member.id,
                     recruiter: i.user.id,
-                    joinDate: moment.unix(i.createdAt).toDate(),
+                    joinDate: i.createdAt,
                     kingdom: clan
                 });
                 await recruitData.save();
                 if (!userData) {
                     userData = new users({
                         userID: member.id, 
-                        serverJoinDate: moment.unix(member.joinedAt).toDate(),
+                        serverJoinDate: member.joinedAt,
                         wfIGN: name,
                         wfPastIGN: []
                     });
@@ -95,6 +95,7 @@ module.exports = {
                 recruiterWallet.tokens += 0.5;
                 await recruiterWallet.save();
 
+                const welmsg = await welcomes.findOne({ team: "recruiter" });
                 const wEmbed = new EmbedBuilder()
                     .setColor(kingdom.hexColor)
                     .setTitle(`Welcome to ${kingdom.name}, ${name}`)

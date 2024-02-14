@@ -1,6 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ButtonStyle } = require('discord.js');
-const apps = require('../../models/guild/applications');
-const applyDb = require("../../models/guild/apply");
+const apps = require('../../models/dbv2/applications');
 
 module.exports = {
     data: {

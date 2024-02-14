@@ -1,6 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const cc = require('../../../config.json');
-const recruits = require('../../models/recruitment/recruit');
+const recruits = require('../../models/dbv2/wf_recruitData');
 const moment = require('moment');
 
 module.exports = {
@@ -26,8 +26,8 @@ module.exports = {
                 { name: 'User', value: `<@${user.id}>`, inline: true },
                 { name: 'Kingdom', value: `${clan ? clan.name || 'Unknown' : 'Unknown'}`, inline: true },
                 { name: 'Recruiter', value: `<@${data.recruiter}>`, inline: true },
-                { name: 'Clan Join Date', value: `<t:${data.clanJoin}>`, inline: true },
-                { name: 'Server Join Date', value: `<t:${data.serverJoin}>`, inline: true },
+                { name: 'Clan Join Date', value: `<t:${data.joinDate}>`, inline: true },
+                { name: 'Server Join Date', value: `<t:${user.joinedAt}>`, inline: true },
             ])
         await i.reply({ embeds: [embed] });
     },

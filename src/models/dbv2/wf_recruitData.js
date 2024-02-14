@@ -7,4 +7,4 @@ const wf_recruitData = {
     kingdom: { type: String, required: true }
 };
 
-module.exports = mongoose.model("wf_recruitData", wf_recruitData);
+module.exports = mongoose.model("wf_recruitData", wf_recruitData, "wf_recruitData");

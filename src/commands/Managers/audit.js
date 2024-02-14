@@ -1,19 +1,17 @@
 const { SlashCommandBuilder } = require('discord.js');
 const cc = require('../../../config.json');
-const recruitDb = require('../../models/recruitment/recruit');
+const recruitDb = require('../../models/dbv2/wf_recruitData');
 const wallets = {
-    'r': require('../../models/wallets/recruiterWallet'),
-    't': require('../../models/wallets/treasuryWallet'),
-    'd': require('../../models/wallets/designerWallet'),
-    'e': require('../../models/wallets/eventWallet'),
-    'c': require('../../models/wallets/decoratorWallet'),
+    'r': require('../../models/dbv2/tokens_recruit'),
+    't': require('../../models/dbv2/tokens_treasure'),
+    'd': require('../../models/dbv2/tokens_design'),
+    'c': require('../../models/dbv2/tokens_deco'),
 };
 
 const departmentManagers = {
     't': "890240560496017476", //Treasury manager
     'd': "890240560496017477", //Desigenr Manager
     'r': "890240560542134274", //Recruiter Manager
-    'e': "890240560496017474", //Community Manager
     'c': "890240560542134272", //Decorator Manager
 };
 

@@ -4,13 +4,12 @@ const cc = require('../../../config.json');
 const wait = require('node:timers/promises').setTimeout;
 
 // Models
-const recruits = require('../../models/recruitment/recruit');
+const recruits = require('../../models/dbv2/wf_recruitData');
 const walletModels = {
-    r: require('../../models/wallets/recruiterWallet'),
-    t: require('../../models/wallets/treasuryWallet'),
-    d: require('../../models/wallets/designerWallet'),
-    e: require('../../models/wallets/eventWallet'),
-    c: require('../../models/wallets/decoratorWallet'),
+    r: require('../../models/dbv2/tokens_recruit'),
+    t: require('../../models/dbv2/tokens_treasure'),
+    d: require('../../models/dbv2/tokens_design'),
+    c: require('../../models/dbv2/tokens_deco'),
 };
 
 const clans = {
@@ -118,6 +117,5 @@ const departmentMap = {
     r: 'Recruiter',
     t: 'Treasury',
     d: 'Designer',
-    e: 'Events',
     c: 'Decorator'
 };

@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
-const db = require('../../models/recruitment/recruit')
+const db = require('../../models/dbv2/wf_recruitData')
 const cc = require('../../../config.json');
 
 module.exports = {
@@ -18,10 +18,10 @@ module.exports = {
         if (!data) 
             return i.reply({ content: "Unable to locate you within the database", ephemeral: true});
 
-        let recruits = "Recruited, Kingdom, Recruiter, Clan Join, Server Join\n";
+        let recruits = "Recruited, Kingdom, Recruiter, Clan Join\n";
         db.find({ recruiter: user ? user.id : i.user.id }).exec( async (e, r) => {
             for (index = 0; index < r.length; index++) {
-                recruits += `${r[index].userID}, ${r[index].kingdom}, ${r[index].recruiter}, ${r[index].clanJoin}, ${r[index].serverJoin}\n`;
+                recruits += `${r[index].userID}, ${r[index].kingdom}, ${r[index].recruiter}, ${r[index].joinDate}\n`;
             }
             const attachment = new AttachmentBuilder(Buffer.from(recruits, 'utf-8'), { name: 'ExportedData.csv' });
             await i.reply({ files: [attachment], ephemeral: true})

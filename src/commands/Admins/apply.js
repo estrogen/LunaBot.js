@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const apps = require('../../models/guild/applications');
+const apps = require('../../models/dbv2/applications');
 const cc = require('../../../config.json');
 
 module.exports = {

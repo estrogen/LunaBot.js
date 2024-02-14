@@ -1,13 +1,12 @@
 const { SlashCommandBuilder, EmbedBuilder, ButtonStyle } = require('discord.js');
 const { Pagination } = require('pagination.djs');
-const shop = require('../../models/shop/shop');
+const shop = require('../../models/dbv2/tokens_shop');
 const cc = require('../../../config.json');
 const walletModels = {
-    recruiter: require('../../models/wallets/recruiterWallet'),
-    treasury: require('../../models/wallets/treasuryWallet'),
-    designer: require('../../models/wallets/designerWallet'),
-    events: require('../../models/wallets/eventWallet'),
-    decorator: require('../../models/wallets/decoratorWallet'),
+    recruiter: require('../../models/dbv2/tokens_recruit'),
+    treasury: require('../../models/dbv2/tokens_treasure'),
+    designer: require('../../models/dbv2/tokens_design'),
+    decorator: require('../../models/dbv2/tokens_deco')
 };
 
 module.exports = {

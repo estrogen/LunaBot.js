@@ -1,12 +1,7 @@
 const { Collection } = require('discord.js');
-const off = require("../models/moderation/stfu");
-
 const cooldowns = new Map();
 
 module.exports = async (bot, interaction) => {
-    const stfu = await off.findOne({ userID: interaction.user.id });
-    if (stfu) return;
-
     if (interaction.isCommand()) {
         const command = bot.commands.get(interaction.commandName);
         if (!command) return;

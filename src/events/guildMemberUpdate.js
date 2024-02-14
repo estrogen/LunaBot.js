@@ -1,4 +1,4 @@
-const roleBlock = require('../models/guild/roleblock');
+const roleBlock = require('../models/dbv2/roleblock');
 
 module.exports = async (bot, oldMember, newMember) => {
   const oldRoles = oldMember.roles.cache;

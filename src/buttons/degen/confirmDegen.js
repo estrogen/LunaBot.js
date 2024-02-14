@@ -1,6 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const orderHistory = require('../../models/shop/orderhistory');
-const pendingOrders = require('../../models/shop/pendingOrders');
+const orders = require('../../models/dbv2/wf_degenOrders');
 const moment = require("moment");
 
 module.exports = {
@@ -18,18 +17,19 @@ module.exports = {
         const itemName = embed.fields.find(field => field.name === "Item").value;
 
         try {
-            await orderHistory.findOneAndUpdate(
-                { guildID: i.guild.id, userID: buyerId },
-                { 
-                    $push: { history: { itemName: itemName, orderDate: moment(i.createdAt).unix() } },
-                    $setOnInsert: { guildID: i.guild.id, userID: buyerId }
+            await orders.findOneAndUpdate(
+                {
+                    userID: buyerId,
+                    part: itemName,
+                    fulfilled: false
                 },
-                { upsert: true }
-            );
-            await pendingOrders.findOneAndUpdate(
-                { guildID: i.guild.id, userID: buyerId },
-                { $pull: { pending: { itemName: itemName } } } 
-            );
+                {
+                    $set: { fulfilled: true }
+                },
+                {
+                    new: true
+                }
+            )
             console.log("Order history updated successfully.");
         } catch (error) {
             console.error("Error updating order history:", error);

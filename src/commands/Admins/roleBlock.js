@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
-const roleBlock = require('../../models/guild/roleblock');
+const roleBlock = require('../../models/dbv2/roleblock');
 const cc = require('../../../config.json');
 
 module.exports = {

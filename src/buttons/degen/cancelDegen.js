@@ -1,5 +1,5 @@
-const shop = require("../../models/shop/shop");
-const pendingOrders = require('../../models/shop/pendingOrders');
+const shop = require("../../models/dbv2/tokens_shop");
+const orders = require('../../models/dbv2/wf_degenOrders');
 
 module.exports = {
     data: {
@@ -15,10 +15,11 @@ module.exports = {
         const buyerMention = embed.fields.find(field => field.name === "Buyer").value;
         const buyerId = buyerMention.match(/<@(\d+)>/)[1];
 
-        await pendingOrders.findOneAndUpdate(
-            { guildID: i.guild.id, userID: buyerId },
-            { $pull: { pending: { itemName: item } } }
-        )
+        await orders.findOneAndRemove({
+            userID: buyerId,
+            part: itemName,
+            fulfilled: false
+        });
         if (i.channel.id !== "725883088281796698") {
             await i.reply({ content: "Order has been canceled", ephemeral: true })
             i.message.delete();
