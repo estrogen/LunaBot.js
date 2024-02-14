@@ -25,6 +25,11 @@ module.exports = {
                     .setValue( '890240560248524858'),
 
                 new StringSelectMenuOptionBuilder()
+                    .setLabel( 'Heavens Kingdom')
+                    .setDescription( "They'll be joining Heavens Kingdom")
+                    .setValue( '890240560248524857'),
+
+                new StringSelectMenuOptionBuilder()
                     .setLabel( 'Tsuki Kingdom')
                     .setDescription( "They'll be joining Tsuki Kingdom")
                     .setValue( '1193510188955746394'),

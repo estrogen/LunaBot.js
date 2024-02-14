@@ -17,7 +17,8 @@ module.exports = {
             .setRequired(true)
             .addChoices(
                 {name: 'Welcome Embed', value: 'we'},
-                {name: 'Update Relic Data', value: 'rd'}
+                {name: 'Update Relic Data', value: 'rd'},
+                {name: 'HK -> TK', value: 'uk'}
             ))
         .setDefaultPermission(false),
    
@@ -58,6 +59,17 @@ module.exports = {
                 }
                 i.editReply({ content: "Relic data updated successfully.", ephemeral: true});
                 break;
+            case 'uk':
+                const idMappings = {
+                    "1193510188955746394": "890240560248524857", // TK
+
+                    };
+    
+                    for (const [oldId, newId] of Object.entries(idMappings)) {
+                        await recruits.updateMany({ kingdom: oldId }, { $set: { kingdom: newId } });
+                    }
+    
+                    break;
         }
         console.log("Done.")
     },

@@ -18,6 +18,7 @@ module.exports = {
             .addChoices(
                 //{name: 'Anime', value: '890240560248524859'},
                 {name: 'Imouto', value: '890240560248524858'},
+                {name: 'Heaven', value: '890240560248524857'},
                 {name: 'Tsuki', value: '1193510188955746394'},
                 {name: 'Waifu', value: '890240560248524856'},
                 {name: 'Yuri', value: '890240560273702932'},
@@ -64,6 +65,15 @@ module.exports = {
 
         let recruitData = await recruit.findOne({ userID: member.id });
         let userData = await users.findOne({ userID: member.id });
+        if (!userData) {
+            userData = new users({
+                userID: member.id, 
+                serverJoinDate: member.joinedAt,
+                wfIGN: name,
+                wfPastIGN: []
+            });
+            await userData.save();
+        }
         if (!recruitData) {
             recruitData = new recruit({
                 userID: member.id,
@@ -72,15 +82,6 @@ module.exports = {
                 kingdom: clan
             });
             await recruitData.save();
-            if (!userData) {
-                userData = new users({
-                    userID: member.id, 
-                    serverJoinDate: member.joinedAt,
-                    wfIGN: name,
-                    wfPastIGN: []
-                });
-                await userData.save();
-            }
             recruiterWallet.tokens += 0.5;
             await recruiterWallet.save();
 
