@@ -2,3 +2,5 @@ node_modules
 .env
 .todo
 transfer.js
+relics.js
+relics.json
