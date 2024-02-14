@@ -190,16 +190,16 @@ async function handleRegularPurchase(interaction, department, itemName, quantity
         return await interaction.reply({ content: "You have insufficient tokens to make this purchase.", ephemeral: true });
     }
 
-    const managerPing = 0;
+    let managerPing = '';
     switch(department){
-        case recruiter:
-            managerPing = 890240560542134274;
-        case treasury:
-            managerPing = 890240560542134274;
-        case designer:
-            managerPing = 890240560496017477;
-        case decorator:
-            managerPing = 890240560542134272;
+        case 'recruiter':
+            managerPing = '890240560542134274';
+        case 'treasury':
+            managerPing = '890240560542134274';
+        case 'designer':
+            managerPing = '890240560496017477';
+        case 'decorator':
+            managerPing = '890240560542134272';
     };
 
     userWallet.tokens -= item.price * quantity;
