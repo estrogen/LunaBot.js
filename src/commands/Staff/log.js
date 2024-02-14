@@ -25,7 +25,7 @@ module.exports = {
         const clan = i.guild.roles.cache.find(r => r.id === recruitData.kingdom);
         const joinDateUnix = moment(recruitData.joinDate).unix();
         const previousIGNs = userData.wfPastIGN.length > 0 ? userData.wfPastIGN.join('\n') : 'None';
-        
+
         const embed = new EmbedBuilder()
             .setColor(clan ? clan.hexColor || '#ffb347' : '#ffb347')
             .addFields([
@@ -33,7 +33,7 @@ module.exports = {
                 { name: 'Kingdom', value: `${clan ? clan.name || 'Unknown' : 'Unknown'}`, inline: true },
                 { name: 'Recruiter', value: `<@${recruitData.recruiter}>`, inline: true },
                 { name: 'Clan Join Date', value: `<t:${joinDateUnix}>`, inline: true },
-                { name: 'Previous IGNs', value: `\`\`\`${previousIGNs}\`\`\``, inline: false },
+                { name: 'Previous IGNs', value: `\`\`\`haskell\n${previousIGNs}\`\`\``, inline: false },
             ]);
 
         await i.reply({ embeds: [embed] });
