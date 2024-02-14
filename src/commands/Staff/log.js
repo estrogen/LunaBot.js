@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const cc = require('../../../config.json');
 const recruits = require('../../models/dbv2/wf_recruitData');
+const users = require('../../models/dbv2/usersSchema');
 const moment = require('moment');
 
 module.exports = {
@@ -15,20 +16,26 @@ module.exports = {
             return i.reply({ content: "You're not staff!", ephemeral: true});
 
         const user = i.options.getUser('user');
-        const data = await recruits.findOne({ userID: user.id });
-        if (!data)
+        const recruitData = await recruits.findOne({ userID: user.id });
+        const userData = await users.findOne({ userID: user.id });
+
+        if (!recruitData || !userData)
             return i.reply({ content: 'Unable to find member in database.', ephemeral: true });
 
-        const clan = i.guild.roles.cache.find(r => r.id === data.kingdom);
+        const clan = i.guild.roles.cache.find(r => r.id === recruitData.kingdom);
+        const joinDateUnix = moment(recruitData.joinDate).unix();
+        const previousIGNs = userData.wfPastIGN.length > 0 ? userData.wfPastIGN.join('\n') : 'None';
+        
         const embed = new EmbedBuilder()
             .setColor(clan ? clan.hexColor || '#ffb347' : '#ffb347')
             .addFields([
-                { name: 'User', value: `<@${user.id}>`, inline: true },
+                { name: 'User', value: `<@${user.id}> (${userData.wfIGN || 'Unknown'})`, inline: true },
                 { name: 'Kingdom', value: `${clan ? clan.name || 'Unknown' : 'Unknown'}`, inline: true },
-                { name: 'Recruiter', value: `<@${data.recruiter}>`, inline: true },
-                { name: 'Clan Join Date', value: `<t:${data.joinDate}>`, inline: true },
-                { name: 'Server Join Date', value: `<t:${user.joinedAt}>`, inline: true },
-            ])
+                { name: 'Recruiter', value: `<@${recruitData.recruiter}>`, inline: true },
+                { name: 'Clan Join Date', value: `<t:${joinDateUnix}>`, inline: true },
+                { name: 'Previous IGNs', value: `\`\`\`${previousIGNs}\`\`\``, inline: false },
+            ]);
+
         await i.reply({ embeds: [embed] });
     },
 
