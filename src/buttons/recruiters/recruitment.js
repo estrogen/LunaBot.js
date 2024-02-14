@@ -110,7 +110,7 @@ module.exports = {
                 recruitData.save();
             }
 
-            await m.update({ content: `Recruiter: <@${i.user.id}>\nRecruit: <@${member.id}> (${ign})`, components: []});
+            await i.channel.send({ content: `Recruiter: <@${i.user.id}>\nRecruit: <@${member.id}> (${ign})`, components: []});
         });
 
     },

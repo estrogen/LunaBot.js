@@ -5,7 +5,6 @@ const wf_recruitData = {
     recruiter: { type: String, required: true, index: true},
     joinDate: {type: Date, required: true, index: true},
     kingdom: { type: String, required: true}
-
 };
 
 module.exports = mongoose.model("wf_recruitData", wf_recruitData, "wf_recruitData");
