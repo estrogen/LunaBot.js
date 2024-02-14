@@ -87,7 +87,7 @@ module.exports = {
                     userData = new users({
                         userID: member.id, 
                         serverJoinDate: member.joinedAt,
-                        wfIGN: name,
+                        wfIGN: ign,
                         wfPastIGN: []
                     });
                     await userData.save();
