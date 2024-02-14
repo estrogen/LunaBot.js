@@ -87,15 +87,14 @@ module.exports = {
                     kingdom: m.values[0]
                 });
                 await recruitData.save();
-                if (!userData) {
-                    userData = new users({
-                        userID: member.id, 
-                        serverJoinDate: member.joinedAt,
-                        wfIGN: `${ign}`,
-                        wfPastIGN: []
-                    });
-                    await userData.save();
-                }
+                userData = new users({
+                    userID: member.id, 
+                    serverJoinDate: member.joinedAt,
+                    wfIGN: `${ign}`,
+                    wfPastIGN: []
+                });
+                await userData.save();
+                
                 recruiterWallet.tokens += 0.5;
                 await recruiterWallet.save();
 

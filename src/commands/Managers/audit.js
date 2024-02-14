@@ -104,7 +104,7 @@ async function removeRecruitLog(userId, interaction) {
     const recruitEntry = await recruitDb.findOne({ userID: userId });
     const usersEntry = await users.findOne({ userID: userId });
     if (!recruitEntry || !usersEntry) {
-        return interaction.reply({ content: "No recruit entry found for this user.", ephemeral: true });
+        return interaction.deferReply();
     }
 
     await recruitEntry.deleteOne();
