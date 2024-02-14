@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const cc = require('../../../config.json');
 const recruitDb = require('../../models/dbv2/wf_recruitData');
+const users = require('../../models/dbv2/usersSchema');
 const wallets = {
     'r': require('../../models/dbv2/tokens_recruit'),
     't': require('../../models/dbv2/tokens_treasure'),
@@ -101,10 +102,12 @@ async function auditWallet(department, userId, amount, mode, interaction) {
 
 async function removeRecruitLog(userId, interaction) {
     const recruitEntry = await recruitDb.findOne({ userID: userId });
-    if (!recruitEntry) {
+    const usersEntry = await users.findOne({ userID: userId });
+    if (!recruitEntry || !usersEntry) {
         return interaction.reply({ content: "No recruit entry found for this user.", ephemeral: true });
     }
 
     await recruitEntry.deleteOne();
+    await usersEntry.deleteOne();
     interaction.reply({ content: "Recruit log entry removed!", ephemeral: true });
 }

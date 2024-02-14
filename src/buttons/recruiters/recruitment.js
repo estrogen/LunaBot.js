@@ -12,7 +12,8 @@ module.exports = {
         name: 'recruitment'
     },
     async execute(i, bot) {
-        const ign = i.message.embeds[0].fields[0].value;
+        const ign = i.message.embeds[0].fields.find(field => field.name.includes("In-Game")).value;
+        console.log(ign);
         const id = i.message.embeds[0].footer.text.split(' | ')[0];
         const select = new StringSelectMenuBuilder()
             .setCustomId('recruitClan')
@@ -64,7 +65,8 @@ module.exports = {
             await member.roles.remove(cc.Roles.Recruit, `Recruited into the clan by ${i.user.tag}`);
             await member.setNickname(ign, `Recruited into the clan by ${i.user.tag}`);
             await member.roles.add(kingdom.id, `Recruited into the clan by ${i.user.tag}`);
-
+            console.log(ign);
+            
             let recruiterWallet = await wallet.findOne({ userID: i.user.id });
             if (!recruiterWallet) {
                 recruiterWallet = new Wallet({
