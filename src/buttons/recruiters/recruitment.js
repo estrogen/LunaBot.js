@@ -109,7 +109,7 @@ module.exports = {
                 recruitData.save();
             }
 
-            await m.update({ content: `Recruiter: <@${i.user.id}>\nRecruit: <@${member.id}> (${ign})`, components: [], ephemeral: true });
+            await m.update({ content: `Recruiter: <@${i.user.id}>\nRecruit: <@${member.id}> (${ign})`, components: []});
         });
 
     },

@@ -40,7 +40,6 @@ module.exports = {
             return i.reply({ content: 'Unable to find member.', ephemeral: true });
 
         const general = await i.guild.channels.cache.get('890240569165639771');
-        const welmsg = await welcomes.findOne({ team: "recruiter" });
         const kingdom = await i.guild.roles.cache.find(r => r.id === clan);
         const nEmbed = new EmbedBuilder()
             .setTitle("Recruit Succesful")
