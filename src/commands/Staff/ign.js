@@ -6,7 +6,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('ign')
         .setDescription('get or update the ign of a clan member')
-        .addStringOption(option => option.setName('user').setDescription('Warframe Player').setRequired(true))
+        .addUserOption(option => option.setName('user').setDescription('Warframe Player').setRequired(true))
         .addStringOption(option => option.setName('ign').setDescription('Updated IGN').setRequired(true))
         .addStringOption(option => option.setName('nickname').setDescription('Update Users Nickname').setRequired(false)
             .addChoices(
@@ -20,7 +20,7 @@ module.exports = {
             return i.reply({ content: "You're not a staff!", ephemeral: true});
         }
 
-        const user = i.options.getString('user');
+        const user = i.options.getUser('user');
         const ign = i.options.getString('ign');
 
         const member = await i.guild.members.fetch(user);
@@ -37,11 +37,11 @@ module.exports = {
             return i.reply({ content: "This user hasn't been recruited", ephemeral: true});
         }
         if(userData.wfIGN != ""){
-            userData.wfPastIGN.push(ign);
+            userData.wfPastIGN.push(userData.wfIGN);
         }
         userData.wfIGN = ign;
         await userData.save();
         
-        await i.reply({ content: `User: <@${user}> had their ign updated to (${ign})`});
+        await i.reply({ content: `User: ${user} had their ign updated to (${ign})`, ephemeral: true});
     }
 }
