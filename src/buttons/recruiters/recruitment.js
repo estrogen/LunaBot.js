@@ -58,7 +58,8 @@ module.exports = {
         collector.on("collect", async (m) => {
             const member = await i.guild.members.fetch(id);
             if (!member) return await m.reply({ content: 'Unable to find member.', ephemeral: true });
-
+            
+            const general = await i.guild.channels.cache.get('890240569165639771');
             const kingdom = await i.guild.roles.cache.find(r => r.id === m.values[0]);
             await member.roles.set([kingdom.id], `Recruited into the clan by ${i.user.tag}`);
             await member.setNickname(ign, `Recruited into the clan by ${i.user.tag}`);
