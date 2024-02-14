@@ -66,7 +66,7 @@ module.exports = {
             await member.setNickname(ign, `Recruited into the clan by ${i.user.tag}`);
             await member.roles.add(kingdom.id, `Recruited into the clan by ${i.user.tag}`);
             console.log(ign);
-            
+
             let recruiterWallet = await wallet.findOne({ userID: i.user.id });
             if (!recruiterWallet) {
                 recruiterWallet = new Wallet({
@@ -91,7 +91,7 @@ module.exports = {
                     userData = new users({
                         userID: member.id, 
                         serverJoinDate: member.joinedAt,
-                        wfIGN: ign,
+                        wfIGN: `${ign}`,
                         wfPastIGN: []
                     });
                     await userData.save();
