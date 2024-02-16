@@ -40,7 +40,7 @@ const commands = fs.readdirSync("./src/commands");
 	bot.hEvents(events, "./src/events");
 	bot.hCommands(commands, "./src/commands");
 	bot.hButtons();
-    bot.login(process.env.token).catch(e => {
-		console.log(`[Error]`.red, "Invalid or No Bot Token Provided.".green)});
-	bot.hDatabase(); 
+    bot.login(process.env.token).catch(e => {console.log(`[Error]`.red, "Invalid or No Bot Token Provided.".green)});
+	bot.hDatabase();
+	bot.hGoogle();
 })();
