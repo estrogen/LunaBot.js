@@ -65,16 +65,16 @@ module.exports = {
             const member = await i.guild.members.fetch(id);
             if (!member) return await m.reply({ content: 'Unable to find member.', ephemeral: true });
             
+            await m.update({ content: `<@${id}> has been recruited to <@&${m.values[0]}>`, components: [], ephemeral: true })
             const general = await i.guild.channels.cache.get('890240569165639771');
             const kingdom = await i.guild.roles.cache.find(r => r.id === m.values[0]);
             await member.roles.remove(cc.Roles.Recruit, `Recruited into the clan by ${i.user.tag}`);
             await member.setNickname(ign, `Recruited into the clan by ${i.user.tag}`);
             await member.roles.add(kingdom.id, `Recruited into the clan by ${i.user.tag}`);
-            console.log(ign);
 
             let recruiterWallet = await wallet.findOne({ userID: i.user.id });
             if (!recruiterWallet) {
-                recruiterWallet = new Wallet({
+                recruiterWallet = new wallet({
                     userID: i.user.id,
                     guildID: i.guild.id,
                     tokens: 0.5

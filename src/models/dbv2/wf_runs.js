@@ -8,8 +8,8 @@ const wf_runs = {
     relic: { type: String, required: false },
     rewards: { type: [String], required: false },
     date: { type: Date, required: true, index: true },
-    active: { type: Boolean, required: true },
-    screenshot: { type: String, required: false }
+    status: { type: String, required: true },
+    runId: { type: String, required: false }
 };
 
 module.exports = mongoose.model("WF_Runs", wf_runs);

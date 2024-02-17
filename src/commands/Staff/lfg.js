@@ -1,8 +1,9 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, codeBlock, ButtonBuilder, ButtonStyle } = require('discord.js');
 const cc = require('../../../config.json');
 const relicDataModel = require('../../models/dbv2/wf_relicData');
-const wfRuns = require('../../models/dbv2/wf_runs');
+const wf_runs = require('../../models/dbv2/wf_runs');
 const axios = require('axios');
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -85,58 +86,63 @@ module.exports = {
 
         await i.deferReply();
 
-        switch (type) {
-            case "treasury":
-                if (!amount || !relic) {
-                    i.editReply({ content: "Missing Relic Name or Amount." });
-                    break;
-                } else {
-                    if (amount < 6) {
-                        i.editReply({ content: "Treasury runs require a minimum of 6 relics." });
+        try {
+            switch (type) {
+                case "treasury":
+                    if (!amount || !relic) {
+                        i.editReply({ content: "Missing Relic Name or Amount." });
                         break;
                     } else {
-                        if (amount % 3 != 0) {
-                            i.editReply({ content: "Relic amount must be a multiple of 3." });
+                        if (amount < 6) {
+                            i.editReply({ content: "Treasury runs require a minimum of 6 relics." });
                             break;
+                        } else {
+                            if (amount % 3 != 0) {
+                                i.editReply({ content: "Relic amount must be a multiple of 3." });
+                                break;
+                            }
                         }
                     }
-                }
 
-                const fissures = await getFissuresForRelic(relic) || 'No Ideal Fissures';
-                const relicData = await getRelicBreakdown(bot, relic);
-                const lfgButtons = new ActionRowBuilder()
-                    .addComponents(
-                        new ButtonBuilder().setCustomId("lfgJoin").setLabel("✔").setStyle(ButtonStyle.Success),
-                        new ButtonBuilder().setCustomId('lfgCancel').setLabel('❌').setStyle(ButtonStyle.Danger),
-                    );
+                    const fissures = await getFissuresForRelic(relic) || 'No Ideal Fissures';
+                    const relicData = await getRelicBreakdown(bot, relic);
+                    const lfgButtons = new ActionRowBuilder()
+                        .addComponents(
+                            new ButtonBuilder().setCustomId("lfgJoin").setLabel("✔").setStyle(ButtonStyle.Success),
+                            new ButtonBuilder().setCustomId('lfgCancel').setLabel('❌').setStyle(ButtonStyle.Danger),
+                        );
 
-                const embed = new EmbedBuilder()
-                    .setTitle(`Treasury Run for ${amount}x ${relic}`)
-                    .setDescription(`<@${i.member.id}>`)
-                    .addFields([
-                        { name: "Fissures", value: `${fissures}`, inline: false}, 
-                        { name: `${relicData.name || `${relic} Data`}`, value: `${codeBlock('ml', relicData.rewards) || 'Unable to acquire data.' }`, inline: false}
-                    ])
-                    .setColor("#ffb347")
-                    .setTimestamp();
-                await i.editReply({ embeds: [embed], components: [lfgButtons] });
-                newWfRun = new wfRuns({
-                    host: i.user.id,
-                    participants: [],
-                    runType: type,
-                    mission: "",
-                    relic: relic,
-                    rewards: [],
-                    active: true,
-                    date: new Date(),
-                    screenshot: ""
-                });
-                await newWfRun.save();
-                break;
-            case "farmer":
-                break;
-            case "general":
-                break;  
+                    const runId = await generateRunId(i.user.id, relic, type);
+                    const embed = new EmbedBuilder()
+                        .setTitle(`Treasury Run for ${amount}x ${relic}`)
+                        .setDescription(`<@${i.member.id}>`)
+                        .addFields([
+                            { name: "Fissures", value: `${fissures}`, inline: false}, 
+                            { name: `${relicData.name || `${relic} Data`}`, value: `${codeBlock('ml', relicData.rewards) || 'Unable to acquire data.' }`, inline: false}
+                        ])
+                        .setColor("#ffb347")
+                        .setFooter({ text: `Run ID: ${runId}` });
+                    await i.editReply({ embeds: [embed], components: [lfgButtons] });
+                    newWfRun = new wf_runs({
+                        host: i.user.id,
+                        participants: [],
+                        runType: type,
+                        mission: "",
+                        relic: relic,
+                        rewards: [],
+                        status: "lfg",
+                        date: new Date(),
+                        runId: runId
+                    });
+                    await newWfRun.save();
+                    break;
+                case "farmer":
+                    break;
+                case "general":
+                    break;  
+            }
+        } catch (error) {
+            console.log(`Error:`, error);
         }
     }
 }
@@ -372,4 +378,12 @@ function rgbToHex(r, g, b) {
         return hex.length == 1 ? "0" + hex : hex;
     }
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+function generateRunId(userId, relic, type) {
+    const date = new Date().toISOString().slice(0, 19).replace(/[-T:]/g, "");
+    const shortRelic = relic.split(' ')[0];
+    const shortType = type.substring(0, 3);
+    const uniqueSuffix = uuidv4().split('-')[0];
+    return `${userId}-${date}-${shortType}-${shortRelic}-${uniqueSuffix}`;
 }

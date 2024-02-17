@@ -1,4 +1,4 @@
-const wfRuns = require('../../models/dbv2/wf_runs');
+const wf_runs = require('../../models/dbv2/wf_runs');
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
 module.exports = {
@@ -10,8 +10,9 @@ module.exports = {
         let embedDescription = embed.description || "";
         const mentionedUserId = embedDescription.match(/<@!?(\d+)>/)?.[1];
         const interactingUserId = i.user.id;
+        const runId = i.message.embeds[0].footer.text.replace('Run ID: ', '');
         if (mentionedUserId === interactingUserId) {
-            await wfRuns.findOneAndDelete({ host: mentionedUserId })
+            await wf_runs.findOneAndDelete({ runId: runId, host: mentionedUserId, status: "active" })
                 .then((deletedRun) => {
                     const title = i.message.embeds[0]?.title || "";
                     const match = title.match(/Treasury Run for (\d+)x (.*)/);
@@ -26,7 +27,7 @@ module.exports = {
                 });
             i.message.delete();
         } else {
-            const run = await wfRuns.findOne({ host: mentionedUserId });
+            const run = await wf_runs.findOne({ host: mentionedUserId, status: "lfg" });
             if (run && run.participants.includes(interactingUserId)) {
                 const updatedParticipants = run.participants.filter(id => id !== interactingUserId);
                 run.participants = updatedParticipants;
