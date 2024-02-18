@@ -99,7 +99,7 @@ async function fetchItemDetailsByColor(gsapi, spreadsheetId, targetColorType) {
                 if (colorType === targetColorType) {
                     const count = parseInt(cellValue, 10);
                     if (!isNaN(count)) {
-                        if (colIndex > 0 && partNames.includes(rows[rowIndex][colIndex - 1])) {
+                        if (colIndex > 0 && partNames.includes(rows[rowIndex][colIndex - 1].replace(' x2', ''))) {
                             let itemRow = rowIndex;
                             while (itemRow >= 0) {
                                 const borderRight = formatRows[itemRow].values[colIndex - 1]?.effectiveFormat?.borders?.right;
