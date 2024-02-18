@@ -1,27 +1,13 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, codeBlock, ButtonBuilder, ButtonStyle } = require('discord.js');
 const cc = require('../../../config.json');
 const relicDataModel = require('../../models/dbv2/wf_relicData');
-const wf_runs = require('../../models/dbv2/wf_runs');
 const axios = require('axios');
-const { v4: uuidv4 } = require('uuid');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('lfg')
-        .setDescription('sets up a looking for group embed')
-        .addStringOption(option => 
-            option.setName('type')
-            .setDescription('Which type of run this will be')
-            .setRequired(true)
-            .addChoices(
-                {name: 'Treasury', value: 'treasury'},
-                {name: 'Farmer', value: 'farmer'},
-                {name: 'Rad Share', value: 'radShare'},
-                {name: 'General', value: 'general'}
-            ))
-            .addStringOption(option => option.setName('relic').setDescription('Relic').setAutocomplete(true))
-            .addStringOption(option => option.setName('amount').setDescription('Amount of relics').setAutocomplete(true))
-            .addStringOption(option => option.setName('mission').setDescription('Mission Type').setAutocomplete(true))
+        .setName('relic')
+        .setDescription('acquires parts inside a relic and their stock information')
+        .addStringOption(option => option.setName('relic').setDescription('Relic').setAutocomplete(true))
         .setDefaultPermission(false),
     async autocomplete(i, bot) {
         const focusedOption = i.options.getFocused(true);
@@ -34,7 +20,7 @@ module.exports = {
                 const allRelics = await getAllRelics();
 
                 relics = allRelics
-                    .filter(relic => `${relic.type} ${relic.name}`.toLowerCase().includes(focusedValue))
+                    .filter(relic => `${relic.type} ${relic.name}`.toLowerCase().includes(focusedValue)) 
                     .slice(0, 25)
                     .map(relic => ({ name: `${relic.type} ${relic.name}`, value: `${relic.type} ${relic.name}` }));
             } catch (error) {
@@ -42,108 +28,27 @@ module.exports = {
             }
 
             await i.respond(relics);
-        } else if (focusedOption.name === 'misson') {
-            const missionTypes = [
-                { name: 'Assassination', value: 'assassination' },
-                { name: 'Assault', value: 'assault' },
-                { name: 'Capture', value: 'capture' },
-                { name: 'Defense', value: 'defense' },
-                { name: 'Disruption', value: 'disruption' },
-                { name: 'Excavation', value: 'excavation' },
-                { name: 'Exterminate', value: 'exterminate' },
-                { name: 'Interception', value: 'interception' },
-                { name: 'MobileDefense', value: 'mobiledefense' },
-                { name: 'Rescue', value: 'rescue' },
-                { name: 'Sabotage', value: 'sabotage' },
-                { name: 'Spy', value: 'spy' },
-                { name: 'Survival', value: 'survival' },
-                { name: 'Any', value: 'any' }
-            ];
-        
-            await i.respond(missionTypes);
-        } else if (focusedOption.name === 'amount') {
-            const relicAmount = [
-                { name: '6', value: '6' },
-                { name: '9', value: '9' },
-                { name: '12', value: '12' },
-                { name: '15', value: '15' },
-                { name: '18', value: '18' },
-                { name: '21', value: '21' },
-                { name: '24', value: '24' }
-            ];
-        
-            await i.respond(relicAmount);
         }
     },
     async execute(i, bot) {
         if(!i.member.roles.cache.some(r => cc.Roles.Staff.includes(r.id))){
             return i.reply({ content: "You're not a staff!", ephemeral: true});
         }
-        const type = i.options.getString('type');
-        const amount = i.options.getString('amount');
+        
         const relic = i.options.getString('relic');
-        const mission = i.options.getString('mission');
-
         await i.deferReply();
+        const relicData = await getRelicBreakdown(bot, relic);
 
-        try {
-            switch (type) {
-                case "treasury":
-                    if (!amount || !relic) {
-                        i.editReply({ content: "Missing Relic Name or Amount." });
-                        break;
-                    } else {
-                        if (amount < 6) {
-                            i.editReply({ content: "Treasury runs require a minimum of 6 relics." });
-                            break;
-                        } else {
-                            if (amount % 3 != 0) {
-                                i.editReply({ content: "Relic amount must be a multiple of 3." });
-                                break;
-                            }
-                        }
-                    }
-
-                    const fissures = await getFissuresForRelic(relic) || 'No Ideal Fissures';
-                    const relicData = await getRelicBreakdown(bot, relic);
-                    const lfgButtons = new ActionRowBuilder()
-                        .addComponents(
-                            new ButtonBuilder().setCustomId("lfgJoin").setLabel("✔").setStyle(ButtonStyle.Success),
-                            new ButtonBuilder().setCustomId('lfgCancel').setLabel('❌').setStyle(ButtonStyle.Danger),
-                        );
-
-                    const runId = await generateRunId(i.user.id, relic, type);
-                    const embed = new EmbedBuilder()
-                        .setTitle(`Treasury Run for ${amount}x ${relic}`)
-                        .setDescription(`<@${i.member.id}>`)
-                        .addFields([
-                            { name: "Fissures", value: `${fissures}`, inline: false}, 
-                            { name: `${relicData.name || `${relic} Data`}`, value: `${codeBlock('ml', relicData.rewards) || 'Unable to acquire data.' }`, inline: false}
-                        ])
-                        .setColor("#cfa3ff")
-                        .setFooter({ text: `Run ID: ${runId}` });
-                    await i.editReply({ embeds: [embed], components: [lfgButtons] });
-                    newWfRun = new wf_runs({
-                        host: i.user.id,
-                        participants: [],
-                        runType: type,
-                        mission: "",
-                        relic: relic,
-                        rewards: [],
-                        status: "lfg",
-                        date: new Date(),
-                        runId: runId
-                    });
-                    await newWfRun.save();
-                    break;
-                case "farmer":
-                    break;
-                case "general":
-                    break;  
-            }
-        } catch (error) {
-            console.log(`Error:`, error);
+        if (!relicData) {
+            return i.editReply({ content: "Failed to fetch data for the specified relic." });
         }
+
+        const embed = new EmbedBuilder()
+            .setTitle(`${relicData.name || 'Unknown'}`)
+            .setDescription(codeBlock('ml', relicData.rewards))
+            .setColor("#cfa3ff")
+
+        await i.editReply({ embeds: [embed] });
     }
 }
 
@@ -167,34 +72,6 @@ async function getAllRelics() {
     } catch (error) {
         console.error('Error fetching all relics:', error);
         return [];
-    }
-}
-
-async function getFissuresForRelic(relic) {
-    const relicType = relic.split(' ')[0];
-    const allowedMissionTypes = ['Extermination', 'Capture', 'Sabotage', 'Rescue'];
-    const url = 'https://api.warframestat.us/pc/fissures/';
-  
-    try {
-        const response = await axios.get(url);
-        const fissures = response.data;
-    
-        let fissureString = '';
-
-        fissures.forEach(fissure => {
-        if (fissure.active && !fissure.isStorm && fissure.tier.toLowerCase() === relicType.toLowerCase() && allowedMissionTypes.includes(fissure.missionType)) {
-            const spPrefix = fissure.isHard ? 'SP ' : '';
-            const expiryUnix = Math.floor(new Date(fissure.expiry).getTime() / 1000);
-            fissureString += `${spPrefix}${fissure.missionType} - ${fissure.node} - <t:${expiryUnix}:R>\n`;
-        }
-        });
-
-        fissureString = fissureString.trim();
-
-        return fissureString;
-    } catch (error) {
-      console.error('Error fetching fissures:', error);
-      return [];
     }
 }
 
@@ -378,12 +255,4 @@ function rgbToHex(r, g, b) {
         return hex.length == 1 ? "0" + hex : hex;
     }
     return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-}
-
-function generateRunId(userId, relic, type) {
-    const date = new Date().toISOString().slice(0, 19).replace(/[-T:]/g, "");
-    const shortRelic = relic.split(' ')[0];
-    const shortType = type.substring(0, 3);
-    const uniqueSuffix = uuidv4().split('-')[0];
-    return `${userId}-${date}-${shortType}-${shortRelic}-${uniqueSuffix}`;
 }

@@ -38,7 +38,7 @@ module.exports = {
 
             const clanApplication = new EmbedBuilder()
                 .setTitle("Application")
-                .setColor("#ffb347")
+                .setColor("#cfa3ff")
                 .setTimestamp()
                 .setFooter({ text: `${i.member.id} | ${i.user.tag}` });
 

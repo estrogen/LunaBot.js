@@ -43,7 +43,7 @@ module.exports = {
             return i.reply({ content: 'No items in this shop department', ephemeral: true });
         }
 
-        const embedColor = '#FFB347';
+        const embedColor = '#cfa3ff';
         const itemsPerPage = 10;
         const embeds = departmentShop.items.reduce((acc, item, index) => {
             const pageIndex = Math.floor(index / itemsPerPage);

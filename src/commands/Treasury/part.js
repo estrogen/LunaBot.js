@@ -31,7 +31,7 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setTitle(`${itemName} Prime Set`)
                 .setDescription(`${codeBlock('ml', message)}`)
-                .setColor("#ffb347")
+                .setColor("#cfa3ff")
                 .setTimestamp();
             i.editReply({ embeds: [embed]});
         } else if (result) {
@@ -65,7 +65,7 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setTitle(`${fullPartName} {${result.count}}`)
                 .setDescription(`${codeBlock('ml', message)}`)
-                .setColor("#ffb347")
+                .setColor("#cfa3ff")
                 .setTimestamp();
             i.editReply({ embeds: [embed], ephemeral: true });
         }

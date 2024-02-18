@@ -44,7 +44,7 @@ module.exports = {
         const type = i.options.getString('department')
         const user = i.options.getUser('user');
         const avatarURL = user.avatarURL({ dynamic: true, format: "png", size: 4096 });
-        const color = '#ffb347'; // Use a constant for the color to maintain consistency
+        const color = '#cfa3ff'; // Use a constant for the color to maintain consistency
 
         // Initialize the wallet if not present
         const walletModel = walletModels[type] || walletModels.c;

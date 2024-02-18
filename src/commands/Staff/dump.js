@@ -54,7 +54,7 @@ module.exports = {
     
             const embed = new EmbedBuilder()
                 .setTitle(`Recruit Leaderboard for the past ${days} days`)
-                .setColor(`#FFB347`)
+                .setColor(`#cfa3ff`)
                 .setDescription(data);
     
             await i.editReply({ embeds: [embed] });

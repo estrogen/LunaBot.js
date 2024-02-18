@@ -74,7 +74,7 @@ module.exports = async (bot, m) => {
                                                     { name: 'Fissures', value: fissures },
                                                     { name: originalMessage.embeds[0].fields[1].name, value: originalMessage.embeds[0].fields[1].value }
                                                 )
-                                                .setColor("#ffb347")
+                                                .setColor("#cfa3ff")
                                                 .setFooter({ text: `Run ID: ${runId}` });
                                                 
                                             await originalMessage.reply({ content: mentionString, embeds: [followUpEmbed], components: [lfgButtons] });

@@ -50,7 +50,7 @@ module.exports = {
                             { name: 'Fissures', value: fissures },
                             { name: i.message.embeds[0].fields[1].name, value: i.message.embeds[0].fields[1].value }
                         )
-                        .setColor("#ffb347")
+                        .setColor("#cfa3ff")
                         .setFooter({ text: `Run ID: ${runId}` });
                         
                     await i.followUp({ content: mentionString, embeds: [followUpEmbed], components: [lfgButtons] });

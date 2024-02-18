@@ -27,7 +27,7 @@ module.exports = {
         const previousIGNs = userData.wfPastIGN.length > 0 ? userData.wfPastIGN.join('\n') : 'None';
 
         const embed = new EmbedBuilder()
-            .setColor(clan ? clan.hexColor || '#ffb347' : '#ffb347')
+            .setColor(clan ? clan.hexColor || '#cfa3ff' : '#cfa3ff')
             .addFields([
                 { name: 'User', value: `<@${user.id}> (${userData.wfIGN || 'Unknown'})`, inline: true },
                 { name: 'Kingdom', value: `${clan ? clan.name || 'Unknown' : 'Unknown'}`, inline: true },

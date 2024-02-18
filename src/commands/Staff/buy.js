@@ -168,7 +168,7 @@ async function handleDegenPurchase(interaction, itemName, store, item) {
             { name: "Item", value: `${itemName}`, inline: false}, 
             { name: "Buyer", value: `<@${interaction.user.id}> (${interaction.user.tag})`, inline: false},
         ])
-        .setColor("#ffb347")
+        .setColor("#cfa3ff")
         .setTimestamp();
 
     await degenLogChannel.send({ embeds: [embed], components: [row] });
@@ -208,7 +208,7 @@ async function handleRegularPurchase(interaction, department, itemName, quantity
     const embed = new EmbedBuilder()
         .setTitle(`Purchase Confirmation for ${itemName}`)
         .setDescription(`**Amount**: ${quantity}\n**Total Cost**: ${item.price * quantity} tokens\n**New Balance**: ${userWallet.tokens} tokens \n <@${managerPing}>`)
-        .setColor("#ffb347")
+        .setColor("#cfa3ff")
         .setThumbnail(interaction.user.avatarURL({ dynamic: true, format: "png", size: 4096 }))
         .setTimestamp();
 
