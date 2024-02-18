@@ -30,7 +30,7 @@ module.exports = {
             fs.writeFileSync(filePath, excelString);
             const file = new AttachmentBuilder(filePath, { name: 'export.txt' });
 
-            await i.reply({ files: [file] });
+            await i.reply({ files: [file], ephemeral: true });
             fs.unlinkSync(filePath);
         } else {
             await i.reply({ content: "You are not the host of this run or the run was not found.", ephemeral: true });
