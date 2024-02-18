@@ -21,7 +21,7 @@ module.exports = {
             ))
             .addStringOption(option => option.setName('relic').setDescription('Relic').setAutocomplete(true))
             .addStringOption(option => option.setName('amount').setDescription('Amount of relics').setAutocomplete(true))
-            .addStringOption(option => option.setName('misson').setDescription('Mission Type').setAutocomplete(true))
+            .addStringOption(option => option.setName('mission').setDescription('Mission Type').setAutocomplete(true))
         .setDefaultPermission(false),
     async autocomplete(i, bot) {
         const focusedOption = i.options.getFocused(true);
