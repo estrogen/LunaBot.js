@@ -159,7 +159,7 @@ async function fetchRelicValues(gsapi, spreadsheetId, relics) {
 }
 
 async function fetchItemPartCount(gsapi, spreadsheetId, data) {
-    const range = 'MANAGERS!Q:S';  // Only fetch from the 'MANAGERS' sheet, range Q:S as you specified
+    const range = 'MANAGERS!Q:S';  
     const response = await gsapi.spreadsheets.values.get({ spreadsheetId, range });
     const rows = response.data.values;
     let results = [];
@@ -242,8 +242,8 @@ async function fetchItemPartCount(gsapi, spreadsheetId, data) {
 function getColorType(count) {
     if (count >= 0 && count <= 7) return 'ED';
     if (count >= 8 && count <= 15) return 'RED';
-    if (count >= 16 && count <= 35) return 'ORANGE';
-    if (count >= 36 && count <= 64) return 'YELLOW';
+    if (count >= 16 && count <= 31) return 'ORANGE';
+    if (count >= 32 && count <= 64) return 'YELLOW';
     if (count >= 65) return 'GREEN';
     return 'Unknown';
 }

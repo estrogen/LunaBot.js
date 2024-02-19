@@ -124,8 +124,8 @@ function capitalizeWords(str) {
 function getColorType(count) {
     if (count >= 0 && count <= 7) return 'ED';
     if (count >= 8 && count <= 15) return 'RED';
-    if (count >= 16 && count <= 35) return 'ORANGE';
-    if (count >= 36 && count <= 64) return 'YELLOW';
+    if (count >= 16 && count <= 31) return 'ORANGE';
+    if (count >= 32 && count <= 64) return 'YELLOW';
     if (count >= 65) return 'GREEN';
     return 'Unknown';
 }
