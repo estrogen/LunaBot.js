@@ -76,61 +76,62 @@ module.exports = {
 }
 
 async function fetchItemPartCount(gsapi, spreadsheetId, itemName, partName) {
-    const sheets = ['FRAMES', 'PRIMARIES', 'SECONDARIES', 'MELEES', 'OTHERS'];
+    const range = 'MANAGERS!Q:S';
     let details = partName.toLowerCase() === 'set' ? [] : null;
 
-    for (const sheet of sheets) {
-        const countResponse = await gsapi.spreadsheets.values.get({
+    try {
+        const response = await gsapi.spreadsheets.values.get({
             spreadsheetId,
-            range: `${sheet}!A:Z`,
+            range,
         });
-        const countRows = countResponse.data.values;
+        const rows = response.data.values;
 
-        const formatResponse = await gsapi.spreadsheets.get({
-            spreadsheetId,
-            ranges: `${sheet}!A:Z`,
-            includeGridData: true,
-        });
-        const formatRows = formatResponse.data.sheets[0].data[0].rowData;
+        const partsRequiringHalfCount = [
+            "Afuris Barrel", "Afuris Receiver", "Akarius Barrel", "Akarius Receiver",
+            "Akbolto Barrel", "Akbolto Receiver", "Akjagara Barrel", "Akjagara Receiver",
+            "Aksomati Barrel", "Aksomati Receiver", "Akstiletto Barrel", "Akstiletto Receiver",
+            "Ankyros Blade", "Ankyros Gauntlet", "Bo Ornament", "Dual Kamas Blade",
+            "Dual Kamas Handle", "Dual Keres Blade", "Dual Keres Handle", "Fang Blade",
+            "Fang Handle", "Glaive Blade", "Guandao Blade", "Gunsen Blade", "Gunsen Handle",
+            "Hikou Pouch", "Hikou Stars", "Kogake Boot", "Kogake Gauntlet", "Kronen Blade",
+            "Kronen Handle", "Nami Skyla Blade", "Nami Skyla Handle", "Ninkondi Handle",
+            "Orthos Blade", "Spira Blade", "Spira Pouch", "Tekko Blade", "Tekko Gauntlet",
+            "Tipedo Ornament", "Venka Blades", "Venka Gauntlet"
+        ];
 
-        let itemFound = false;
-        let itemColumnIndex = -1;
+        rows.forEach(row => {
+            const [fetchedItemName, fetchedPartName, countStr] = row;
 
-        for (let rowIndex = 0; rowIndex < countRows.length; rowIndex++) {
-            const countRow = countRows[rowIndex];
+            const normalizedFetchedItemName = fetchedItemName ? fetchedItemName.toLowerCase() : '';
+            const normalizedFetchedPartName = fetchedPartName ? fetchedPartName.toLowerCase() : '';
 
-            if (!itemFound) {
-                itemColumnIndex = countRow.findIndex(cell => cell && cell.toString().toLowerCase() === itemName.toLowerCase());
-                if (itemColumnIndex !== -1) {
-                    itemFound = true;
-                    continue;
-                }
-            } else {
-                const partCell = countRow[itemColumnIndex] ? countRow[itemColumnIndex].toString().toLowerCase() : '';
-                const countCell = countRow[itemColumnIndex + 1] ? countRow[itemColumnIndex + 1] : 'N/A';
+            if (normalizedFetchedItemName.includes(itemName.toLowerCase()) && 
+                (partName.toLowerCase() === 'set' || normalizedFetchedPartName.includes(partName.toLowerCase()))) {
 
-                const formatCell = formatRows[rowIndex] && formatRows[rowIndex].values[itemColumnIndex + 1];
-                const bgColor = formatCell && formatCell.effectiveFormat && formatCell.effectiveFormat.backgroundColor;
-                const colorType = bgColor ? getColorType(bgColor) : 'Unknown';
+                const count = parseInt(countStr, 10);
+                const isValidCount = !isNaN(count);
+                const adjustedCount = partsRequiringHalfCount.includes(normalizedFetchedPartName) ? Math.ceil(count / 2) : count;
+                const colorType = isValidCount ? getColorType(adjustedCount) : 'Unknown';
 
-                if (!partCell || (rowIndex > 0 && !countRows[rowIndex - 1][itemColumnIndex])) {
-                    break;
-                }
+                const detail = {
+                    part: fetchedPartName,
+                    count: isValidCount ? count : 'N/A',
+                    color: colorType,
+                };
 
                 if (partName.toLowerCase() === 'set') {
-                    details.push({ part: countRow[itemColumnIndex], count: countCell, color: colorType });
-                } else if (partCell.includes(partName.toLowerCase())) {
-                    details = { part: countRow[itemColumnIndex], count: countCell, color: colorType };
-                    break;
+                    details.push(detail);
+                } else {
+                    details = detail;
                 }
             }
-        }
+        });
 
-        if (details && (Array.isArray(details) && details.length > 0 || !Array.isArray(details))) break;
-        itemFound = false;
+        return details;
+    } catch (error) {
+        console.error('Error fetching item part count:', error);
+        return null;
     }
-
-    return details;
 }
 
 async function fetchRelicValues(gsapi, spreadsheetId, relics) {
@@ -152,24 +153,11 @@ async function fetchRelicValues(gsapi, spreadsheetId, relics) {
     return relicValues;
 }
 
-function getColorType(bgColor) {
-    const types = {
-        'ED': "#20124D",
-        'RED': "#990000",
-        'ORANGE': "#B45F06",
-        'YELLOW': "#BF9000",
-        'GREEN': "#38761D",
-    };
-
-    const hexColor = rgbToHex(bgColor.red || 0, bgColor.green || 0, bgColor.blue || 0).toUpperCase();
-    const colorType = Object.keys(types).find(key => types[key] === hexColor) || 'Unknown';
-    return colorType;
-}
-
-function rgbToHex(r, g, b) {
-    function componentToHex(c) {
-        const hex = Math.round((c || 0) * 255).toString(16);
-        return hex.length == 1 ? "0" + hex : hex;
-    }
-    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+function getColorType(count) {
+    if (count >= 0 && count <= 7) return 'ED';
+    if (count >= 8 && count <= 15) return 'RED';
+    if (count >= 16 && count <= 35) return 'ORANGE';
+    if (count >= 36 && count <= 64) return 'YELLOW';
+    if (count >= 65) return 'GREEN';
+    return 'Unknown';
 }

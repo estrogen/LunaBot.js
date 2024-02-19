@@ -35,18 +35,19 @@ module.exports = {
             return i.reply({ content: "You're not a staff!", ephemeral: true});
         }
         
-        const relic = i.options.getString('relic');
+        const relicInput = i.options.getString('relic');
+        const [relicType, relicName] = relicInput.split(' ');
         await i.deferReply();
-        const relicData = await getRelicBreakdown(bot, relic);
+        const relicData = await getRelicBreakdown(bot, relicType, relicName);
 
         if (!relicData) {
             return i.editReply({ content: "Failed to fetch data for the specified relic." });
         }
 
         const embed = new EmbedBuilder()
-            .setTitle(`${relicData.name || 'Unknown'}`)
+            .setTitle(relicData.name || 'Unknown')
             .setDescription(codeBlock('ml', relicData.rewards))
-            .setColor("#cfa3ff")
+            .setColor("#cfa3ff");
 
         await i.editReply({ embeds: [embed] });
     }
@@ -75,58 +76,67 @@ async function getAllRelics() {
     }
 }
 
-async function getRelicBreakdown(bot, selectedRelic) {
-    const relics = await relicDataModel.find({}).lean();
-    const relicValues = await fetchRelicValues(bot.gsapi, process.env.treasury, relics);
-    let details = {
-        name: '',
-        rewards: ''
-    }
+async function getRelicBreakdown(bot, relicType, relicName) {
+    try {
+        const relicData = await relicDataModel.findOne({
+            type: relicType,
+            'relics.name': relicName
+        }).lean();
 
-    const rarityAbbreviation = {
-        'Common': 'C',
-        'Uncommon': 'UC',
-        'Rare': 'RA'
-    };
+        if (!relicData) return null;
 
-    const data = [];
+        const relicValues = await fetchRelicValues(bot.gsapi, process.env.treasury, [{ type: relicType, relics: [{ name: relicName }] }]);
+        const relicValue = relicValues[`${relicType} ${relicName}`] || 'N/A';
 
-    for (const relic of relics) {
-        if (selectedRelic.includes(relic.type)) {
-            for (const r of relic.relics) {
-                if (selectedRelic.includes(r.name)) {
-                    for (const reward of r.rewards) {
-                        const rarityAbbr = rarityAbbreviation[reward.rarity] || reward.rarity;
-                        const relicValue = relicValues[`${relic.type} ${r.name}`] || 'N/A';
-                        details.name = `${relic.type} ${r.name} {${relicValue}}`;
-                        if (!reward.part.includes('Forma')) {
-                            const breakdown = reward.part.split(' Prime ');
-                            const part = breakdown[1].split(' ')[0];
-                            data.push({
-                                technicalName: reward.part,
-                                name: breakdown[0],
-                                part: part,
-                                rarity: rarityAbbr,
-                                color: '',
-                                value: ''
-                            });
-                        } else {
-                            data.push({
-                                technicalName: reward.part,
-                                name: 'Forma',
-                                part: 'Blueprint',
-                                rarity: rarityAbbr,
-                                color: '',
-                                value: ''
-                            });
-                        }
+        let details = {
+            name: `${relicType} ${relicName} {${relicValue}}`,
+            rewards: ''
+        };
+
+        let data = [];
+        const rarityAbbreviation = {
+            'Common': 'C',
+            'Uncommon': 'UC',
+            'Rare': 'RA'
+        };
+        
+        relicData.relics.forEach(r => {
+            if (r.name === relicName) {
+                r.rewards.forEach(reward => {
+                    const rarityAbbr = rarityAbbreviation[reward.rarity] || reward.rarity;
+                    if (!reward.part.includes('Forma')) {
+                        const breakdown = reward.part.split(' Prime ');
+                        let itemName = breakdown[0]; // Remaining is the item name, e.g., "Latron"
+                        let partName = breakdown[1].split(' ')[0]; // Last part is the part name, e.g., "Barrel"
+
+                        data.push({
+                            technicalName: reward.part,
+                            name: itemName,
+                            part: partName,
+                            rarity: rarityAbbr,
+                            color: '',
+                            value: ''
+                        });
+                    } else {
+                        data.push({
+                            technicalName: reward.part,
+                            name: 'Forma',
+                            part: 'Blueprint',
+                            rarity: rarityAbbr,
+                            color: '',
+                            value: ''
+                        });
                     }
-                }
+                });
             }
-        }
-    }    
-    details.rewards = await fetchItemPartCount(bot.gsapi, process.env.sheet, data);
-    return details;
+        });
+
+        details.rewards = await fetchItemPartCount(bot.gsapi, process.env.sheet, data);
+        return details;
+    } catch (error) {
+        console.error('Error in getRelicBreakdown:', error);
+        return null;
+    }
 }
 
 async function fetchRelicValues(gsapi, spreadsheetId, relics) {
@@ -149,64 +159,61 @@ async function fetchRelicValues(gsapi, spreadsheetId, relics) {
 }
 
 async function fetchItemPartCount(gsapi, spreadsheetId, data) {
-    const sheets = ['FRAMES', 'PRIMARIES', 'SECONDARIES', 'MELEES', 'OTHERS'];
+    const range = 'MANAGERS!Q:S';  // Only fetch from the 'MANAGERS' sheet, range Q:S as you specified
+    const response = await gsapi.spreadsheets.values.get({ spreadsheetId, range });
+    const rows = response.data.values;
     let results = [];
 
-    for (const sheet of sheets) {
-        const countResponse = await gsapi.spreadsheets.values.get({
-            spreadsheetId,
-            range: `${sheet}!A:Z`,
+    const partsRequiringHalfCount = [
+        "Afuris Barrel", "Afuris Receiver", "Akarius Barrel", "Akarius Receiver",
+        "Akbolto Barrel", "Akbolto Receiver", "Akjagara Barrel", "Akjagara Receiver",
+        "Aksomati Barrel", "Aksomati Receiver", "Akstiletto Barrel", "Akstiletto Receiver",
+        "Ankyros Blade", "Ankyros Gauntlet", "Bo Ornament", "Dual Kamas Blade",
+        "Dual Kamas Handle", "Dual Keres Blade", "Dual Keres Handle", "Fang Blade",
+        "Fang Handle", "Glaive Blade", "Guandao Blade", "Gunsen Blade", "Gunsen Handle",
+        "Hikou Pouch", "Hikou Stars", "Kogake Boot", "Kogake Gauntlet", "Kronen Blade",
+        "Kronen Handle", "Nami Skyla Blade", "Nami Skyla Handle", "Ninkondi Handle",
+        "Orthos Blade", "Spira Blade", "Spira Pouch", "Tekko Blade", "Tekko Gauntlet",
+        "Tipedo Ornament", "Venka Blades", "Venka Gauntlet"
+    ];
+
+    data.forEach(item => {
+        const row = rows.find(row => {
+            let [itemName, partName] = row;
+
+            const fullName = item.technicalName.includes('Prime') && !item.name.includes('Prime')
+                ? `${item.name} Prime ${item.part}`
+                : `${item.name} ${item.part}`;
+
+            const rowName = `${itemName} ${partName}`;
+            return fullName === rowName;
         });
-        const countRows = countResponse.data.values;
 
-        const formatResponse = await gsapi.spreadsheets.get({
-            spreadsheetId,
-            ranges: `${sheet}!A:Z`,
-            includeGridData: true,
-        });
-        const formatRows = formatResponse.data.sheets[0].data[0].rowData;
+        if (row) {
+            let [_, __, countStr] = row;
+            let count = parseInt(countStr, 10);
+            if (isNaN(count)) count = 0;
 
-        for (const item of data) {
-            let itemFound = false;
-            let itemColumnIndex = -1;
-
-            for (let rowIndex = 0; rowIndex < countRows.length; rowIndex++) {
-                const countRow = countRows[rowIndex];
-
-                if (!itemFound) {
-                    itemColumnIndex = countRow.findIndex(cell => cell && cell.toString().toLowerCase() === item.name.toLowerCase());
-                    if (itemColumnIndex !== -1) {
-                        itemFound = true;
-                    }
-                }
-
-                if (itemFound) {
-                    const partCell = countRow[itemColumnIndex] ? countRow[itemColumnIndex].toString().toLowerCase() : '';
-                    const countCell = countRow[itemColumnIndex + 1] ? countRow[itemColumnIndex + 1] : '';
-
-                    const formatCell = formatRows[rowIndex] && formatRows[rowIndex].values[itemColumnIndex + 1];
-                    const bgColor = formatCell && formatCell.effectiveFormat && formatCell.effectiveFormat.backgroundColor;
-                    const colorType = bgColor ? getColorType(bgColor) : 'Unknown';
-
-                    if (!partCell || (rowIndex > 0 && !countRows[rowIndex - 1][itemColumnIndex])) {
-                        continue;
-                    }
-
-                    if (partCell.includes(item.part.toLowerCase())) {
-                        item.value = countCell;
-                        item.color = colorType;
-
-                        const existingItemIndex = results.findIndex(res => res.name === item.name && res.part === item.part);
-                        if (existingItemIndex !== -1) {
-                            results[existingItemIndex] = item;
-                        } else {
-                            results.push(item);
-                        }
-                    }
-                }
+            let countBefore = count;
+            const fullPartName = `${item.name} ${item.part}`;
+            if (partsRequiringHalfCount.includes(fullPartName)) {
+                count = Math.ceil(count / 2);
             }
+
+            const colorType = getColorType(count);
+            const formattedPart = item.part.replace(/Neuroptics/g, 'Neuro').replace(/Blueprint/g, 'BP');
+            const formattedName = item.name + (item.technicalName.includes('prime') ? ' Prime' : '');
+
+            results.push({
+                technicalName: `${formattedName} ${formattedPart}`,
+                name: formattedName,
+                part: formattedPart,
+                rarity: item.rarity,
+                color: colorType,
+                value: countBefore 
+            });
         }
-    }
+    });
 
     data.forEach(item => {
         if (item.technicalName.includes('Forma')) {
@@ -223,36 +230,20 @@ async function fetchItemPartCount(gsapi, spreadsheetId, data) {
 
     let message = '';
     results.forEach(item => {
-        const paddedRarity = item.rarity.padEnd(2, ' ');
-        const paddedValue = item.technicalName.includes('Forma') ? '  ' : item.value.padEnd(2, ' ');
-        const colorCode = item.technicalName.includes('Forma') ? '' : `{${item.color}}`;
+        const paddedRarity = String(item.rarity).padEnd(2, ' ');
+        const paddedValue = String(item.technicalName).includes('Forma') ? '  ' : String(item.value).padEnd(2, ' ');
+        const colorCode = String(item.technicalName).includes('Forma') ? '' : `{${item.color}}`;
         message += `${paddedRarity} | ${paddedValue} | ${item.name} ${item.part} ${colorCode}\n`;
     });
 
-    console.log("Final message:", message);
-
     return message;
-
 }
 
-function getColorType(bgColor) {
-    const types = {
-        'ED': "#20124D",
-        'RED': "#990000",
-        'ORANGE': "#B45F06",
-        'YELLOW': "#BF9000",
-        'GREEN': "#38761D",
-    };
-
-    const hexColor = rgbToHex(bgColor.red || 0, bgColor.green || 0, bgColor.blue || 0).toUpperCase();
-    const colorType = Object.keys(types).find(key => types[key] === hexColor) || 'Unknown';
-    return colorType;
-}
-
-function rgbToHex(r, g, b) {
-    function componentToHex(c) {
-        const hex = Math.round((c || 0) * 255).toString(16);
-        return hex.length == 1 ? "0" + hex : hex;
-    }
-    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+function getColorType(count) {
+    if (count >= 0 && count <= 7) return 'ED';
+    if (count >= 8 && count <= 15) return 'RED';
+    if (count >= 16 && count <= 35) return 'ORANGE';
+    if (count >= 36 && count <= 64) return 'YELLOW';
+    if (count >= 65) return 'GREEN';
+    return 'Unknown';
 }

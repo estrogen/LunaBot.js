@@ -25,7 +25,7 @@ module.exports = {
         const colorType = i.options.getString('type');
         await i.deferReply();
 
-        const parts = await fetchItemDetailsByColor(bot.gsapi, process.env.sheet, colorType);
+        const parts = await fetchItemDetails(bot.gsapi, process.env.sheet, colorType);
 
         if (!parts.length) {
             return i.editReply({ content: `No items found for color type ${colorType}.`, ephemeral: true });
@@ -42,7 +42,11 @@ module.exports = {
         const embeds = pages.map((page, pageIndex) => {
             const pageDescription = page.map(part => {
                 const paddedCount = String(part.count).padStart(2, ' ').padEnd(3, ' ');
-                const modifiedItemName = part.itemName.replace(/Neuroptics/g, 'Neuro').replace(/Blueprint/g, 'BP');
+                const modifiedItemName = (part.itemName + ' ' + part.partName)
+                    .replace(/Neuroptics/g, 'Neuro')
+                    .replace(/Blueprint/g, 'BP')
+                    .trim();
+        
                 return `${paddedCount} | ${modifiedItemName}`;
             }).join('\n');
         
@@ -67,62 +71,46 @@ module.exports = {
     }
 }
 
-async function fetchItemDetailsByColor(gsapi, spreadsheetId, targetColorType) {
-    const sheets = ['FRAMES', 'PRIMARIES', 'SECONDARIES', 'MELEES', 'OTHERS'];
-    const partNames = [
-        "Chassis", "Neuroptics", "Stock", "Upper limb", "Lower limb", "Barrel",
-        "Receiver", "Grip", "String", "Pouch", "Stars", "Blade", "Ornament", "Disc",
-        "Handle", "Head", "Boot", "Gauntlet", "Chain", "Guard", "Hilt", "Carapace",
-        "Cerebrum", "Band", "Buckle", "Blueprint", "Harness", "Systems", "Wings"
-    ];
+async function fetchItemDetails(gsapi, spreadsheetId, targetType) {
+    const range = 'MANAGERS!Q:S';
+    const response = await gsapi.spreadsheets.values.get({ spreadsheetId, range });
+    const rows = response.data.values;
     const results = [];
 
-    for (const sheet of sheets) {
-        const range = `${sheet}!A:Z`;
-        const response = await gsapi.spreadsheets.values.get({ spreadsheetId, range });
-        const rows = response.data.values;
-        
-        const formatResponse = await gsapi.spreadsheets.get({
-            spreadsheetId,
-            ranges: range,
-            includeGridData: true,
-        });
-        const formatRows = formatResponse.data.sheets[0].data[0].rowData;
+    const partsRequiringHalfCount = [
+        "Afuris Barrel", "Afuris Receiver", "Akarius Barrel", "Akarius Receiver",
+        "Akbolto Barrel", "Akbolto Receiver", "Akjagara Barrel", "Akjagara Receiver",
+        "Aksomati Barrel", "Aksomati Receiver", "Akstiletto Barrel", "Akstiletto Receiver",
+        "Ankyros Blade", "Ankyros Gauntlet", "Bo Ornament", "Dual Kamas Blade",
+        "Dual Kamas Handle", "Dual Keres Blade", "Dual Keres Handle", "Fang Blade",
+        "Fang Handle", "Glaive Blade", "Guandao Blade", "Gunsen Blade", "Gunsen Handle",
+        "Hikou Pouch", "Hikou Stars", "Kogake Boot", "Kogake Gauntlet", "Kronen Blade",
+        "Kronen Handle", "Nami Skyla Blade", "Nami Skyla Handle", "Ninkondi Handle",
+        "Orthos Blade", "Spira Blade", "Spira Pouch", "Tekko Blade", "Tekko Gauntlet",
+        "Tipedo Ornament", "Venka Blades", "Venka Gauntlet"
+    ];
 
-        for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
-            for (let colIndex = 0; colIndex < (rows[rowIndex] ? rows[rowIndex].length : 0); colIndex++) {
-                const cellValue = rows[rowIndex][colIndex];
-                const formatCell = formatRows[rowIndex] && formatRows[rowIndex].values[colIndex];
-                const bgColor = formatCell && formatCell.effectiveFormat && formatCell.effectiveFormat.backgroundColor;
-                const colorType = getColorType(bgColor);
+    for (const row of rows) {
+        let [itemName, partName, countStr] = row;
 
-                if (colorType === targetColorType) {
-                    const count = parseInt(cellValue, 10);
-                    if (!isNaN(count)) {
-                        if (colIndex > 0 && partNames.includes(rows[rowIndex][colIndex - 1].replace(' x2', ''))) {
-                            let itemRow = rowIndex;
-                            while (itemRow >= 0) {
-                                const borderRight = formatRows[itemRow].values[colIndex - 1]?.effectiveFormat?.borders?.right;
-                                if (!borderRight) {
-                                    const itemName = sheet === 'FRAMES' ? rows[itemRow+1][colIndex - 1] : rows[itemRow][colIndex - 1];
-                                    const partName = rows[rowIndex][colIndex - 1];
+        itemName = itemName.replace(' Prime', '');
 
-                                    if (itemName) {
-                                        results.push({
-                                            sheet,
-                                            itemName: capitalizeWords(`${itemName} ${partName}`),
-                                            count,
-                                            colorType
-                                        });                            
-                                        break;
-                                    }
-                                }
-                                itemRow--;
-                            }
-                        }
-                    }
-                }
-            }
+        let count = parseInt(countStr, 10);
+        if (isNaN(count)) continue;
+
+        const fullPartName = `${itemName} ${partName}`;
+        if (partsRequiringHalfCount.includes(fullPartName)) {
+            count = Math.ceil(count / 2);
+        }
+
+        const colorType = getColorType(count);
+        if (colorType === targetType) {
+            results.push({
+                itemName: capitalizeWords(itemName),
+                partName: capitalizeWords(partName),
+                count,
+                colorType
+            });
         }
     }
 
@@ -133,24 +121,11 @@ function capitalizeWords(str) {
     return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 }
 
-function getColorType(bgColor) {
-    const types = {
-        'ED': "#20124D",
-        'RED': "#990000",
-        'ORANGE': "#B45F06",
-        'YELLOW': "#BF9000",
-        'GREEN': "#38761D",
-    };
-
-    const hexColor = rgbToHex(bgColor.red || 0, bgColor.green || 0, bgColor.blue || 0).toUpperCase();
-    const colorType = Object.keys(types).find(key => types[key] === hexColor) || 'Unknown';
-    return colorType;
-}
-
-function rgbToHex(r, g, b) {
-    function componentToHex(c) {
-        const hex = Math.round((c || 0) * 255).toString(16);
-        return hex.length == 1 ? "0" + hex : hex;
-    }
-    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+function getColorType(count) {
+    if (count >= 0 && count <= 7) return 'ED';
+    if (count >= 8 && count <= 15) return 'RED';
+    if (count >= 16 && count <= 35) return 'ORANGE';
+    if (count >= 36 && count <= 64) return 'YELLOW';
+    if (count >= 65) return 'GREEN';
+    return 'Unknown';
 }
