@@ -6,7 +6,7 @@ const moment = require('moment');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('ign')
-        .setDescription('get or update the ign of a clan member')
+        .setDescription('Get or update the ign of a clan member')
         .addUserOption(option => option.setName('user').setDescription('Warframe Player').setRequired(true))
         .addStringOption(option => option.setName('ign').setDescription('Updated IGN').setRequired(false))
         .addStringOption(option => option.setName('nickname').setDescription('Update Users Nickname').setRequired(false)
