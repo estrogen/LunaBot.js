@@ -50,7 +50,7 @@ module.exports = {
                 tokens: 0,
                 transactions: 
                     {date: i.createdAt,
-                    identifier: 'Initialization',
+                    identifier: 'Init',
                     desc: "Init Wallet",
                     amount: 0}
             });
