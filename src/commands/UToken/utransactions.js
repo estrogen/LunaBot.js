@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
 const moment = require('moment');
 const cc = require('../../../config.json');
 const wallet = require('../../models/dbv2/tokens_universal');
@@ -23,6 +23,7 @@ module.exports = {
                 {name: 'Other', value: 'Other'},
             ))
         .addNumberOption(option => option.setName('timeframe').setDescription('Filter with the last x days').setRequired(false))
+        .addBooleanOption(option => option.setName('csv').setDescription('Get Output as a CSV').setRequired(false))
         .setDefaultPermission(false),
 
     async execute(i, bot) {
@@ -53,17 +54,23 @@ module.exports = {
             });
         });
 
+        if(i.options.getBoolean('csv')){
+            const attachment = new AttachmentBuilder(Buffer.from(output, 'utf-8'), { name: 'TransactionData.csv' });
+            await i.reply({ files: [attachment]});
+        }
+        else{
+            const embed = new EmbedBuilder()
+            .setTitle(`Transactions Logs`)
+            .setColor(color)
+            .addFields(
+                { name: 'Identifier', value: `${filterIdentifier}`, inline: true },
+                { name: 'User', value: `${filterUser}`, inline: true },
+                { name: 'Start Date', value: `${startDate.toISOString().slice(0, 10)}`, inline: true },
+                { name: 'Transactions', value: `\`\`\`haskell\n${output}\`\`\``, inline: false},);
+            
+    
+            await i.reply({ embeds: [embed] });
+        }
         
-        const embed = new EmbedBuilder()
-        .setTitle(`Transactions Logs`)
-        .setColor(color)
-        .addFields(
-            { name: 'Identifier', value: `${filterIdentifier}`, inline: true },
-            { name: 'User', value: `${filterUser}`, inline: true },
-            { name: 'Start Date', value: `${startDate.toISOString().slice(0, 10)}`, inline: true },
-            { name: 'Transactions', value: `\`\`\`haskell\n${output}\`\`\``, inline: false},);
-        
-
-        await i.reply({ embeds: [embed] });
     }
 }
