@@ -21,12 +21,13 @@ module.exports = {
             .setDescription('Where is this transaction coming from')
             .setRequired(true)
             .addChoices(
-                {name: 'Treasury', value: 'treasury'},
-                {name: 'Recruiter', value: 'recruiter'},
-                {name: 'Decorator', value: 'decorator'},
-                {name: 'Farmer', value: 'farmer'},
-                {name: 'Events', value: 'events'},
-                {name: 'Other', value: 'other'},
+                {name: 'Treasury', value: 'Treasury'},
+                {name: 'Recruiter', value: 'Recruiter'},
+                {name: 'Decorator', value: 'Decorator'},
+                {name: 'Farmer', value: 'Farmer'},
+                {name: 'Designer', value: 'Designer'},
+                {name: 'Events', value: 'Events'},
+                {name: 'Other', value: 'Other'},
             ))
         .addStringOption(option => option.setName('amount').setDescription('Amount to change').setRequired(true))
         .addStringOption(option => option.setName('reason').setDescription('Reason for audit').setRequired(true))
@@ -50,7 +51,7 @@ module.exports = {
                 transactions: 
                     {date: i.createdAt,
                     identifier: 'Initialization',
-                    desc: "Initialized Wallet",
+                    desc: "Init Wallet",
                     amount: 0}
             });
         }
@@ -60,7 +61,7 @@ module.exports = {
             userWallet.transactions.push({
                 date: i.createdAt,
                 identifier: i.options.getString('identifier'),
-                desc: `Audit: ${i.member.user.username}(${i.member.id}) - ${i.options.getString('reason')}`,
+                desc: `Audit: `,
                 amount: amount
             });
         } 
@@ -69,7 +70,7 @@ module.exports = {
             userWallet.transactions.push({
                 date: i.createdAt,
                 identifier: i.options.getString('identifier'),
-                desc: `Audit: ${i.member.user.username}(${i.member.id}) - ${i.options.getString('reason')}`,
+                desc: `Audit: ${i.options.getString('reason')}-${i.member.user.username}(${i.member.id})`,
                 amount: -amount
             });
         }

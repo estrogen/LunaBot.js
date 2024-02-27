@@ -5,7 +5,8 @@ const moment = require('moment');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('utransactions')
-        .setDescription('Null')
+        .setDescription('See transactions based on your filters')
+
         .setDefaultPermission(false),
 
     async execute(i, bot) {

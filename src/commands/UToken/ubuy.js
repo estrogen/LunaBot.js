@@ -41,8 +41,8 @@ module.exports = {
         userWallet.tokens -= total;
         userWallet.transactions.push({
             date: i.createdAt,
-            identifier: "shop",
-            desc: `Buy: ${quantity}x ${shopItem.name}`,
+            identifier: "Shop Purchase",
+            desc: `Shop Buy: ${quantity}x ${shopItem.name}`,
             amount: total
         });
         await userWallet.save();
