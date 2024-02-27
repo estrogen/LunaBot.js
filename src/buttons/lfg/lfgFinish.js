@@ -20,8 +20,8 @@ module.exports = {
                         new ButtonBuilder().setCustomId('lfgActivate').setLabel('Re-activate').setStyle(ButtonStyle.Success),
                         new ButtonBuilder().setCustomId('lfgExport').setLabel('Export Run').setStyle(ButtonStyle.Secondary),
                     );
-
-                await i.update({ embeds: [embed], components: [newButtons] });
+                const followUpEmbed = new EmbedBuilder(embed).setTitle(`Completed ${embed.title}`);
+                await i.update({ embeds: [followUpEmbed], components: [newButtons] });
             } else {
                 i.reply({ content: "No active run found or unable to update the run status.", ephemeral: true });
             }
