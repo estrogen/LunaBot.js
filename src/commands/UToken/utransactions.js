@@ -59,6 +59,9 @@ module.exports = {
             await i.reply({ files: [attachment]});
         }
         else{
+            if(output.length > 1024){
+                return await i.reply({ content: "Too many transactions. Try using CSV format", ephemeral: true });
+            }
             const embed = new EmbedBuilder()
             .setTitle(`Transactions Logs`)
             .setColor(color)
