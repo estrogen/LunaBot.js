@@ -4,6 +4,17 @@ const shop = require('../../models/dbv2/tokens_ushop');
 const cc = require('../../../config.json');
 const wallet = require('../../models/dbv2/tokens_universal');
 
+const restrictionID= {
+    "Treasurer": '890240560319856711',
+    "Recruiter": '890240560319856720',
+    "Designer": '890240560294682627',
+    "Decorator": '890240560294682626',
+    "Farmer": '890240560319856712',
+    "Staff": '890240560294682624',
+    "PartHolder": '890240560131104802',
+}
+
+
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('ushop')
@@ -26,7 +37,22 @@ module.exports = {
                     .setColor(embedColor);
             }
             const itemStatus = balance >= item.price ? ':white_check_mark:' : ':x:';
-            acc[pageIndex].addFields({ name: item.name +` (${item.restriction})`, value: `${itemStatus} ${item.price}` });
+
+
+            var rate = 1;
+            for(const modifiers of item.modifier){
+                if(i.member.roles.cache.some(r => r.id === restrictionID[modifiers])){
+                    rate = 0.75;
+                }
+            }
+            const itemRealPrice = item.price * rate
+
+            var itemRestriction = "";
+            if(item.restriction != null){
+                itemRestriction = ` (${item.restriction})`;
+            }
+
+            acc[pageIndex].addFields({ name: item.name +` ${itemRestriction}`, value: `${itemStatus} ${itemRealPrice}` });
             return acc;
         }, []);
 
