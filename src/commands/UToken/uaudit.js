@@ -42,7 +42,7 @@ module.exports = {
         let amount = mode !== 'log' ? i.options.getString('amount') : null;
         amount = amount ? parseFloat(amount) : null;
 
-        const userWallet = await wallet.findOne({ userID: user.id });
+        var userWallet = await wallet.findOne({ userID: user.id });
     
         if (!userWallet) {
             userWallet = new wallet({

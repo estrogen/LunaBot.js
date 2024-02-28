@@ -13,9 +13,7 @@ module.exports = {
     async execute(i, bot) {
         
         const userWallet = await wallet.findOne({ userID: i.member.id });
-        console.log(userWallet);
         const balance = userWallet.tokens;
-        console.log(balance);
         const items = await shop.find();
 
         const embedColor = '#cfa3ff';
@@ -28,7 +26,7 @@ module.exports = {
                     .setColor(embedColor);
             }
             const itemStatus = balance >= item.price ? ':white_check_mark:' : ':x:';
-            acc[pageIndex].addFields({ name: item.name, value: `${itemStatus} ${item.price}` });
+            acc[pageIndex].addFields({ name: item.name +` (${item.restriction})`, value: `${itemStatus} ${item.price}` });
             return acc;
         }, []);
 

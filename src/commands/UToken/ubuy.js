@@ -5,6 +5,16 @@ const cc = require('../../../config.json');
 const wallet = require('../../models/dbv2/tokens_universal');
 const buylogchannel =  "1193512882944610335";
 
+const restrictionID= {
+    "Treasurer": '890240560319856711',
+    "Recruiter": '890240560319856720',
+    "Designer": '890240560294682627',
+    "Decorator": '890240560294682626',
+    "Farmer": '890240560319856712',
+    "Staff": '890240560294682624',
+    "PartHolder": '890240560131104802',
+}
+
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,17 +26,20 @@ module.exports = {
                 .setRequired(true)
                 .setAutocomplete(false))
         .addNumberOption(option => option.setName('quantity').setDescription('Amount you want to buy').setRequired(true))
+        .addStringOption(option => option.setName('info').setDescription('Any Additional Notes').setRequired(false))
         .setDefaultPermission(false),
 
 
     async execute(i, bot) {
         const itemInput = i.options.getString('item');
         const shopItem = await shop.findOne({name: itemInput});
-        const restriction = shopItem.restriction;
         const price = shopItem.price;
         const quantity = i.options.getNumber('quantity');
         const userWallet = await wallet.findOne({ userID: i.member.id });
         const total = price*quantity;
+        const info = i.options.getString('info');
+        const restriction = restrictionID[shopItem.restriction];
+
 
         if (quantity <= 0) {
             return await i.reply({ content: "Can't purchase a negative or zero amount of an item.", ephemeral: true });
@@ -35,21 +48,24 @@ module.exports = {
             return await i.reply({ content: "The item you're trying to purchase doesn't exist.", ephemeral: true });
         }
         if (userWallet.tokens < total){
-            return await i.reply({ content: "You don't have enough tokens to purchase this item", ephemeral: true });
+            return await i.reply({ content: "You don't have enough tokens to purchase this item.", ephemeral: true });
+        }
+        if ((shopItem.restriction == "Clan" && !i.member.roles.cache.some(r => cc.Roles.Clan.includes(r.id))) && !i.member.roles.cache.some(r => r.id === restriction)){
+            return await i.reply({ content: `You are not allowed to purchase this item - requires ${shopItem.restriction}`, ephemeral: true });
         }
 
         userWallet.tokens -= total;
         userWallet.transactions.push({
             date: i.createdAt,
             identifier: "Shop",
-            desc: `Shop Buy: ${quantity}x ${shopItem.name}`,
+            desc: `Shop Buy: ${quantity}x ${shopItem.name} - ${info}`,
             amount: total
         });
         await userWallet.save();
 
         const embed = new EmbedBuilder()
-            .setTitle(`Purchase Confirmation for ${shopItem.name}`)
-            .setDescription(`**Amount**: ${quantity}\n**Total Cost**: ${shopItem.price * quantity} tokens\n**New Balance**: ${userWallet.tokens} tokens`)
+            .setTitle(`Purchase Confirmation for ${shopItem.name} (${shopItem.restriction})`)
+            .setDescription(`**Amount:** ${quantity}\n**Total Cost:** ${shopItem.price * quantity} tokens\n**New Balance:** ${userWallet.tokens} tokens\n**Notes:** ${info}`)
             .setColor("#cfa3ff")
             .setThumbnail(i.member.user.avatarURL({ dynamic: true, format: "png", size: 4096 }))
             .setTimestamp();
