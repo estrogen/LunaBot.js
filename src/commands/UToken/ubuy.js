@@ -33,13 +33,20 @@ module.exports = {
     async execute(i, bot) {
         const itemInput = i.options.getString('item');
         const shopItem = await shop.findOne({name: itemInput});
-        const price = shopItem.price;
         const quantity = i.options.getNumber('quantity');
         const userWallet = await wallet.findOne({ userID: i.member.id });
-        const total = price*quantity;
         const info = i.options.getString('info');
         const restriction = restrictionID[shopItem.restriction];
 
+
+        var rate = 1;
+        for(const modifiers of shopItem.modifier){
+            if(i.member.roles.cache.some(r => r.id === restrictionID[modifiers])){
+                rate = 0.75;
+            }
+        }
+        const price = shopItem.price * rate;
+        const total = price*quantity;
 
         if (quantity <= 0) {
             return await i.reply({ content: "Can't purchase a negative or zero amount of an item.", ephemeral: true });
@@ -50,7 +57,7 @@ module.exports = {
         if (userWallet.tokens < total){
             return await i.reply({ content: "You don't have enough tokens to purchase this item.", ephemeral: true });
         }
-        if ((shopItem.restriction == "Clan" && !i.member.roles.cache.some(r => cc.Roles.Clan.includes(r.id))) && !i.member.roles.cache.some(r => r.id === restriction)){
+        if ((shopItem.restriction == "Clan Member" && !i.member.roles.cache.some(r => cc.Roles.Clan.includes(r.id))) && !i.member.roles.cache.some(r => r.id === restriction)){
             return await i.reply({ content: `You are not allowed to purchase this item - requires ${shopItem.restriction}`, ephemeral: true });
         }
 
@@ -63,9 +70,17 @@ module.exports = {
         });
         await userWallet.save();
 
+        var title = null
+        if(shopItem.restirction != null){
+            title = `Purchase Confirmation for ${shopItem.name} (${shopItem.restriction})`;
+        }
+        else{
+            title = `Purchase Confirmation for ${shopItem.name}`;
+        }
+
         const embed = new EmbedBuilder()
-            .setTitle(`Purchase Confirmation for ${shopItem.name} (${shopItem.restriction})`)
-            .setDescription(`**Amount:** ${quantity}\n**Total Cost:** ${shopItem.price * quantity} tokens\n**New Balance:** ${userWallet.tokens} tokens\n**Notes:** ${info}`)
+            .setTitle(title)
+            .setDescription(`**Amount:** ${quantity}\n**Total Cost:** ${total} tokens\n**New Balance:** ${userWallet.tokens} tokens\n**Notes:** ${info}`)
             .setColor("#cfa3ff")
             .setThumbnail(i.member.user.avatarURL({ dynamic: true, format: "png", size: 4096 }))
             .setTimestamp();
