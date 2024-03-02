@@ -17,7 +17,7 @@ module.exports = {
 
         await orders.findOneAndRemove({
             userID: buyerId,
-            part: itemName,
+            part: item,
             fulfilled: false
         });
         if (i.channel.id !== "725883088281796698") {
