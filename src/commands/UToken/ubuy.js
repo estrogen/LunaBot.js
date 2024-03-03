@@ -42,7 +42,7 @@ module.exports = {
         var rate = 1;
         for(const modifiers of shopItem.modifier){
             if(i.member.roles.cache.some(r => r.id === restrictionID[modifiers])){
-                rate = 0.75;
+                rate = 0.80;
             }
         }
         const price = Math.ceil(shopItem.price * rate / 5) * 5;

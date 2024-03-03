@@ -54,7 +54,7 @@ module.exports = {
             var rate = 1;
             for(const modifiers of item.modifier){
                 if(i.member.roles.cache.some(r => r.id === restrictionID[modifiers])){
-                    rate = 0.75;
+                    rate = 0.80;
                 }
             }
             const itemRealPrice = Math.ceil(item.price * rate / 5) * 5;
