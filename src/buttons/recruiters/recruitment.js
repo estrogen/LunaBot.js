@@ -100,7 +100,13 @@ module.exports = {
                 });
                 await userData.save();
                 
-                recruiterWallet.tokens += 0.5;
+                recruiterWallet.tokens += 6.25;
+                recruiterWallet.transactions.push({
+                    date: i.createdAt,
+                    identifier: 'Recruiter',
+                    desc: `New recruit`,
+                    amount: 6.25
+                });
                 await recruiterWallet.save();
 
                 const welmsg = await welcomes.findOne({ team: "recruiter" });

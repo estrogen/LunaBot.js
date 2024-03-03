@@ -3,6 +3,12 @@ const axios = require('axios');
 const cc = require('../../../config.json');
 const recruits = require('../../models/dbv2/wf_recruitData');
 const relicDataModel = require('../../models/dbv2/wf_relicData');
+const wallet = require('../../models/dbv2/tokens_universal');
+const recwallet = require('../../models/dbv2/tokens_recruit');
+const trewallet = require('../../models/dbv2/tokens_treasure');
+const decowallet = require('../../models/dbv2/tokens_deco');
+const designwallet = require('../../models/dbv2/tokens_design');
+
 
 const relicTypes = ['Lith', 'Meso', 'Neo', 'Axi'];
 const baseUrl = 'https://api.warframestat.us/items/search/';
@@ -18,7 +24,9 @@ module.exports = {
             .addChoices(
                 {name: 'Welcome Embed', value: 'we'},
                 {name: 'Update Relic Data', value: 'rd'},
-                {name: 'HK -> TK', value: 'uk'}
+                {name: 'HK -> TK', value: 'uk'},
+                {name: 'Convert Tokens', value: 'dest'},
+                {name: 'Rynnth test', value: 'test'}
             ))
         .setDefaultPermission(false),
    
@@ -70,8 +78,49 @@ module.exports = {
                     }
     
                     break;
+            case 'dest':
+                i.editReply({ content: "Don't use this."});
+                break;
+                const oldwallet = await decowallet.find({ userID: { $exists: true }});
+                for (const user of oldwallet) {
+                    const newtokens = user.tokens ? user.tokens * 5 : 0;
+                    let userWallet = await wallet.findOne({ userID: user.userID });
+                    console.log(`${user.userID} - ${user.tokens}`);
+                    if (!userWallet) {
+                        userWallet = new wallet({
+                            userID: user.userID,
+                            tokens: newtokens,
+                            transactions: [{
+                                date: i.createdAt,
+                                identifier: 'Init',
+                                desc: "Init Wallet",
+                                amount: 0
+                            },
+                            {
+                                date: i.createdAt,
+                                identifier: 'Other',
+                                desc: `Migration: Decorator Tokens - ${user.tokens}`,
+                                amount: newtokens
+                            }
+                            ]
+                        });
+                    } else {
+                        userWallet.tokens += newtokens;
+                        userWallet.transactions.push({
+                            date: i.createdAt,
+                            identifier: 'Other',
+                            desc: `Migration: Decorator Tokens - ${user.tokens}`,
+                            amount: newtokens
+                        });
+                    }
+                    
+                    await userWallet.save();
+                }
+                console.log(`Done merge.`);
+                i.editReply({ content: "Data merged."});
+                break;
         }
-        console.log("Done.")
+        console.log("Done.");
     },
 };
 

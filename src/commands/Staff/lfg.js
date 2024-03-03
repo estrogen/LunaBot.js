@@ -138,9 +138,10 @@ module.exports = {
                     await newWfRun.save();
                     break;
                 case "farmer":
-                    break;
+                    return i.reply("not implemented");
                 case "general":
-                    break;  
+                    return i.reply("not implemented");
+                      
             }
         } catch (error) {
             console.log(`Error:`, error);
