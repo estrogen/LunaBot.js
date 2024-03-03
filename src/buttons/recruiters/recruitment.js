@@ -2,7 +2,7 @@ const { InteractionCollector, EmbedBuilder, StringSelectMenuBuilder, StringSelec
 
 const welcomes = require("../../models/dbv2/embed_templates");
 const cc = require('../../../config.json');
-const wallet = require('../../models/dbv2/tokens_recruit');
+const wallet = require('../../models/dbv2/tokens_universal');
 const users = require('../../models/dbv2/usersSchema');
 const recruit = require('../../models/dbv2/wf_recruitData');
 const moment = require("moment");
