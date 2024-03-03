@@ -19,7 +19,8 @@ module.exports = {
                 {name: 'Farmer', value: 'Farmer'},
                 {name: 'Designer', value: 'Designer'},
                 {name: 'Staff', value: 'Staff'},
-                {name: 'PartHolder', value: 'PartHolder'}
+                {name: 'Merchant', value: 'Merchant'},
+                {name: 'Clan Member', value: 'Clan Member'}
             ))
         .addStringOption(option => option.setName('modifier').setDescription('modifiers').setRequired(false)
             .addChoices(

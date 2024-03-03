@@ -11,7 +11,7 @@ const restrictionID= {
     "Decorator": '890240560294682626',
     "Farmer": '890240560319856712',
     "Staff": '890240560294682624',
-    "PartHolder": '890240560131104802',
+    "Merchant": '890240560294682633',
 }
 
 
@@ -23,7 +23,19 @@ module.exports = {
 
     async execute(i, bot) {
         
-        const userWallet = await wallet.findOne({ userID: i.member.id });
+        var userWallet = await wallet.findOne({ userID: i.member.id });
+        if (!userWallet) {
+            userWallet = new wallet({
+            userID: i.member.id,
+            tokens: 0,
+            transactions: 
+                {date: i.createdAt,
+                identifier: 'Init',
+                desc: "Init Wallet",
+                amount: 0}
+            });
+        }
+        await userWallet.save();
         const balance = userWallet.tokens;
         const items = await shop.find();
 
@@ -45,7 +57,7 @@ module.exports = {
                     rate = 0.75;
                 }
             }
-            const itemRealPrice = item.price * rate
+            const itemRealPrice = Math.ceil(item.price * rate / 5) * 5;
 
             var itemRestriction = "";
             if(item.restriction != null){

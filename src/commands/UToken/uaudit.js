@@ -61,7 +61,7 @@ module.exports = {
             userWallet.transactions.push({
                 date: i.createdAt,
                 identifier: i.options.getString('identifier'),
-                desc: `Audit: `,
+                desc: `Audit: ${i.options.getString('reason')}-${i.member.user.username}(${i.member.id})`,
                 amount: amount
             });
         } 

@@ -12,7 +12,7 @@ const restrictionID= {
     "Decorator": '890240560294682626',
     "Farmer": '890240560319856712',
     "Staff": '890240560294682624',
-    "PartHolder": '890240560131104802',
+    "Merchant": '890240560131104802',
 }
 
 
@@ -45,7 +45,7 @@ module.exports = {
                 rate = 0.75;
             }
         }
-        const price = shopItem.price * rate;
+        const price = Math.ceil(shopItem.price * rate / 5) * 5;
         const total = price*quantity;
 
         if (quantity <= 0) {

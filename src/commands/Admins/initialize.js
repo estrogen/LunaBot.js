@@ -3,6 +3,12 @@ const axios = require('axios');
 const cc = require('../../../config.json');
 const recruits = require('../../models/dbv2/wf_recruitData');
 const relicDataModel = require('../../models/dbv2/wf_relicData');
+const wallet = require('../../models/dbv2/tokens_universal');
+const recwallet = require('../../models/dbv2/tokens_recruit');
+const trewallet = require('../../models/dbv2/tokens_treasure');
+const decowallet = require('../../models/dbv2/tokens_deco');
+const designwallet = require('../../models/dbv2/tokens_design');
+
 
 const relicTypes = ['Lith', 'Meso', 'Neo', 'Axi'];
 const baseUrl = 'https://api.warframestat.us/items/search/';
@@ -18,7 +24,10 @@ module.exports = {
             .addChoices(
                 {name: 'Welcome Embed', value: 'we'},
                 {name: 'Update Relic Data', value: 'rd'},
-                {name: 'HK -> TK', value: 'uk'}
+                {name: 'HK -> TK', value: 'uk'},
+                {name: 'Convert Tokens Recruiter', value: 'rect'},
+                {name: 'Convert Tokens Designer', value: 'dest'},
+                {name: 'Rynnth test', value: 'test'}
             ))
         .setDefaultPermission(false),
    
@@ -70,8 +79,65 @@ module.exports = {
                     }
     
                     break;
+            case 'rect':
+                for (recuser in recwallet.find()){
+                    var userWallet = await wallet.findOne({ userID: recuser.userID });
+                    const newtokens = recuser.tokens * 12.5;
+
+                    if (!userWallet) {
+                        userWallet = new wallet({
+                        userID: recuser.userID,
+                        tokens: 0,
+                        transactions: 
+                            {date: i.createdAt,
+                            identifier: 'Init',
+                            desc: "Init Wallet",
+                            amount: 0}
+                        });
+                    }
+
+                    userWallet.tokens += newtokens;
+                    userWallet.transactions.push({
+                        date: i.createdAt,
+                        identifier: 'Other',
+                        desc: `Migration: Recruiter Tokens - ${recuser.tokens}`,
+                        amount: newtokens
+                    });
+                    await userWallet.save();
+                }
+                break;
+            case 'dest':
+                const oldwallet = await designwallet.find({ userID: { $exists: true }});
+                oldwallet.forEach(user => {
+                    const newtokens = user.tokens ? user.tokens*25 : 0;
+                    
+                    let userWallet = wallet.findOne({ userID: user.id });
+                    if (!userWallet) {
+                        userWallet = new wallet({
+                        userID: user.userID,
+                        tokens: 0,
+                        transactions: 
+                            {date: i.createdAt,
+                            identifier: 'Init',
+                            desc: "Init Wallet",
+                            amount: 0}
+                        });
+                    }
+                    
+                    
+                    userWallet.tokens += newtokens;
+                    userWallet.transactions.push({
+                        date: i.createdAt,
+                        identifier: 'Other',
+                        desc: `Migration: Designer Tokens - ${user.tokens}`,
+                        amount: newtokens
+                    });
+                    console.log(userWallet.userID);
+                });
+
+
         }
-        console.log("Done.")
+        console.log("Done.");
     },
 };
 
