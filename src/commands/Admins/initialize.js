@@ -25,8 +25,7 @@ module.exports = {
                 {name: 'Welcome Embed', value: 'we'},
                 {name: 'Update Relic Data', value: 'rd'},
                 {name: 'HK -> TK', value: 'uk'},
-                {name: 'Convert Tokens Recruiter', value: 'rect'},
-                {name: 'Convert Tokens Designer', value: 'dest'},
+                {name: 'Convert Tokens', value: 'dest'},
                 {name: 'Rynnth test', value: 'test'}
             ))
         .setDefaultPermission(false),
@@ -79,37 +78,12 @@ module.exports = {
                     }
     
                     break;
-            case 'rect':
-                for (recuser in recwallet.find()){
-                    var userWallet = await wallet.findOne({ userID: recuser.userID });
-                    const newtokens = recuser.tokens * 12.5;
-
-                    if (!userWallet) {
-                        userWallet = new wallet({
-                        userID: recuser.userID,
-                        tokens: 0,
-                        transactions: 
-                            {date: i.createdAt,
-                            identifier: 'Init',
-                            desc: "Init Wallet",
-                            amount: 0}
-                        });
-                    }
-
-                    userWallet.tokens += newtokens;
-                    userWallet.transactions.push({
-                        date: i.createdAt,
-                        identifier: 'Other',
-                        desc: `Migration: Recruiter Tokens - ${recuser.tokens}`,
-                        amount: newtokens
-                    });
-                    await userWallet.save();
-                }
-                break;
             case 'dest':
-                const oldwallet = await designwallet.find({ userID: { $exists: true }});
+                i.editReply({ content: "Don't use this."});
+                break;
+                const oldwallet = await decowallet.find({ userID: { $exists: true }});
                 for (const user of oldwallet) {
-                    const newtokens = user.tokens ? user.tokens * 25 : 0;
+                    const newtokens = user.tokens ? user.tokens * 5 : 0;
                     let userWallet = await wallet.findOne({ userID: user.userID });
                     console.log(`${user.userID} - ${user.tokens}`);
                     if (!userWallet) {
@@ -120,15 +94,22 @@ module.exports = {
                                 date: i.createdAt,
                                 identifier: 'Init',
                                 desc: "Init Wallet",
+                                amount: 0
+                            },
+                            {
+                                date: i.createdAt,
+                                identifier: 'Other',
+                                desc: `Migration: Decorator Tokens - ${user.tokens}`,
                                 amount: newtokens
-                            }]
+                            }
+                            ]
                         });
                     } else {
                         userWallet.tokens += newtokens;
                         userWallet.transactions.push({
                             date: i.createdAt,
                             identifier: 'Other',
-                            desc: `Migration: Designer Tokens - ${user.tokens}`,
+                            desc: `Migration: Decorator Tokens - ${user.tokens}`,
                             amount: newtokens
                         });
                     }
@@ -136,7 +117,7 @@ module.exports = {
                     await userWallet.save();
                 }
                 console.log(`Done merge.`);
-                i.editReply({ content: "Designer data merged."});
+                i.editReply({ content: "Data merged."});
                 break;
         }
         console.log("Done.");
