@@ -108,34 +108,36 @@ module.exports = {
                 break;
             case 'dest':
                 const oldwallet = await designwallet.find({ userID: { $exists: true }});
-                oldwallet.forEach(user => {
-                    const newtokens = user.tokens ? user.tokens*25 : 0;
-                    
-                    let userWallet = wallet.findOne({ userID: user.id });
+                for (const user of oldwallet) {
+                    const newtokens = user.tokens ? user.tokens * 25 : 0;
+                    let userWallet = await wallet.findOne({ userID: user.userID });
+                    console.log(`${user.userID} - ${user.tokens}`);
                     if (!userWallet) {
                         userWallet = new wallet({
-                        userID: user.userID,
-                        tokens: 0,
-                        transactions: 
-                            {date: i.createdAt,
-                            identifier: 'Init',
-                            desc: "Init Wallet",
-                            amount: 0}
+                            userID: user.userID,
+                            tokens: newtokens,
+                            transactions: [{
+                                date: i.createdAt,
+                                identifier: 'Init',
+                                desc: "Init Wallet",
+                                amount: newtokens
+                            }]
+                        });
+                    } else {
+                        userWallet.tokens += newtokens;
+                        userWallet.transactions.push({
+                            date: i.createdAt,
+                            identifier: 'Other',
+                            desc: `Migration: Designer Tokens - ${user.tokens}`,
+                            amount: newtokens
                         });
                     }
                     
-                    
-                    userWallet.tokens += newtokens;
-                    userWallet.transactions.push({
-                        date: i.createdAt,
-                        identifier: 'Other',
-                        desc: `Migration: Designer Tokens - ${user.tokens}`,
-                        amount: newtokens
-                    });
-                    console.log(userWallet.userID);
-                });
-
-
+                    await userWallet.save();
+                }
+                console.log(`Done merge.`);
+                i.editReply({ content: "Designer data merged."});
+                break;
         }
         console.log("Done.");
     },
