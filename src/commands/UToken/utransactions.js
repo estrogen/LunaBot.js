@@ -40,7 +40,8 @@ module.exports = {
         
 
         const allTransactions = await wallet.find({}).exec();
-        let output = 'userID | date | identifier | desc | amount\n';
+        let totalAmount = 0;
+        let output = '';
         allTransactions.forEach(transaction => {
             const { userID, transactions } = transaction;
             transactions.forEach(t => {
@@ -49,19 +50,19 @@ module.exports = {
                 (timeframe == null || startDate < new Date(t.date))){
                     const formattedDate = t.date.toISOString().slice(0, 10);
                     const formattedDesc = t.desc.replace(/\(\d+\)/g, '');
+                    totalAmount += t.amount;
                     output += `${userID} | ${formattedDate} | ${t.identifier} | ${formattedDesc} | ${t.amount}\n`;
                 }
             });
         });
 
         if(i.options.getBoolean('csv')){
+            output = `Total Tokens: ${totalAmount}\nuserID | date | identifier | desc | amount \n` + output;
             const attachment = new AttachmentBuilder(Buffer.from(output, 'utf-8'), { name: 'TransactionData.csv' });
             await i.reply({ files: [attachment]});
         }
         else{
-            if(output.length > 1024){
-                return await i.reply({ content: "Too many transactions. Try using CSV format", ephemeral: true });
-            }
+
             const embed = new EmbedBuilder()
             .setTitle(`Transactions Logs`)
             .setColor(color)
@@ -69,9 +70,15 @@ module.exports = {
                 { name: 'Identifier', value: `${filterIdentifier}`, inline: true },
                 { name: 'User', value: `${filterUser}`, inline: true },
                 { name: 'Start Date', value: `${startDate.toISOString().slice(0, 10)}`, inline: true },
-                { name: 'Transactions', value: `\`\`\`haskell\n${output}\`\`\``, inline: false},);
+                { name: 'Total Tokens', value:`${totalAmount}`, inline: true});
+            if(output.length <= 1024){
+                embed.addFields({ name: 'Transactions', value: `\`\`\`haskell\n${output}\`\`\``, inline: false},);
+            }
+            else{
+                embed.addFields({ name: 'Error', value: "Too many transactions to show. Try using CSV format", inline: false });
+            }
+                
             
-    
             await i.reply({ embeds: [embed] });
         }
         
