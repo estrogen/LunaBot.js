@@ -50,7 +50,7 @@ const resourceList = [
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('farmercontribution')
+        .setName('farmcontribute')
         .setDescription('Null')
         .addUserOption(option => option.setName('user').setDescription('User Donating').setRequired(true))
         .addStringOption(option => option.setName('clan')
