@@ -45,7 +45,8 @@ module.exports = {
                     (!timeframe || startDate < new Date(t.date))) {
                         const outUser = userID;
                         const outClan = clan;
-                        output += `${outUser} | ${outClan} | ${transaction.date} | ${transaction.resource} | ${transaction.amount}\n`;
+                        const formattedDate = transaction.date.toISOString().slice(0, 10);
+                        output += `${outUser} | ${outClan} | ${formattedDate} | ${transaction.resource} | ${transaction.amount}\n`;
                 }
             });
         });
