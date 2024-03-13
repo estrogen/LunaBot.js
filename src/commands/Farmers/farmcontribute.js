@@ -100,7 +100,7 @@ module.exports = {
                 userContributions = new farmerCont({
                     userID: user.id,
                     clan: clan,
-                    contribution: {
+                    contributions: {
                         date: i.createdAt,
                         resource: resource,
                         amount: amount,
@@ -109,7 +109,7 @@ module.exports = {
                 })
             }
             else{
-                userContributions.contribution.push({
+                userContributions.contributions.push({
                     date: i.createdAt,
                     resource: resource,
                     amount: amount,

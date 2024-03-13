@@ -34,7 +34,6 @@ module.exports = {
         const filterUser = i.options.getUser('user');
         const timeframe = i.options.getNumber('timeframe');
 
-        const days = i.options.getInteger('days');
         const startDate = new Date(Date.now() - timeframe * 86400 * 1000); 
 
         
@@ -45,13 +44,13 @@ module.exports = {
         allTransactions.forEach(transaction => {
             const { userID, transactions } = transaction;
             transactions.forEach(t => {
-                if((filterIdentifier == null || filterIdentifier == t.identifier) && 
-                (filterUser == null || filterUser.id == userID) &&
-                (timeframe == null || startDate < new Date(t.date))){
-                    const formattedDate = t.date.toISOString().slice(0, 10);
-                    const formattedDesc = t.desc.replace(/\(\d+\)/g, '');
-                    totalAmount += t.amount;
-                    output += `${userID} | ${formattedDate} | ${t.identifier} | ${formattedDesc} | ${t.amount}\n`;
+                if ((filterIdentifier == null || filterIdentifier == t.identifier) && 
+                    (filterUser == null || filterUser.id == userID) &&
+                    (timeframe == null || startDate < new Date(t.date))){
+                        const formattedDate = t.date.toISOString().slice(0, 10);
+                        const formattedDesc = t.desc.replace(/\(\d+\)/g, '');
+                        totalAmount += t.amount;
+                        output += `${userID} | ${formattedDate} | ${t.identifier} | ${formattedDesc} | ${t.amount}\n`;
                 }
             });
         });
