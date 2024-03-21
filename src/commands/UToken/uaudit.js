@@ -27,6 +27,7 @@ module.exports = {
                 {name: 'Farmer', value: 'Farmer'},
                 {name: 'Designer', value: 'Designer'},
                 {name: 'Events', value: 'Events'},
+                {name: 'Shop Purchase', value: 'Shop'},
                 {name: 'Other', value: 'Other'},
             ))
         .addStringOption(option => option.setName('amount').setDescription('Amount to change').setRequired(true))
