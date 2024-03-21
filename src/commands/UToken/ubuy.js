@@ -66,7 +66,7 @@ module.exports = {
             date: i.createdAt,
             identifier: "Shop",
             desc: `Shop Buy: ${quantity}x ${shopItem.name} - ${info}`,
-            amount: total
+            amount: -total
         });
         await userWallet.save();
 
