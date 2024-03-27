@@ -24,10 +24,36 @@ module.exports = {
             option.setName('item')
                 .setDescription('Item you want to buy')
                 .setRequired(true)
-                .setAutocomplete(false))
+                .setAutocomplete(true))
         .addNumberOption(option => option.setName('quantity').setDescription('Amount you want to buy').setRequired(true))
         .addStringOption(option => option.setName('info').setDescription('Any Additional Notes').setRequired(false))
         .setDefaultPermission(false),
+    async autocomplete(i, bot) {
+        const focusedOption = i.options.getFocused(true);
+
+        if (focusedOption.name === 'item') {
+
+            const focusedValue = focusedOption.value.toLowerCase();
+            let items = [];
+            try {
+                const store = await shop.find();
+                if (store && store.length > 0) {
+                    items = store
+                        .filter(store => 
+                            store.name.toLowerCase().includes(focusedValue) &&
+                            (store.restriction == null || i.member.roles.cache.some(r => r.id === restrictionID[store.restriction])) &&
+                            !(store.restriction === "Clan Member" && !i.member.roles.cache.some(r => cc.Roles.Clan.includes(r.id)))
+                        )
+                        .slice(0, 25)
+                        .map(store => ({name: store.name, value: store.name}));
+                    }
+            } catch (error) {
+                console.error(`Error fetching items from shop`, error);
+            }
+
+            await i.respond(items);
+        }
+    },
 
 
     async execute(i, bot) {
