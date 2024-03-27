@@ -31,7 +31,7 @@ module.exports = {
                 const store = await stored_Data.findOne({ "team": 'degen' });
                 if (store && store.items && store.items.length > 0) {
                     items = store.items
-                        .filter(item => item.name.toLowerCase().startsWith(focusedValue))
+                        .filter(item => item.name.toLowerCase().includes(focusedValue))
                         .slice(0, 25)
                         .map(item => ({ name: item.name, value: item.name })); 
                 }
@@ -44,16 +44,19 @@ module.exports = {
     },
     async execute(i, bot) {
         const itemName = i.options.getString('item');
-        const item = await findItem(itemName);
-        if (item.price === 0) {
-            return await i.reply({ content: "This item is currently out of stock!", ephemeral: true });
-        }
-        
-    
-        const data = await stored_Data.findOne({ "team": 'degen', "items.name": itemName });
+        const data = await stored_Data.findOne({ "team": "degen", "items.name": itemName.toLowerCase()});
+
         if (!data){
             return await i.reply({ content: "Error: Item not found in the store.", ephemeral: true });
         }
+
+        const item = data.items.find(item => item.name === itemName.toLowerCase());
+        console.log(item.amount);
+        if (item.amount === 0) {
+            return await i.reply({ content: "This item is currently out of stock!", ephemeral: true });
+        }
+        
+
         const userOrderHistory = await orders.find({ userID: i.user.id });
         let hasOrderedBefore = false;
         let hasPendingOrder = false;
@@ -79,7 +82,7 @@ module.exports = {
         }
     
         const index = data.items.findIndex(i => i.name === itemName);
-        data.items[index].price = Math.max(0, data.items[index].price - 1);
+        data.items[index].amount = Math.max(0, data.items[index].amount - 1);
         await data.save();
     
         const row = new ActionRowBuilder()
@@ -112,12 +115,4 @@ module.exports = {
     }
 
     
-}
-async function findItem(itemName) {
-    const normalizedItemName = itemName.toLowerCase(); 
-    const store = await stored_Data.findOne({ "team": "degen", "items.name": normalizedItemName });
-    if (!store) return null;
-    const itemIndex = store.items.findIndex(item => item.name === normalizedItemName);
-    if (itemIndex === -1) return null;
-    return { store, item: store.items[itemIndex] };
 }

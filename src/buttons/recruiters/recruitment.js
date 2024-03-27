@@ -75,11 +75,14 @@ module.exports = {
             let recruiterWallet = await wallet.findOne({ userID: i.user.id });
             if (!recruiterWallet) {
                 recruiterWallet = new wallet({
-                    userID: i.user.id,
-                    guildID: i.guild.id,
-                    tokens: 0.5
+                    userID: user.id,
+                    tokens: 0,
+                    transactions: 
+                        {date: i.createdAt,
+                        identifier: 'Init',
+                        desc: "Init Wallet",
+                        amount: 0}
                 });
-                await recruiterWallet.save();
             }
 
             let recruitData = await recruit.findOne({ userID: member.id });
