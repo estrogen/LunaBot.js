@@ -13,7 +13,7 @@ module.exports = {
         const runId = i.message.embeds[0].footer.text.replace('Run ID: ', '');
         const run = await wf_runs.findOne({ runId: runId, status: "lfg" });
 
-        if (run && !run.participants.includes(interactingUserId)) {
+        if (run && !run.participants.includes(interactingUserId) && run.host !== interactingUserId) {
             if (run.participants.length < 3) {
                 run.participants.push(interactingUserId);
                 await run.save();
