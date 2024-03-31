@@ -73,13 +73,13 @@ module.exports = {
                 userID: member.id,
                 recruiter: i.user.id,
                 joinDate: i.createdAt,
-                kingdom: m.values[0]
+                kingdom: clan
             });
             await recruitData.save();
             userData = new users({
                 userID: member.id, 
                 serverJoinDate: member.joinedAt,
-                wfIGN: `${ign}`,
+                wfIGN: `${name}`,
                 wfPastIGN: []
             });
             await userData.save();
