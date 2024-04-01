@@ -17,7 +17,7 @@ module.exports = {
             if (run.participants.length < 3) {
                 run.participants.push(interactingUserId);
                 await run.save();
-
+                
                 const updatedDescription = `${embedDescription}\n<@${interactingUserId}>`;
                 const updatedEmbed = new EmbedBuilder(i.message.embeds[0]).setDescription(updatedDescription);
 
