@@ -11,8 +11,8 @@ module.exports = {
         const mentionedUserId = embedDescription.match(/<@!?(\d+)>/)?.[1];
         const interactingUserId = i.user.id;
         const runId = i.message.embeds[0].footer.text.replace('Run ID: ', '');
-        if (mentionedUserId === interactingUserId) {
-            await wf_runs.findOneAndDelete({ runId: runId, host: mentionedUserId, status: "active" })
+        if (mentionedUserId == interactingUserId) {
+            await wf_runs.findOneAndDelete({ runId: runId, host: mentionedUserId, status: "lfg" })
                 .then((deletedRun) => {
                     const title = i.message.embeds[0]?.title || "";
                     const match = title.match(/Treasury Run for (\d+)x (.*)/);
@@ -26,13 +26,16 @@ module.exports = {
                     i.reply({ content: "An error occurred while deleting the run.", ephemeral: true });
                 });
             i.message.delete();
-        } else {
-            const run = await wf_runs.findOne({ host: mentionedUserId, status: "lfg" });
+        } else{
+            const runtemp = await wf_runs.find({ host: mentionedUserId, status: "lfg" }).sort({_id:-1}).limit(1);
+            const run = runtemp[0];
+
             if (run && run.participants.includes(interactingUserId)) {
+                
                 const updatedParticipants = run.participants.filter(id => id !== interactingUserId);
                 run.participants = updatedParticipants;
+                
                 await run.save();
-
                 embedDescription = embedDescription.replace(new RegExp(`\n<@!?${interactingUserId}>`, 'g'), '').trim();
                 const updatedEmbed = new EmbedBuilder(embed).setDescription(embedDescription);
 

@@ -6,8 +6,10 @@ const relicDataModel = require('../../models/dbv2/wf_relicData');
 const wallet = require('../../models/dbv2/tokens_universal');
 const recwallet = require('../../models/dbv2/tokens_recruit');
 const trewallet = require('../../models/dbv2/tokens_treasure');
+const wf_runs = require('../../models/dbv2/wf_runs');
 const decowallet = require('../../models/dbv2/tokens_deco');
 const designwallet = require('../../models/dbv2/tokens_design');
+const { testing } = require('googleapis/build/src/apis/testing');
 
 
 const relicTypes = ['Lith', 'Meso', 'Neo', 'Axi'];
@@ -118,6 +120,9 @@ module.exports = {
                 }
                 console.log(`Done merge.`);
                 i.editReply({ content: "Data merged."});
+                break;
+            case 'test':
+
                 break;
         }
         console.log("Done.");

@@ -53,27 +53,21 @@ module.exports = {
         await member.setNickname(name, `Recruited into the clan by ${i.user.tag}`);
         await member.roles.add(kingdom.id, `Recruited into the clan by ${i.user.tag}`);
 
-        let recruiterWallet = await wallet.findOne({ userID: i.member.id });
+        let recruiterWallet = await wallet.findOne({ userID: i.user.id });
         if (!recruiterWallet) {
             recruiterWallet = new wallet({
-                userID: i.user.id,
-                guildID: i.guild.id,
-                tokens: 0.5
+                userID: user.id,
+                tokens: 0,
+                transactions: 
+                    {date: i.createdAt,
+                    identifier: 'Init',
+                    desc: "Init Wallet",
+                    amount: 0}
             });
-            await recruiterWallet.save();
         }
 
         let recruitData = await recruit.findOne({ userID: member.id });
         let userData = await users.findOne({ userID: member.id });
-        if (!userData) {
-            userData = new users({
-                userID: member.id, 
-                serverJoinDate: member.joinedAt,
-                wfIGN: name,
-                wfPastIGN: []
-            });
-            await userData.save();
-        }
         if (!recruitData) {
             recruitData = new recruit({
                 userID: member.id,
@@ -82,6 +76,14 @@ module.exports = {
                 kingdom: clan
             });
             await recruitData.save();
+            userData = new users({
+                userID: member.id, 
+                serverJoinDate: member.joinedAt,
+                wfIGN: `${name}`,
+                wfPastIGN: []
+            });
+            await userData.save();
+            
             recruiterWallet.tokens += 6.25;
             recruiterWallet.transactions.push({
                 date: i.createdAt,
