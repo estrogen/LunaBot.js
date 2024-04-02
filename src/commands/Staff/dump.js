@@ -20,8 +20,8 @@ module.exports = {
         .setDefaultPermission(false),
 
     async execute(i, bot) {
-        if(!i.member.roles.cache.some(r => cc.Roles.Staff.includes(r.id)))
-            return i.reply({ content: "You're not upper staff!", ephemeral: true});
+        if(!i.member.roles.cache.some(r => Object.values(cc.Roles.Staff).includes(r.id)))
+            return i.reply({ content: "You're not staff!", ephemeral: true});
 
         const type = i.options.getString('information')
         const days = i.options.getInteger('days');

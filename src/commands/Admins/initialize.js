@@ -4,11 +4,7 @@ const cc = require('../../../config.json');
 const recruits = require('../../models/dbv2/wf_recruitData');
 const relicDataModel = require('../../models/dbv2/wf_relicData');
 const wallet = require('../../models/dbv2/tokens_universal');
-const recwallet = require('../../models/dbv2/tokens_recruit');
-const trewallet = require('../../models/dbv2/tokens_treasure');
 const wf_runs = require('../../models/dbv2/wf_runs');
-const decowallet = require('../../models/dbv2/tokens_deco');
-const designwallet = require('../../models/dbv2/tokens_design');
 const { testing } = require('googleapis/build/src/apis/testing');
 
 
@@ -33,9 +29,9 @@ module.exports = {
         .setDefaultPermission(false),
    
     async execute(i, bot) {
-        if(!i.member.roles.cache.some(r => cc.Roles.Admin.includes(r.id)))
+        if(!i.member.roles.cache.some(r => Object.values(cc.Roles.Admin).includes(r.id))){
             return i.reply({ content: "You're not a admin", ephemeral: true});
-
+        }
         const option = i.options.getString('embed');
         await i.deferReply();
         switch (option) {
@@ -122,7 +118,7 @@ module.exports = {
                 i.editReply({ content: "Data merged."});
                 break;
             case 'test':
-
+                    await i.member.roles.remove(Object.values(cc.Roles.Clan), "test by rynnth");
                 break;
         }
         console.log("Done.");

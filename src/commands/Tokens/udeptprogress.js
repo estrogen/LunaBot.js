@@ -2,18 +2,19 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const moment = require('moment');
 const progress = require('string-progressbar');
 const recruits = require('../../models/dbv2/wf_recruitData');
+const cc = require('../../../config.json');
 
 
 
 const clans = {
-    "AK": "890240560248524859",
-    "IK": "890240560248524858",
-    "HK": "890240560248524857",
-    "TK": "1193510188955746394",
-    "WK": "890240560248524856",
-    "YK": "890240560273702932",
-    "CK": "1192922910751473736",
-    "MK": "1192923627419619419"
+    "AK": cc.Roles.Clan.AnimeK,
+    "IK": cc.Roles.Clan.ImoutoK,
+    "HK": cc.Roles.Clan.HeavensK,
+    "TK": cc.Roles.Clan.TsukiK,
+    "WK": cc.Roles.Clan.WaifuK,
+    "YK": cc.Roles.Clan.YuriK,
+    "CK": cc.Roles.Clan.CowaiiK,
+    "MK": cc.Roles.Clan.MangaK
 }
 
 
@@ -39,7 +40,7 @@ module.exports = {
         const color = '#cfa3ff'; // Use a constant for the color to maintain consistency
 
         const embed = new EmbedBuilder()
-        .setTitle(`${user.username}'s ${type} Wallet`)
+        .setTitle(`${user.username}'s ${type} Progress`)
         .setColor(color)
         .setThumbnail(avatarURL);
 

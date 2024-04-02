@@ -12,7 +12,7 @@ module.exports = {
         .setDefaultPermission(false),
 
     async execute(i, bot) {
-        if(!i.member.roles.cache.some(r => cc.Roles.Staff.includes(r.id)))
+        if(!i.member.roles.cache.some(r => Object.values(cc.Roles.Staff).includes(r.id)))
             return i.reply({ content: "You're not staff!", ephemeral: true});
 
         const user = i.options.getUser('user');

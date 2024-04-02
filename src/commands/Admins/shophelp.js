@@ -5,7 +5,7 @@ const shop = require('../../models/dbv2/tokens_ushop');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('shoptool')
-        .setDescription('Null')
+        .setDescription('Adds items to the shop')
         .addStringOption(option => option.setName('name').setDescription('name').setRequired(true))
         .addNumberOption(option => option.setName('price').setDescription('price').setRequired(true))
         .addStringOption(option => 

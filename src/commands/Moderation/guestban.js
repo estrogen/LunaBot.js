@@ -10,7 +10,7 @@ module.exports = {
 		.setDefaultPermission(false),
    
 	async execute(i, bot) {
-		if(!i.member.roles.cache.some(r => cc.Roles.Mods.includes(r.id)))
+		if(!i.member.roles.cache.some(r => cc.Roles.Staff.Sage == r.id))
 			return i.reply({ content: "You're not a moderator!", ephemeral: true});
 
 		const user = i.options.getUser('guest');
@@ -20,10 +20,10 @@ module.exports = {
 			if (!target)
 				return i.reply({ content: "Guest doesn't exist", ephemeral: true});
 
-			if (target.roles.cache.some(r => (cc.Roles.Guestban).concat(cc.Roles.Kingdoms, cc.Roles.Admin).includes(r.id)))
+			if (target.roles.cache.some(r => (cc.Roles.Identifier.Stranger).concat(Object.values(cc.Roles.Kingdoms), Object.values(cc.Roles.Admin)).includes(r.id)))
 				return i.reply({ content: "You're unable to ban this user!", ephemeral: true});
 		
-			const logs = await i.guild.channels.cache.get('890240562970624026');
+			const logs = await i.guild.channels.cache.get(cc.Channels.MutesAndBans);
 			const bEmbed = new EmbedBuilder()
 				.setColor('#FF6961')
 				.setThumbnail(i.user.avatarURL({ dynamic: false, format: "png", size: 4096 }))

@@ -76,7 +76,7 @@ module.exports = {
         }
     },
     async execute(i, bot) {
-        if(!i.member.roles.cache.some(r => cc.Roles.Staff.includes(r.id))){
+        if(!i.member.roles.cache.some(r => Object.values(cc.Roles.Staff).includes(r.id))){
             return i.reply({ content: "You're not a staff!", ephemeral: true});
         }
         const type = i.options.getString('type');

@@ -1,6 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const users = require('../../models/dbv2/usersSchema');
-const cc = require('../../../config.json');
 
 module.exports = {
     data: new SlashCommandBuilder()

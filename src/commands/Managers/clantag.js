@@ -26,7 +26,7 @@ module.exports = {
         }
 
 
-        if(i.user.id != user && (!i.member.roles.cache.some(r => cc.Roles.Management.includes(r.id)))){
+        if(i.user.id != user && (!i.member.roles.cache.some(r => Object.values(cc.Roles.Managers).includes(r.id)))){
             return i.reply({ content: "You're not permitted to add clan tags!", ephemeral: true});
         }   
         if (!member){ 
@@ -38,7 +38,7 @@ module.exports = {
             userData.wfPastIGN.push(userData.wfIGN);
         }
         userData.wfIGN = ign;
-        await member.roles.add('890240560131104806', `Given clan tag by ${i.user.tag}`);
+        await member.roles.add(cc.Roles.ClanTag, `Given clan tag by ${i.user.tag}`);
         await userData.save();
         
         await i.reply({ content: `${user} had their ign updated and clan tag added`, ephemeral: true});

@@ -10,7 +10,7 @@ module.exports = {
         .setDefaultPermission(false),
 
     async execute(i, bot) {
-        if(!i.member.roles.cache.some(r => cc.Roles.Recruiter.includes(r.id)))
+        if(!i.member.roles.cache.some(r => cc.Roles.Staff.Recruiter == r.id))
 			return i.reply({ content: "You're not a recruiter!", ephemeral: true});
 
         const user = i.options.getUser('target');

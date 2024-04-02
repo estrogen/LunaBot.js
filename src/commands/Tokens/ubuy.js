@@ -3,16 +3,15 @@ const moment = require('moment');
 const shop = require('../../models/dbv2/tokens_ushop');
 const cc = require('../../../config.json');
 const wallet = require('../../models/dbv2/tokens_universal');
-const buylogchannel =  "1193512882944610335";
 
 const restrictionID= {
-    "Treasurer": '890240560319856711',
-    "Recruiter": '890240560319856720',
-    "Designer": '890240560294682627',
-    "Decorator": '890240560294682626',
-    "Farmer": '890240560319856712',
-    "Staff": '890240560294682624',
-    "Merchant": '890240560294682633',
+    "Treasurer": cc.Roles.Staff.Treasurer,
+    "Recruiter": cc.Roles.Staff.Recruiter,
+    "Designer": cc.Roles.Staff.Designer,
+    "Decorator": cc.Roles.Staff.Decorator,
+    "Farmer": cc.Roles.Staff.Farmer,
+    "Staff": Object.values(cc.Roles.Staff),
+    "Merchant": cc.Roles.TreasuryMerchant,
 }
 
 
@@ -83,7 +82,7 @@ module.exports = {
         if (userWallet.tokens < total){
             return await i.reply({ content: "You don't have enough tokens to purchase this item.", ephemeral: true });
         }
-        if ((shopItem.restriction == "Clan Member" && !i.member.roles.cache.some(r => cc.Roles.Clan.includes(r.id))) && !i.member.roles.cache.some(r => r.id === restriction)){
+        if ((shopItem.restriction == "Clan Member" && !i.member.roles.cache.some(r => Object.values(cc.Roles.Clan).includes(r.id))) && !i.member.roles.cache.some(r => r.id === restriction)){
             return await i.reply({ content: `You are not allowed to purchase this item - requires ${shopItem.restriction}`, ephemeral: true });
         }
 
@@ -113,7 +112,7 @@ module.exports = {
 
         await i.reply({ embeds: [embed], ephemeral: true });
 
-        const logChannel = i.guild.channels.cache.get(buylogchannel);
+        const logChannel = i.guild.channels.cache.get(cc.Channels.BuyLog);
         await logChannel.send({ content: `New purchase by <@${i.member.id}>`, embeds: [embed] });
     }
 }

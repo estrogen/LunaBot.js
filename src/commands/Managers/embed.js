@@ -10,7 +10,7 @@ module.exports = {
         .setDefaultPermission(false),
 
     async execute(i, bot) {
-        if(!i.member.roles.cache.some(r => cc.Roles.Management.concat(cc.Roles.Admin).includes(r.id)))
+        if(!i.member.roles.cache.some(r => Object.values(cc.Roles.Management).concat(Object.values(cc.Roles.Admin)).includes(r.id)))
             return i.reply({ content: "You're not upper staff!", ephemeral: true});
 
         const text = i.options.getString('json');

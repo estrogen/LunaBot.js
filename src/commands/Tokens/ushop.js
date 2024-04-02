@@ -5,13 +5,13 @@ const cc = require('../../../config.json');
 const wallet = require('../../models/dbv2/tokens_universal');
 
 const restrictionID= {
-    "Treasurer": '890240560319856711',
-    "Recruiter": '890240560319856720',
-    "Designer": '890240560294682627',
-    "Decorator": '890240560294682626',
-    "Farmer": '890240560319856712',
-    "Staff": '890240560294682624',
-    "Merchant": '890240560294682633',
+    "Treasurer": cc.Roles.Staff.Treasurer,
+    "Recruiter": cc.Roles.Staff.Recruiter,
+    "Designer": cc.Roles.Staff.Designer,
+    "Decorator": cc.Roles.Staff.Decorator,
+    "Farmer": cc.Roles.Staff.Farmer,
+    "Staff": Object.values(cc.Roles.Staff),
+    "Merchant": cc.Roles.TreasuryMerchant,
 }
 
 

@@ -29,7 +29,7 @@ module.exports = {
         .setDefaultPermission(false),
 
     async execute(i, bot) {
-        if(!i.member.roles.cache.some(r => cc.Roles.Recruiter.includes(r.id)))
+        if(!i.member.roles.cache.some(r => cc.Roles.Staff.Recruiter == r.id))
             return i.reply({ content: "You're not a recruiter!", ephemeral: true});
 
         const user = i.options.getString('user');
@@ -40,7 +40,7 @@ module.exports = {
         if (!member) 
             return i.reply({ content: 'Unable to find member.', ephemeral: true });
 
-        const general = await i.guild.channels.cache.get('890240569165639771');
+        const general = await i.guild.channels.cache.get(cc.Channels.General);
         const kingdom = await i.guild.roles.cache.find(r => r.id === clan);
         const nEmbed = new EmbedBuilder()
             .setTitle("Recruit Succesful")
@@ -49,7 +49,7 @@ module.exports = {
             .setThumbnail(i.user.avatarURL({ dynamic: true, format: "png", size: 4096 }))
         i.reply({ embeds: [nEmbed] });
 
-        await member.roles.remove(cc.Roles.Recruit, `Recruited into the clan by ${i.user.tag}`);
+        await member.roles.remove(Object.values(cc.Roles.Clan).concat(Object.values(cc.Roles.Identifier)), `Recruited into the clan by ${i.user.tag}`);
         await member.setNickname(name, `Recruited into the clan by ${i.user.tag}`);
         await member.roles.add(kingdom.id, `Recruited into the clan by ${i.user.tag}`);
 

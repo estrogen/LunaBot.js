@@ -27,7 +27,7 @@ module.exports = {
         .setDefaultPermission(false),
    
     async execute(i, bot) {
-        if(!i.member.roles.cache.some(r => cc.Roles.Admin.includes(r.id)))
+        if(!i.member.roles.cache.some(r => Object.values(cc.Roles.Admin).includes(r.id)))
             return i.reply({ content: "You're not a admin", ephemeral: true});
 
         const target = i.options.getString('id');

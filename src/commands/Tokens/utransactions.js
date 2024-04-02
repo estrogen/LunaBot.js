@@ -1,6 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
 const moment = require('moment');
-const cc = require('../../../config.json');
 const wallet = require('../../models/dbv2/tokens_universal');
 const { Transaction } = require('mongodb');
 

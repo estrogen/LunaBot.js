@@ -4,11 +4,6 @@ const stored_Data = require('../../models/dbv2/stored_Data');
 const orders = require('../../models/dbv2/wf_degenOrders');
 const cc = require('../../../config.json');
 
-// Configurable channel IDs for purchases and logs
-const degenChannelId = "1193672601579565157"; // Channel for 'degen' purchases
-const degenLogChannelId = "890240568339341341"; // Log channel for 'degen' purchase announcements
-
-
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('degen')
@@ -91,7 +86,7 @@ module.exports = {
                     new ButtonBuilder().setCustomId('cancelDegen').setLabel('Cancel').setStyle(ButtonStyle.Danger),
             );
     
-        const degenLogChannel = i.guild.channels.cache.get(degenLogChannelId);
+        const degenLogChannel = i.guild.channels.cache.get(cc.Channels.DegenPendingOrders);
         const embed = new EmbedBuilder()
             .setTitle("Degen Discount Order")
             .setDescription(`${additionalMessage}`)

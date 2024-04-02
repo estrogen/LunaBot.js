@@ -37,10 +37,10 @@ module.exports = {
             return i.reply({ embeds: [embed] });
         }
 
-        if(!i.member.roles.cache.some(r => cc.Roles.Staff.includes(r.id))){
+        if(!i.member.roles.cache.some(r => Object.values(cc.Roles.Staff).includes(r.id))){
             return i.reply({ content: "You're not a staff!", ephemeral: true});
         }
-        if(i.user.id != user && (!i.member.roles.cache.some(r => cc.Roles.Management.includes(r.id)))){
+        if(i.user.id != user && (!i.member.roles.cache.some(r => Object.values(cc.Roles.Managers).includes(r.id)))){
             return i.reply({ content: "You're not permitted to change other usernames!", ephemeral: true});
         }
         

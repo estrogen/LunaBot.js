@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const orders = require('../../models/dbv2/wf_degenOrders');
+const cc = require('../../../config.json');
 const moment = require("moment");
 
 module.exports = {
@@ -8,7 +9,7 @@ module.exports = {
     },
     async execute(i, bot) {
         await i.reply({ content: 'Fulfilling...', ephemeral: true })
-        const log = await i.guild.channels.cache.get("890240568670716026");
+        const log = await i.guild.channels.cache.get(cc.Channels.DegenFulfillLogs);
         const embed = i.message.embeds[0];
         embed.data.title = `Buy order fulfilled by ${i.user.tag}`
         embed.data.color = 5763719

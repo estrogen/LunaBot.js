@@ -11,25 +11,24 @@ const management = {
 };
 
 module.exports = async (bot, member) => {
-	const kingdom = member.roles.cache.find(r => cc.Roles.Kingdoms.includes(r.id));
+	const kingdom = member.roles.cache.find(r => Object.values(cc.Roles.Clan).includes(r.id));
 
-	if (!member.roles.cache.has("595045402143752212")) { //NO IDEA
-		if (member.roles.cache.some(r=>cc.Roles.Kingdoms.includes(r.id))) {
-			const log = await bot.channels.cache.get("890240564589629544");
-			const leaveEmbed = new Discord.EmbedBuilder()
-				.setAuthor({ name: `${member.user.username}#${member.user.discriminator} | ${kingdom.name}`, iconURL: member.user.displayAvatarURL() })
-				.setColor(kingdom.color)
-				.setDescription(`${member.nickname} has left the server.`)
-				.setFooter({ text: `ID: ${member.id} • ${new Date().toLocaleString()}` })
-			await log.send({ embeds: [leaveEmbed]});
-		}
+
+	if (member.roles.cache.some(r=>Object.values(cc.Roles.Clan).includes(r.id))) {
+		const log = await bot.channels.cache.get(cc.Channels.WelcomeBye);
+		const leaveEmbed = new Discord.EmbedBuilder()
+			.setAuthor({ name: `${member.user.username}#${member.user.discriminator} | ${kingdom.name}`, iconURL: member.user.displayAvatarURL() })
+			.setColor(kingdom.color)
+			.setDescription(`${member.nickname} has left the server.`)
+			.setFooter({ text: `ID: ${member.id} • ${new Date().toLocaleString()}` })
+		await log.send({ embeds: [leaveEmbed]});
 	}
-	
-	if(member.roles.cache.some(r=>cc.Roles.Staff.includes(r.id))){
-		const parse = member.roles.cache.filter(r => cc.Roles.Staff.includes(r.id));
+
+	if(member.roles.cache.some(r=>Object.values(cc.Roles.Staff).includes(r.id))){
+		const parse = member.roles.cache.filter(r => Object.values(cc.Roles.Staff).includes(r.id));
 		const teams = parse.map(r => `${r.name}`).join(", ").replace(/[^,\sa-z]/gi, '');
 		const managers = parse.map(r => `<@&${management[r.id]}>`).join(" ");
-		const staffLeaveLog = await bot.channels.cache.get("1193541654058106920");
+		const staffLeaveLog = await bot.channels.cache.get(cc.Channels.StaffLeaveLog);
 		const msg = await staffLeaveLog.send({ content: `${managers}` });
 		const notify = new Discord.EmbedBuilder()
 			.setAuthor({ name: `${member.user.username}#${member.user.discriminator} | ${kingdom.name}`, iconURL: member.user.displayAvatarURL() })

@@ -22,37 +22,37 @@ module.exports = {
                 new StringSelectMenuOptionBuilder()
                     .setLabel( 'Imouto Kingdom')
                     .setDescription( "They'll be joining Imouto Kingdom")
-                    .setValue( '890240560248524858'),
+                    .setValue(cc.Roles.Clan.ImoutoK),
 
                 new StringSelectMenuOptionBuilder()
                     .setLabel( 'Heavens Kingdom')
                     .setDescription( "They'll be joining Heavens Kingdom")
-                    .setValue( '890240560248524857'),
+                    .setValue(cc.Roles.Clan.HeavensK),
 
                 new StringSelectMenuOptionBuilder()
                     .setLabel( 'Tsuki Kingdom')
                     .setDescription( "They'll be joining Tsuki Kingdom")
-                    .setValue( '1193510188955746394'),
+                    .setValue(cc.Roles.Clan.TsukiK),
 
                 new StringSelectMenuOptionBuilder()
                     .setLabel( 'Waifu Kingdom')
                     .setDescription( "They'll be joining Waifu Kingdom")
-                    .setValue( '890240560248524856'),
+                    .setValue(cc.Roles.Clan.WaifuK),
 
                 new StringSelectMenuOptionBuilder()
                     .setLabel( 'Yuri Kingdom')
                     .setDescription( "They'll be joining Yuri Kingdom")
-                    .setValue( '890240560273702932'),
+                    .setValue(cc.Roles.Clan.YuriK),
 
                 new StringSelectMenuOptionBuilder()
                     .setLabel( 'Cowaii Kingdom')
                     .setDescription( "They'll be joining Cowaii Kingdom")
-                    .setValue( '1192922910751473736'),
+                    .setValue(cc.Roles.Clan.CowaiiK),
 
                 new StringSelectMenuOptionBuilder()
                     .setLabel( 'Manga Kingdom')
                     .setDescription( "They'll be joining Manga Kingdom")
-                    .setValue( '1192923627419619419'),
+                    .setValue(cc.Roles.Clan.MangaK),
             )
 
         const row = new ActionRowBuilder().addComponents(select);
@@ -66,9 +66,9 @@ module.exports = {
             if (!member) return await m.reply({ content: 'Unable to find member.', ephemeral: true });
             
             await m.update({ content: `<@${id}> has been recruited to <@&${m.values[0]}>`, components: [], ephemeral: true })
-            const general = await i.guild.channels.cache.get('890240569165639771');
+            const general = await i.guild.channels.cache.get(cc.Channels.General);
             const kingdom = await i.guild.roles.cache.find(r => r.id === m.values[0]);
-            await member.roles.remove(cc.Roles.Recruit, `Recruited into the clan by ${i.user.tag}`);
+            await member.roles.remove(Object.values(cc.Roles.Clan).concat(Object.values(cc.Roles.Identifier)), `Recruited into the clan by ${i.user.tag}`);
             await member.setNickname(ign, `Recruited into the clan by ${i.user.tag}`);
             await member.roles.add(kingdom.id, `Recruited into the clan by ${i.user.tag}`);
 
