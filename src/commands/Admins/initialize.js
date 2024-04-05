@@ -119,7 +119,8 @@ module.exports = {
                 i.editReply({ content: "Data merged."});
                 break;
             case 'test':
-                    console.log(i.member);
+                    console.log(i.member.roles.cache)
+                    console.log(i.member.roles.cache.some(r => Object.values(cc.Roles.Clan).includes(r.id)));
                 break;
         }
         console.log("Done.");

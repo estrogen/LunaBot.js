@@ -13,6 +13,7 @@ const restrictionID= {
     "Farmer": cc.Roles.Staff.Farmer,
     "Staff": Object.values(cc.Roles.Staff),
     "Merchant": cc.Roles.TreasuryMerchant,
+    "Clan Member": Object.values(cc.Roles.Clan)
 }
 
 
@@ -41,8 +42,7 @@ module.exports = {
                     items = store
                         .filter(store => 
                             store.name.toLowerCase().includes(focusedValue) &&
-                            (store.restriction == null || i.member.roles.cache.some(r => r.id === restrictionID[store.restriction])) &&
-                            !(store.restriction === "Clan Member" && !i.member.roles.cache.some(r => cc.Roles.Clan.includes(r.id)))
+                            (store.restriction == null || i.member.roles.cache.some(r => Object.values(restrictionID[store.restriction]).includes(r.id)))
                         )
                         .slice(0, 25)
                         .map(store => ({name: store.name, value: store.name}));
@@ -59,6 +59,9 @@ module.exports = {
     async execute(i, bot) {
         const itemInput = i.options.getString('item');
         const shopItem = await shop.findOne({name: itemInput});
+        if(!shopItem){
+            return i.reply({ content: "This item doesn't exist", ephemeral: true});
+        }
         const quantity = i.options.getNumber('quantity');
         const userWallet = await getWallet(i, i.member.id);
         const info = i.options.getString('info');
@@ -83,7 +86,7 @@ module.exports = {
         if (userWallet.tokens < total){
             return await i.reply({ content: "You don't have enough tokens to purchase this item.", ephemeral: true });
         }
-        if ((shopItem.restriction == "Clan Member" && !i.member.roles.cache.some(r => Object.values(cc.Roles.Clan).includes(r.id))) && !i.member.roles.cache.some(r => r.id === restriction)){
+        if ((shopItem.restriction == "Clan Member" && (!i.member.roles.cache.some(r => Object.values(cc.Roles.Clan).includes(r.id)) || i.member.roles.cache.some(r => cc.Roles.Identifier.Clanless))) && !i.member.roles.cache.some(r => r.id === restriction)){
             return await i.reply({ content: `You are not allowed to purchase this item - requires ${shopItem.restriction}`, ephemeral: true });
         }
 
