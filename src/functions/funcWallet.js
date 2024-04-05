@@ -16,6 +16,6 @@ async function getWallet(i, userId){
             await userWallet.save();
         }
     
-    return userWallet;
+    return userWallet;z
 }
 module.exports = getWallet;

@@ -58,5 +58,8 @@
         "DegenPendingOrders": "890240568339341341",
         "DegenFulfillLogs": "890240568670716026",
         "WFEntrance": "1193605095296876605"
+    },
+    "Numbers":{
+        "RecruiterRecruitT": "6.25"
     }
 }
