@@ -5,6 +5,8 @@ const wallet = require('../../models/dbv2/tokens_universal');
 const users = require('../../models/dbv2/usersSchema');
 const recruit = require('../../models/dbv2/wf_recruitData');
 const moment = require("moment");
+const getWallet = require('../../functions/funcWallet.js');
+
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -53,22 +55,12 @@ module.exports = {
         await member.setNickname(name, `Recruited into the clan by ${i.user.tag}`);
         await member.roles.add(kingdom.id, `Recruited into the clan by ${i.user.tag}`);
 
-        let recruiterWallet = await wallet.findOne({ userID: i.user.id });
-        if (!recruiterWallet) {
-            recruiterWallet = new wallet({
-                userID: user.id,
-                tokens: 0,
-                transactions: 
-                    {date: i.createdAt,
-                    identifier: 'Init',
-                    desc: "Init Wallet",
-                    amount: 0}
-            });
-        }
 
+        let recruiterWallet = await getWallet(i, i.member.id);
         let recruitData = await recruit.findOne({ userID: member.id });
         let userData = await users.findOne({ userID: member.id });
         if (!recruitData) {
+            //Create User Data on Recruit
             recruitData = new recruit({
                 userID: member.id,
                 recruiter: i.user.id,
@@ -84,6 +76,7 @@ module.exports = {
             });
             await userData.save();
             
+            //Update Recruiters Wallet
             recruiterWallet.tokens += 6.25;
             recruiterWallet.transactions.push({
                 date: i.createdAt,
