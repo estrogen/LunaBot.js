@@ -6,7 +6,7 @@ const farmerCont = require('../../models/dbv2/wf_farmerContributions');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('contributionsfarmer')
-        .setDescription('Null')
+        .setDescription('See contributions from farmers based on filters')
         .addUserOption(option => option.setName('user').setDescription('User Donating').setRequired(false))
         .addStringOption(option => option.setName('clan')
             .setDescription('Clan')

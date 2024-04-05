@@ -3,12 +3,13 @@ const moment = require('moment');
 const farmerCont = require('../../models/dbv2/wf_farmerContributions');
 const stored_Data = require('../../models/dbv2/stored_Data');
 const wallet = require('../../models/dbv2/tokens_universal');
+const getWallet = require('../../functions/funcWallet.js');
 
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('farmcontribute')
-        .setDescription('Null')
+        .setDescription('Log farmer contributions and add tokens')
         .addUserOption(option => option.setName('user').setDescription('User Donating').setRequired(true))
         .addStringOption(option => option.setName('clan')
             .setDescription('Clan')
@@ -87,20 +88,8 @@ module.exports = {
         await userContributions.save();
         //Token stuff
 
-        var userWallet =  await wallet.findOne({ userID: user.id });
+        var userWallet =  await getWallet(i, user.id);
         const rvalue = amount /resourceVal.amount;
-
-        if (!userWallet) {
-            userWallet = new wallet({
-                userID: user.id,
-                tokens: 0,
-                transactions: 
-                    {date: i.createdAt,
-                    identifier: 'Init',
-                    desc: "Init Wallet",
-                    amount: 0}
-            });
-        }
 
         userWallet.tokens += rvalue;
         userWallet.transactions.push({

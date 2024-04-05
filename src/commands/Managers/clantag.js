@@ -22,7 +22,6 @@ module.exports = {
         const color = '#ffb347';
 
         if(!userData){
-
             return i.reply({ content: "This user hasn't been recruited", ephemeral: true});
         }
 
