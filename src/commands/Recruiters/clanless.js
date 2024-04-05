@@ -23,10 +23,16 @@ module.exports = {
 
         let userTarget = await users.findOne({ wfIGN: { $regex: target , $options: 'i' } });
 
+        console.log(userTarget);
 
         //Check if name listed in DB
         if(userTarget != null){
-            user = await i.guild.members.fetch(userTarget.userID)
+            try{
+                user = await i.guild.members.fetch(userTarget.userID);
+            }
+            catch(error){
+                return i.reply({content: `User found, has left the discord`, ephemeral: true});
+            }
         }
 
         //Check if nickname alligns
@@ -80,7 +86,7 @@ module.exports = {
         }
 
         if(user == ""){
-            return i.reply({content: `Could not find user ${target}, may not be in discord`})
+            return i.reply({content: `Could not find user ${target}, may not be in discord`, ephemeral: true});
         }
 
 
