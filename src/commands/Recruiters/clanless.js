@@ -85,13 +85,14 @@ module.exports = {
 
 
         await user.roles.add(cc.Roles.Identifier.Clanless, `Set Clanless by ${i.user.tag}`);
+        await user.roles.remove(cc.Roles.DegenShop, `Lost through Clanless by ${i.user.tag}`);
         await inactive.send({ 
             content: `**Inactivity Notification**\n<@${user.id}> you have crossed the inactivity threshold, to rejoin the clan please see <#${cc.Channels.ClanHelp}>`});
         if(newIGN == false){
-            await i.reply({content: `<@${user.id}> (${target}) has been marked clanless and notified`});
+            await i.reply({content: `<@${user.id}> (${target}) has been marked clanless and notified`, ephemeral: true});
         }
         else{
-            await i.reply({content: `<@${user.id}> (${target}) has been marked clanless, notified, and IGN was updated`});
+            await i.reply({content: `<@${user.id}> (${target}) has been marked clanless, notified, and IGN was updated`, ephemeral: true});
         }
         
 
