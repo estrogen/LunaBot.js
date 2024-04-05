@@ -119,7 +119,7 @@ module.exports = {
                 i.editReply({ content: "Data merged."});
                 break;
             case 'test':
-                    await i.member.roles.remove(Object.values(cc.Roles.Clan), "test by rynnth");
+                    console.log(i.member);
                 break;
         }
         console.log("Done.");

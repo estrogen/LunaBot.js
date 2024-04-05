@@ -29,7 +29,7 @@ module.exports = {
             user = await i.guild.members.fetch(userTarget.userID)
         }
 
-        //Check if user name alligns
+        //Check if nickname alligns
         if(user == ""){
             const members = await i.guild.members.fetch();
             userTarget = members.find(m => m.nickname && m.nickname.toLowerCase() == target.toLowerCase());
@@ -45,7 +45,40 @@ module.exports = {
                 await userData.save();
             }
         } 
-    
+        //check if global name alligns
+        if(user == ""){
+            const members = await i.guild.members.fetch();
+            userTarget = members.find(m => m.globalName && m.globalName.toLowerCase() == target.toLowerCase());
+            if(userTarget != null){
+                user = userTarget;
+                //Push found IGN
+                newIGN = true;
+                let userData = await users.findOne({ userID: user.id });
+                if(userData.wfIGN != ""){
+                    userData.wfPastIGN.push(userData.wfIGN);
+                }
+                userData.wfIGN = target;
+                await userData.save();
+            }
+        } 
+
+        //Check if their username alligns
+        if(user == ""){
+            const members = await i.guild.members.fetch();
+            userTarget = members.find(m => m.username && m.username.toLowerCase() == target.toLowerCase());
+            if(userTarget != null){
+                user = userTarget;
+                //Push found IGN
+                newIGN = true;
+                let userData = await users.findOne({ userID: user.id });
+                if(userData.wfIGN != ""){
+                    userData.wfPastIGN.push(userData.wfIGN);
+                }
+                userData.wfIGN = target;
+                await userData.save();
+            }
+        }
+
         if(user == ""){
             return i.reply({content: `Could not find user ${target}, may not be in discord`})
         }
