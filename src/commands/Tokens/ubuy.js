@@ -3,6 +3,7 @@ const moment = require('moment');
 const shop = require('../../models/dbv2/tokens_ushop');
 const cc = require('../../../config.json');
 const wallet = require('../../models/dbv2/tokens_universal');
+const getWallet = require('../../functions/funcWallet.js');
 
 const restrictionID= {
     "Treasurer": cc.Roles.Staff.Treasurer,
@@ -59,7 +60,7 @@ module.exports = {
         const itemInput = i.options.getString('item');
         const shopItem = await shop.findOne({name: itemInput});
         const quantity = i.options.getNumber('quantity');
-        const userWallet = await wallet.findOne({ userID: i.member.id });
+        const userWallet = await getWallet(i, i.member.id);
         const info = i.options.getString('info');
         const restriction = restrictionID[shopItem.restriction];
 

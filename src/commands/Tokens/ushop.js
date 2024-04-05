@@ -1,8 +1,9 @@
 const { SlashCommandBuilder, EmbedBuilder, ButtonStyle } = require('discord.js');
 const { Pagination } = require('pagination.djs');
-const shop = require('../../models/dbv2/tokens_ushop');
+const shop = require('../../models/dbv2/tokens_ushop.js');
 const cc = require('../../../config.json');
-const wallet = require('../../models/dbv2/tokens_universal');
+const wallet = require('../../models/dbv2/tokens_universal.js');
+const getWallet = require('../../functions/funcWallet.js');
 
 const restrictionID= {
     "Treasurer": cc.Roles.Staff.Treasurer,
@@ -23,19 +24,7 @@ module.exports = {
 
     async execute(i, bot) {
         
-        var userWallet = await wallet.findOne({ userID: i.member.id });
-        if (!userWallet) {
-            userWallet = new wallet({
-            userID: i.member.id,
-            tokens: 0,
-            transactions: 
-                {date: i.createdAt,
-                identifier: 'Init',
-                desc: "Init Wallet",
-                amount: 0}
-            });
-        }
-        await userWallet.save();
+        var userWallet = await getWallet(i, i.member.id);
         const balance = userWallet.tokens;
         const items = await shop.find();
 

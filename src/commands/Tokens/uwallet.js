@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const moment = require('moment');
 const wallet = require('../../models/dbv2/tokens_universal');
+const getWallet = require('../../functions/funcWallet.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -19,20 +20,10 @@ module.exports = {
 
         const avatarURL = user.avatarURL({ dynamic: true, format: "png", size: 4096 });
 
-        let userWallet = await wallet.findOne({ userID: user.id });
+        //Get Wallet
+        let userWallet = await getWallet(i, user.id);
 
-        if (!userWallet) {
-            userWallet = new wallet({
-                userID: user.id,
-                tokens: 0,
-                transactions: 
-                    {date: i.createdAt,
-                    identifier: 'Init',
-                    desc: "Initialized Wallet",
-                    amount: 0}
-            });
-            await userWallet.save();
-        }
+        //Additional Data for View
         const allTransactions = userWallet.transactions;
         const lastThreeItems = allTransactions.slice(-3);
         var formattedData;
