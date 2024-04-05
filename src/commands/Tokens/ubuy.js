@@ -86,7 +86,7 @@ module.exports = {
         if (userWallet.tokens < total){
             return await i.reply({ content: "You don't have enough tokens to purchase this item.", ephemeral: true });
         }
-        if ((shopItem.restriction == "Clan Member" && (!i.member.roles.cache.some(r => Object.values(cc.Roles.Clan).includes(r.id)) || i.member.roles.cache.some(r => cc.Roles.Identifier.Clanless))) && !i.member.roles.cache.some(r => r.id === restriction)){
+        if (!(shopItem.restriction == null || i.member.roles.cache.some(r => Object.values(restrictionID[shopItem.restriction]).includes(r.id)))){
             return await i.reply({ content: `You are not allowed to purchase this item - requires ${shopItem.restriction}`, ephemeral: true });
         }
 
