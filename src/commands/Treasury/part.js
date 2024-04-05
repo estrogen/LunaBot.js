@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, codeBlock } = require('discord.js');
 const relicDataModel = require('../../models/dbv2/wf_relicData');
 const cc = require('../../../config.json');
+const permission = require('../../functions/funcPermissions.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -11,7 +12,7 @@ module.exports = {
         .setDefaultPermission(false),
 
     async execute(i, bot) {
-        if(!i.member.roles.cache.some(r => Object.values(cc.Roles.Staff).includes(r.id))){
+        if(!permission(i.member, "Staff")){
             return i.reply({ content: "You're not a staff!", ephemeral: true});
         }
 

@@ -4,6 +4,7 @@ const relicDataModel = require('../../models/dbv2/wf_relicData');
 const wf_runs = require('../../models/dbv2/wf_runs');
 const axios = require('axios');
 const { v4: uuidv4 } = require('uuid');
+const permission = require('../../functions/funcPermissions.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -76,7 +77,7 @@ module.exports = {
         }
     },
     async execute(i, bot) {
-        if(!i.member.roles.cache.some(r => Object.values(cc.Roles.Staff).includes(r.id))){
+        if(!permission(i.member, "Staff")){
             return i.reply({ content: "You're not a staff!", ephemeral: true});
         }
         const type = i.options.getString('type');

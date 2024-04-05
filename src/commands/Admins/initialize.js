@@ -6,6 +6,7 @@ const relicDataModel = require('../../models/dbv2/wf_relicData');
 const wallet = require('../../models/dbv2/tokens_universal');
 const wf_runs = require('../../models/dbv2/wf_runs');
 const { testing } = require('googleapis/build/src/apis/testing');
+const permission = require('../../functions/funcPermissions.js');
 
 
 const relicTypes = ['Lith', 'Meso', 'Neo', 'Axi'];
@@ -29,7 +30,7 @@ module.exports = {
         .setDefaultPermission(false),
    
     async execute(i, bot) {
-        if(!i.member.roles.cache.some(r => Object.values(cc.Roles.Admin).includes(r.id))){
+        if(!permission(i.member, "Admin")){
             return i.reply({ content: "You're not a admin", ephemeral: true});
         }
         const option = i.options.getString('embed');

@@ -2,6 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const moment = require('moment');
 const wallet = require('../../models/dbv2/tokens_universal');
 const getWallet = require('../../functions/funcWallet.js');
+const permission = require('../../functions/funcPermissions.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -36,7 +37,7 @@ module.exports = {
               return `${simplifiedDate} | ${cleanedDesc.trim()} | ${amount}`;
             });
         }
-        if(i.user.id == user || (i.member.roles.cache.some(r => cc.Roles.Management.includes(r.id)))){
+        if(i.user.id == user || permission(i.member, "Manager")){
             formattedData = formatData(lastThreeItems).join('\n');
         }
         else{

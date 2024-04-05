@@ -2,6 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const users = require('../../models/dbv2/usersSchema');
 const cc = require('../../../config.json');
 const moment = require('moment');
+const permission = require('../../functions/funcPermissions.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -26,7 +27,7 @@ module.exports = {
         }
 
 
-        if(i.user.id != user && (!i.member.roles.cache.some(r => Object.values(cc.Roles.Managers).includes(r.id)))){
+        if(i.user.id != user && !permission(i.member, "Manager")){
             return i.reply({ content: "You're not permitted to add clan tags!", ephemeral: true});
         }   
         if (!member){ 

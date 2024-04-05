@@ -2,7 +2,9 @@ const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } = require('discor
 const cc = require('../../../config.json');
 const recruits = require('../../models/dbv2/wf_recruitData');
 const orders = require('../../models/dbv2/wf_degenOrders');
-const medals = [":first_place:", ":second_place:", ":third_place:"]
+const medals = [":first_place:", ":second_place:", ":third_place:"];
+const permission = require('../../functions/funcPermissions.js');
+
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -20,7 +22,7 @@ module.exports = {
         .setDefaultPermission(false),
 
     async execute(i, bot) {
-        if(!i.member.roles.cache.some(r => Object.values(cc.Roles.Staff).includes(r.id)))
+        if(!permission(i.member, "Staff"))
             return i.reply({ content: "You're not staff!", ephemeral: true});
 
         const type = i.options.getString('information')

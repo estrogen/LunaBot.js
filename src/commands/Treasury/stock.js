@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, EmbedBuilder, ButtonStyle, codeBlock } = require('discord.js');
 const { Pagination } = require('pagination.djs');
 const cc = require('../../../config.json');
+const permission = require('../../functions/funcPermissions.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -18,7 +19,7 @@ module.exports = {
                     { name: 'GREEN', value: 'GREEN' }
                 )),
     async execute(i, bot) {
-        if(!i.member.roles.cache.some(r => Object.values(cc.Roles.Staff).includes(r.id))){
+        if(!permission(i.member, "Staff")){
             return i.reply({ content: "You're not a staff!", ephemeral: true});
         }
 

@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const cc = require('../../../config.json');
+const permission = require('../../functions/funcPermissions.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -10,7 +11,7 @@ module.exports = {
         .setDefaultPermission(false),
 
     async execute(i, bot) {
-        if(!i.member.roles.cache.some(r => Object.values(cc.Roles.Management).concat(Object.values(cc.Roles.Admin)).includes(r.id)))
+        if(!permission(i.member, "Manager"))
             return i.reply({ content: "You're not upper staff!", ephemeral: true});
 
         const text = i.options.getString('json');

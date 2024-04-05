@@ -2,6 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, codeBlock, ButtonBu
 const cc = require('../../../config.json');
 const relicDataModel = require('../../models/dbv2/wf_relicData');
 const axios = require('axios');
+const permission = require('../../functions/funcPermissions.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -31,7 +32,7 @@ module.exports = {
         }
     },
     async execute(i, bot) {
-        if(!i.member.roles.cache.some(r => Object.values(cc.Roles.Staff).includes(r.id))){
+        if(!permission(i.member, "Staff")){
             return i.reply({ content: "You're not a staff!", ephemeral: true});
         }
         

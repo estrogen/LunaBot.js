@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const cc = require('../../../config.json');
+const permission = require('../../functions/funcPermissions.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -10,7 +11,7 @@ module.exports = {
 		.setDefaultPermission(false),
    
 	async execute(i, bot) {
-		if(!i.member.roles.cache.some(r => cc.Roles.Staff.Sage == r.id))
+		if(!permission(i.member, "Sage"))
 			return i.reply({ content: "You're not a moderator!", ephemeral: true});
 
 		const user = i.options.getUser('guest');

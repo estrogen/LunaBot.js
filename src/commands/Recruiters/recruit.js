@@ -6,6 +6,7 @@ const users = require('../../models/dbv2/usersSchema');
 const recruit = require('../../models/dbv2/wf_recruitData');
 const moment = require("moment");
 const getWallet = require('../../functions/funcWallet.js');
+const permission = require('../../functions/funcPermissions.js');
 
 
 module.exports = {
@@ -31,7 +32,7 @@ module.exports = {
         .setDefaultPermission(false),
 
     async execute(i, bot) {
-        if(!i.member.roles.cache.some(r => cc.Roles.Staff.Recruiter == r.id))
+        if(!permission(i.member, "Recruiter"))
             return i.reply({ content: "You're not a recruiter!", ephemeral: true});
 
         const user = i.options.getString('user');

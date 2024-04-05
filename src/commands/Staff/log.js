@@ -3,6 +3,7 @@ const cc = require('../../../config.json');
 const recruits = require('../../models/dbv2/wf_recruitData');
 const users = require('../../models/dbv2/usersSchema');
 const moment = require('moment');
+const permission = require('../../functions/funcPermissions.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -12,7 +13,7 @@ module.exports = {
         .setDefaultPermission(false),
 
     async execute(i, bot) {
-        if(!i.member.roles.cache.some(r => Object.values(cc.Roles.Staff).includes(r.id)))
+        if(!permission(i.member, "Staff"))
             return i.reply({ content: "You're not staff!", ephemeral: true});
 
         const user = i.options.getUser('user');

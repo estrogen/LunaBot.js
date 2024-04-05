@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const apps = require('../../models/dbv2/applications');
 const cc = require('../../../config.json');
+const permission = require('../../functions/funcPermissions.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -13,7 +14,7 @@ module.exports = {
         .setDefaultPermission(false),
    
     async execute(i, bot) {
-        if(!i.member.roles.cache.some(r => Object.values(cc.Roles.Admin).includes(r.id)))
+        if(!permission(i.member, "Admin"))
             return i.reply({ content: "You're not a admin", ephemeral: true});
 
         const name = i.options.getString('name');

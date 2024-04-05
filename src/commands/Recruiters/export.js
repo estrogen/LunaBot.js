@@ -1,6 +1,7 @@
 const { SlashCommandBuilder, AttachmentBuilder } = require('discord.js');
 const db = require('../../models/dbv2/wf_recruitData')
 const cc = require('../../../config.json');
+const permission = require('../../functions/funcPermissions.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -10,7 +11,7 @@ module.exports = {
         .setDefaultPermission(false),
 
     async execute(i, bot) {
-        if(!i.member.roles.cache.some(r => cc.Roles.Staff.Recruiter == r.id))
+        if(!permission(i.member, "Recruiter"))
 			return i.reply({ content: "You're not a recruiter!", ephemeral: true});
 
         const user = i.options.getUser('target');
