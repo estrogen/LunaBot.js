@@ -33,7 +33,8 @@ module.exports = {
 
         if(i.options.getString('ign') == null){
             const embed = new EmbedBuilder()
-                .setTitle(`/inv ${userData.wfIGN || 'Unknown'}`)
+                .setTitle(`${member.nickname || user.globalName} | ${userData.wfIGN || 'Unknown'}`)
+                .setDescription(`/inv ${userData.wfIGN || 'Unknown'}`)
                 .setColor(color);
             return i.reply({ embeds: [embed] });
         }
