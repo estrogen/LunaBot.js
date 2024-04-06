@@ -2,6 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const moment = require('moment');
 const wallet = require('../../models/dbv2/tokens_universal');
 const getWallet = require('../../functions/funcWallet.js');
+const getRanking = require('../../functions/funcWalletRank.js');
 const permission = require('../../functions/funcPermissions.js');
 
 module.exports = {
@@ -29,6 +30,11 @@ module.exports = {
         const lastThreeItems = allTransactions.slice(-3);
         var formattedData;
 
+        //Wallet Ranking
+        const rank = await getRanking(userWallet);
+
+        //Format Data
+
         function formatData(data) {
             return data.map(item => {
               const { date, identifier, desc, amount } = item;
@@ -50,7 +56,8 @@ module.exports = {
             .setColor(color)
             .setThumbnail(avatarURL)
             .addFields(
-                { name: 'Tokens', value: `${userWallet.tokens} :gem:`, inline: true },
+                { name: 'Tokens', value: `${userWallet.tokens.toFixed(2)} :gem:`, inline: true },
+                { name: 'Rank', value: `${rank} :medal:`, inline: true},
                 { name: 'Recent Transactions', value: `\`\`\`haskell\n${formattedData}\`\`\``, inline: false},);
             
 

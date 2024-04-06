@@ -19,14 +19,14 @@ module.exports = {
             .setDescription('Which clan theyll be joining.')
             .setRequired(true)
             .addChoices(
-                //{name: 'Anime', value: '890240560248524859'},
-                {name: 'Imouto', value: '890240560248524858'},
-                {name: 'Heaven', value: '890240560248524857'},
-                {name: 'Tsuki', value: '1193510188955746394'},
-                {name: 'Waifu', value: '890240560248524856'},
-                {name: 'Yuri', value: '890240560273702932'},
-                {name: 'Cowaii', value: '1192922910751473736'},
-                {name: 'Manga', value: '1192923627419619419'}
+                //{name: 'Anime', value: cc.Roles.Clan.AnimeK},
+                {name: 'Imouto', value: cc.Roles.Clan.ImoutoK},
+                {name: 'Heaven', value: cc.Roles.Clan.AnimeK},
+                {name: 'Tsuki', value: cc.Roles.Clan.TsukiK},
+                {name: 'Waifu', value: cc.Roles.Clan.WaifuK},
+                {name: 'Yuri', value: cc.Roles.Clan.YuriK},
+                {name: 'Cowaii', value: cc.Roles.Clan.CowaiiK},
+                {name: 'Manga', value: cc.Roles.Clan.MangaK}
             ))
         .addStringOption(option => option.setName('name').setDescription('Warframe players name').setRequired(true))
         .setDefaultPermission(false),
