@@ -70,15 +70,15 @@ module.exports = {
         .setTitle(`Rundown since ${monthDate.toISOString().slice(0, 10)}`)
         .setColor(color)
         .addFields(
-            { name: 'Recruit', value: `${recruiterAmount}`, inline: true},
-            { name: 'Treasury', value: `${treasuryAmount}`, inline: true},
-            { name: 'Farm', value: `${farmerAmount}`, inline: true},
-            { name: 'Design', value: `${designerAmount}`, inline: true},
-            { name: 'Decorate', value: `${decoratorAmount}`, inline: true},
-            { name: 'Event', value: `${eventAmount}`, inline: true},
-            { name: 'Shop', value: `${shopAmount}`, inline: true},
-            { name: 'Other', value: `${otherAmount}`, inline: true},
-            { name: 'Circulation', value: `${recruiterAmount + treasuryAmount + designerAmount + farmerAmount + decoratorAmount + eventAmount}`, inline: true}
+            { name: 'Recruit', value: `${recruiterAmount.toFixed(2)}`, inline: true},
+            { name: 'Treasury', value: `${treasuryAmount.toFixed(2)}`, inline: true},
+            { name: 'Farm', value: `${farmerAmount.toFixed(2)}`, inline: true},
+            { name: 'Design', value: `${designerAmount.toFixed(2)}`, inline: true},
+            { name: 'Decorate', value: `${decoratorAmount.toFixed(2)}`, inline: true},
+            { name: 'Event', value: `${eventAmount.toFixed(2)}`, inline: true},
+            { name: 'Shop', value: `${shopAmount.toFixed(2)}`, inline: true},
+            { name: 'Other', value: `${otherAmount.toFixed(2)}`, inline: true},
+            { name: 'Circulation', value: `${recruiterAmount.toFixed(2) + treasuryAmount.toFixed(2) + designerAmount.toFixed(2) + farmerAmount.toFixed(2) + decoratorAmount.toFixed(2) + eventAmount.toFixed(2)}`, inline: true}
 
         )
         
