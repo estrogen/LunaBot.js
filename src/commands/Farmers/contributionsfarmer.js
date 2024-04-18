@@ -19,7 +19,8 @@ module.exports = {
                 {name: 'Waifu Kingdom', value: 'Waifu'},
                 {name: 'Yuri Kingdom', value: 'Yuri'},
                 {name: 'Cowaii Kingdom', value: 'Cowaii'},
-                {name: 'Manga Kingdom', value: 'Manga'}
+                {name: 'Manga Kingdom', value: 'Manga'},
+                {name: 'N/A', value: 'N/A'}
             ))
         .addNumberOption(option => option.setName('timeframe').setDescription('How many days to look back').setRequired(false))
         .addBooleanOption(option => option.setName('csv').setDescription('Get Output as a CSV').setRequired(false))
@@ -39,14 +40,25 @@ module.exports = {
         allContributions.forEach(contribution => {
             const { userID, clan, contributions } = contribution;
             contributions.forEach(transaction => {
-            
-                if ((!filterUser || transaction.inputUser === filterUser) &&
-                    (!filterClan || allContributions.clan === filterClan) &&
+                if ((!filterUser || userID == filterUser) &&
+                    (!filterClan || clan == filterClan) &&
                     (!timeframe || startDate < new Date(t.date))) {
                         const outUser = userID;
                         const outClan = clan;
                         const formattedDate = transaction.date.toISOString().slice(0, 10);
-                        output += `${outUser} | ${outClan} | ${formattedDate} | ${transaction.resource} | ${transaction.amount}\n`;
+                        if(filterUser != null  && filterClan != null){
+                            output += `${formattedDate} | ${transaction.resource} | ${transaction.amount}\n`;
+                        }
+                        if(filterUser != null  && filterClan == null){
+                            output += `${outClan} | ${formattedDate} | ${transaction.resource} | ${transaction.amount}\n`;
+                        }
+                        if(filterClan != null && filterUser == null){
+                            output += `${outUser} | ${formattedDate} | ${transaction.resource} | ${transaction.amount}\n`;
+                        }
+                        if(filterClan == null && filterUser == null){
+                            output += `${outUser} | ${outClan} | ${formattedDate} | ${transaction.resource} | ${transaction.amount}\n`;
+                        }
+                        
                 }
             });
         });
@@ -65,7 +77,10 @@ module.exports = {
                 { name: 'Clan', value: `${filterClan}`, inline: true },
                 { name: 'User', value: `${filterUser}`, inline: true },
                 { name: 'Start Date', value: `${startDate.toISOString().slice(0, 10)}`, inline: true })
-            if(output.length <= 1024){
+            if(output == ""){
+                embed.addFields({ name: 'Contributions', value: `\`\`\`haskell\nNone Found\`\`\``, inline: false},);
+            }
+            else if(output.length <= 1024){
                 embed.addFields({ name: 'Contributions', value: `\`\`\`haskell\n${output}\`\`\``, inline: false},);
             }
             else{

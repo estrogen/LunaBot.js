@@ -78,7 +78,7 @@ module.exports = {
             { name: 'Event', value: `${eventAmount.toFixed(2)}`, inline: true},
             { name: 'Shop', value: `${shopAmount.toFixed(2)}`, inline: true},
             { name: 'Other', value: `${otherAmount.toFixed(2)}`, inline: true},
-            { name: 'Circulation', value: `${recruiterAmount.toFixed(2) + treasuryAmount.toFixed(2) + designerAmount.toFixed(2) + farmerAmount.toFixed(2) + decoratorAmount.toFixed(2) + eventAmount.toFixed(2)}`, inline: true}
+            { name: 'Circulation', value: `${(recruiterAmount + treasuryAmount + designerAmount + farmerAmount + decoratorAmount+ eventAmount).toFixed(2)}`, inline: true}
 
         )
         
