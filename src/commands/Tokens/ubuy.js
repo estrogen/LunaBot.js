@@ -89,6 +89,9 @@ module.exports = {
         if (!(shopItem.restriction == null || i.member.roles.cache.some(r => Object.values(restriction.includes(r.id))))){
             return await i.reply({ content: `You are not allowed to purchase this item - requires ${shopItem.restriction}`, ephemeral: true });
         }
+        if(itemInput == "6x Axi Fodder" && quantity > 2){
+            return await i.reply({ content: "You can only purchase a maximum of 2 of this item at a time.", ephemeral: true});
+        }
 
         userWallet.tokens -= total;
         userWallet.transactions.push({

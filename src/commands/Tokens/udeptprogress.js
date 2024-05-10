@@ -76,14 +76,12 @@ module.exports = {
                     if (t.desc.includes("Farmer Migration")){
                         totalAmount += t.amount;
                     }
+                    if (t.desc.includes("Farmer: Donated")){
+                        totalAmount += t.amount;
+                    }
                 });
             });
 
-            allFarmCont.forEach(result => {
-                totalAmount += result.contributions.reduce((sum, contribution) => {
-                    return sum + contribution.amount;
-                }, 0);
-            });
 
 
             const progressInfo = getFarmerProgressInfo(totalAmount);
