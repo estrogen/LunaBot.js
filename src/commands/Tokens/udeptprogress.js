@@ -133,6 +133,6 @@ function getFarmerProgressInfo(tokenAmount) {
     ];
     const level = levels.find(l => tokenAmount < l.limit) || { limit: 9999, title: '???' }; // Fallback to the last level
     return {
-        description: `${level.title} progress ${tokenAmount} / ${level.limit} \n${progress.filledBar(level.limit, tokenAmount, 11, '▱', '▰')[0]}`
+        description: `${level.title} progress ${tokenAmount.toFixed(0)} / ${level.limit} \n${progress.filledBar(level.limit, tokenAmount, 11, '▱', '▰')[0]}`
     };
 }
