@@ -88,7 +88,7 @@ module.exports = {
 
             embed.setDescription(progressInfo.description)
                 .addFields([
-                    { name: 'Contributions', value: `${totalAmount} :pick:`, inline: true },
+                    { name: 'Contributions', value: `${totalAmount.toFixed(0)} :pick:`, inline: true },
                 ]);
 
             await i.editReply({ embeds: [embed] });
