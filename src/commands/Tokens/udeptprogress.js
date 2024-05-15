@@ -109,13 +109,14 @@ async function getRecruitBreakdown(recruits, clans) {
 
 function getRecruitProgressInfo(recruitCount) {
     const levels = [
-        { limit: 25, title: 'Recruiter' },
-        { limit: 75, title: 'Honored' },
-        { limit: 150, title: 'Veteran' },
-        { limit: 300, title: 'Ace' },
-        { limit: 1000, title: 'Noble' },
-        { limit: 3000, title: 'Cherished' },
-        { limit: 9999, title: '???' }
+        { limit: cc.Milestones.RRecruiter, title: 'Recruiter' },
+        { limit: cc.Milestones.RHonored, title: 'Honored' },
+        { limit: cc.Milestones.RVeteran, title: 'Veteran' },
+        { limit: cc.Milestones.RAce, title: 'Ace' },
+        { limit: cc.Milestones.RNoble, title: 'Noble' },
+        { limit: cc.Milestones.RCherished, title: 'Cherished' },
+        { limit: cc.Milestones.RSnowy, title: 'Snowy' },
+        { limit: Infinity, title: '???'}
     ];
     const level = levels.find(l => recruitCount < l.limit) || { limit: 9999, title: 'Snowys Goal' }; // Fallback to the last level
     return {
@@ -125,9 +126,9 @@ function getRecruitProgressInfo(recruitCount) {
 
 function getFarmerProgressInfo(tokenAmount) {
     const levels = [
-        { limit: 150, title: 'Graduate' },
-        { limit: 6000, title: 'Spelunker' },
-        { limit: 15000, title: 'Prospector' },
+        { limit: cc.Milestones.FGraduate, title: 'Graduate' },
+        { limit: cc.Milestones.FSpelunker, title: 'Spelunker' },
+        { limit: cc.Milestones.FProspector, title: 'Prospector' },
         { limit: Infinity, title: '???'}
     ];
     const level = levels.find(l => tokenAmount < l.limit) || { limit: 9999, title: '???' }; // Fallback to the last level

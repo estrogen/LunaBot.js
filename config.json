@@ -64,7 +64,23 @@
         "Contributions": "1226484483793092669",
         "WantRynnth": "1227915462730448957"
     },
-    "Numbers":{
-        "RecruiterRecruitT": 6.25
+    "Tokens":{
+        "RecruiterRecruitT": 6.25,
+        "TreasuryRunRare": 28,
+        "TreasuryRunUncommon": 12,
+        "TreasuryRunCommon": 4
+    },
+    "Milestones":{
+        "RRecruiter": 25,
+        "RHonored": 75,
+        "RVeteran": 150,
+        "RAce": 300,
+        "RNoble": 1000,
+        "RCherished": 3000,
+        "RSnowy": 9999,
+        "FGraduate": 125,
+        "FSpelunker": 6000,
+        "FProspector": 15000,
     }
 }
+

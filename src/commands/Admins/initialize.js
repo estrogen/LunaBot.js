@@ -149,7 +149,6 @@ const getRelicsDataForType = async (type) => {
     try {
         const response = await axios.get(`${baseUrl}${type.toLowerCase()}`);
         const data = response.data;
-
         return data
             .filter(item => item.category === 'Relics' && item.name.includes('Intact') && item.tradable)
             .map(relic => {

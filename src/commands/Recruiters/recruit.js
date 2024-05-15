@@ -78,12 +78,12 @@ module.exports = {
             await userData.save();
             
             //Update Recruiters Wallet
-            recruiterWallet.tokens += cc.Numbers.RecruiterRecruitT;
+            recruiterWallet.tokens += cc.Tokens.RecruiterRecruitT;
             recruiterWallet.transactions.push({
                 date: i.createdAt,
                 identifier: 'Recruiter',
                 desc: `New recruit`,
-                amount: cc.Numbers.RecruiterRecruitT
+                amount: cc.Tokens.RecruiterRecruitT
             });
             await recruiterWallet.save();
 
