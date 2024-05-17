@@ -5,6 +5,7 @@ const recruits = require('../../models/dbv2/wf_recruitData');
 const farmcont = require('../../models/dbv2/wf_farmerContributions');
 const cc = require('../../../config.json');
 const utokens = require('../../models/dbv2/tokens_universal.js');
+const data = require('../../models/dbv2/wf_migrationdata.js');
 
 
 
@@ -81,6 +82,11 @@ module.exports = {
                     }
                 });
             });
+
+            let migrationData = await data.findOne({userID: user.id});
+            if(migrationData != null){
+                totalAmount += migrationData.farmer;
+            }
 
 
 
