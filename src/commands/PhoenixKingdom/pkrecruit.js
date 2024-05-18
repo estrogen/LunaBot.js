@@ -64,7 +64,7 @@ module.exports = {
                 .setColor('#ee6958')
                 .setTitle(`Welcome to Phoenix Kingdom, ${name}`)
                 .setDescription(`<@!${member.id}>, ${welmsg.message}`)
-                .setFooter({ text: `Recruited by $, {i.user.username}` });
+                .setFooter({ text: `Recruited by ${i.user.username}` });
             const welcome = await general.send({ content: `Incoming recruit... <@!${member.id}>`});
             await welcome.edit({ content: "\u200B", embeds: [wEmbed] });
         }
