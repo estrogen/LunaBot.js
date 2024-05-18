@@ -29,7 +29,7 @@ module.exports = {
         if(member.roles.cache.some(r => Object.values(cc.Roles.Identifier).includes(r.id))){
             await member.roles.remove(Object.values(cc.Roles.Identifier), `Recruited to PK by ${i.user.tag}`);
             await member.setNickname(name, `Recruited to PK by ${i.user.tag}`);
-            await member.roles.add(cc.Roles.Guest, `Recruited into PK by ${i.user.tag}`);
+            await member.roles.add(cc.Roles.Identifier.Guest, `Recruited into PK by ${i.user.tag}`);
         }
         
         await member.roles.add(cc.Roles.PhoenixK, `Recruited into PK by ${i.user.tag}`);
