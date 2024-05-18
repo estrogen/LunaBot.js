@@ -26,8 +26,12 @@ module.exports = {
             return i.reply({ content: 'Unable to find member.', ephemeral: true });
 
         const general = await i.guild.channels.cache.get(cc.Channels.General);
+        var newmember = false;
         if(member.roles.cache.some(r => Object.values(cc.Roles.Identifier).includes(r.id))){
+            newmember = true;
             await member.roles.remove(Object.values(cc.Roles.Identifier), `Recruited to PK by ${i.user.tag}`);
+        }
+        if(newmember){
             await member.setNickname(name, `Recruited to PK by ${i.user.tag}`);
             await member.roles.add(cc.Roles.Identifier.Guest, `Recruited into PK by ${i.user.tag}`);
         }
@@ -53,15 +57,16 @@ module.exports = {
                 wfPastIGN: [],
                 otherIGN: []
             });
-
+            await userData.save();
             const wEmbed = new EmbedBuilder()
-                .setColor(kingdom.hexColor)
-                .setTitle(`Welcome to ${kingdom.name}, ${name}`)
+                .setColor('#ee6958')
+                .setTitle(`Welcome to Phoenix Kingdom, ${name}`)
                 .setDescription(`<@!${member.id}>, `)
                 .setFooter({ text: `Recruited by ${i.user.username}` });
             const welcome = await general.send({ content: `Incoming recruit... <@!${member.id}>`});
             await welcome.edit({ content: "\u200B", embeds: [wEmbed] });
         }
+
         userData.otherIGN.push(`${cc.Other.PKGame} - ${name}`);
         await userData.save();
         return i.reply({ content: `PK Verified By: <@${i.user.id}>\nRecruit: <@${member.id}> (${name})`});
