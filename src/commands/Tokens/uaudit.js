@@ -37,6 +37,9 @@ module.exports = {
 
     async execute(i, bot) {
 
+        if(!permission(i.member, "Manager")){
+            return i.reply({ content: 'You do not have permission to do this', ephemeral: true});
+        }
         const mode = i.options.getString('mode');
         const user = i.options.getUser('user');
 

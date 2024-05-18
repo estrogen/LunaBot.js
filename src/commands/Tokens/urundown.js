@@ -12,7 +12,9 @@ module.exports = {
         .setDefaultPermission(false),
 
     async execute(i, bot) {
-
+        if(!permission(i.member, "Admin")){
+            return i.reply({ content: 'You do not have permission to do this', ephemeral: true});
+        }
         const color = '#cfa3ff';
 
         const timeframe = i.options.getNumber('timeframe');
