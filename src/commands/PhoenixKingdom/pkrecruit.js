@@ -64,7 +64,7 @@ module.exports = {
         }
         userData.otherIGN.push(`${cc.Other.PKGame} - ${name}`);
         await userData.save();
-        return i.reply.send({ content: `PK Verified By: <@${i.user.id}>\nRecruit: <@${member.id}> (${name})`});
+        return i.reply({ content: `PK Verified By: <@${i.user.id}>\nRecruit: <@${member.id}> (${name})`});
     },
 
 };
