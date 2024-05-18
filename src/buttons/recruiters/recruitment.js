@@ -90,8 +90,12 @@ module.exports = {
                     userID: member.id, 
                     serverJoinDate: member.joinedAt,
                     wfIGN: `${ign}`,
-                    wfPastIGN: []
+                    wfPastIGN: [],
+                    otherIGN: []
                 });
+                if(userData.wfIGN != ""){
+                    userData.wfPastIGN.push(userData.wfIGN);
+                }
                 await userData.save();
                 
                 recruiterWallet.tokens += cc.Tokens.RecruiterRecruitT;

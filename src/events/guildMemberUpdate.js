@@ -25,6 +25,17 @@ module.exports = async (bot, oldMember, newMember) => {
       console.error('[Error]'.red, err);
     }
   }
+  
+  if (!oldMember.roles.cache.has(cc.Roles.Identifier.PKPending) && newMember.roles.cache.has(cc.Roles.Identifier.PKPending)) {
+    console.log('[Luna]'.blue, `Onboarding complete, informing PK Managers.`);
+    try {
+      const applyChannel = await bot.channels.cache.get(cc.Channels.PKBot);
+      const msg = await applyChannel.send({ content: `<@${newMember.id}> has completed their onboarding, please run command <@&${cc.Roles.Managers.PhoenixManager}>` })
+    } catch (err) {
+      console.error('[Error]'.red, err);
+    }
+  }
+
 };
 
 async function preventBlockedRoles(oldMember, newMember, addedRoles) {

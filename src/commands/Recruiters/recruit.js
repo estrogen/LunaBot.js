@@ -13,7 +13,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('recruit')
         .setDescription('Allows recruiters to invite warframe players into the clan')
-        .addStringOption(option => option.setName('user').setDescription('Warframe Player').setRequired(true))
+        .addUserOption(option => option.setName('user').setDescription('Warframe Player').setRequired(true))
         .addStringOption(option => 
             option.setName('clan')
             .setDescription('Which clan theyll be joining.')
@@ -35,7 +35,7 @@ module.exports = {
         if(!permission(i.member, "Recruiter"))
             return i.reply({ content: "You're not a recruiter!", ephemeral: true});
 
-        const user = i.options.getString('user');
+        const user = i.options.getUser('user');
         const clan = i.options.getString('clan');
         const name = i.options.getString('name');
 
@@ -73,8 +73,12 @@ module.exports = {
                 userID: member.id, 
                 serverJoinDate: member.joinedAt,
                 wfIGN: `${name}`,
-                wfPastIGN: []
+                wfPastIGN: [],
+                otherIGN: []
             });
+            if(userData.wfIGN != ""){
+                userData.wfPastIGN.push(userData.wfIGN);
+            }
             await userData.save();
             
             //Update Recruiters Wallet

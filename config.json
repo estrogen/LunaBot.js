@@ -14,7 +14,8 @@
             "FarmerManager": "1193134929274478683",
             "DecoratorManager": "890240560542134272",
             "CommunityManager": "890240560496017474",
-            "ModerationManager": "1192963276070473868"
+            "ModerationManager": "1192963276070473868",
+            "PhoenixManager": "1241121536694288478"
         },
         "Staff":{
             "Sage": "890240560458244182",
@@ -40,13 +41,14 @@
             "Guest": "890240560248524855",
             "Stranger": "1193608156631285921",
             "Pending": "1193605190759227392",
-            "Clanless": "890240560273702933"
+            "Clanless": "890240560273702933",
+            "PKPending": "1241288826270515261"
         },
         "Boost": "1192902218169450517",
         "ClanTag": "890240560131104806",
         "DegenShop": "890240560131104804",
-        "TreasuryMerchant": "890240560294682633"
-            
+        "TreasuryMerchant": "890240560294682633",
+        "PhoenixK": "1241056419541811332"
     },
     "Channels":{
         "General": "890240569165639771",
@@ -62,7 +64,8 @@
         "Inactive": "890240570109349903",
         "ClanHelp": "890240568339341333",
         "Contributions": "1226484483793092669",
-        "WantRynnth": "1227915462730448957"
+        "WantRynnth": "1227915462730448957",
+        "PKBot": "1241058115105849414"
     },
     "Tokens":{
         "RecruiterRecruitT": 6.25,
@@ -81,6 +84,9 @@
         "FGraduate": 125,
         "FSpelunker": 6000,
         "FProspector": 15000
+    },
+    "Other":{
+        "PKGame": "Adventure Quest World - 24/05"
     }
 }
 

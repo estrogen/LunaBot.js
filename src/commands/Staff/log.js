@@ -34,8 +34,12 @@ module.exports = {
                 { name: 'Kingdom', value: `${clan ? clan.name || 'Unknown' : 'Unknown'}`, inline: true },
                 { name: 'Recruiter', value: `<@${recruitData.recruiter}>`, inline: true },
                 { name: 'Clan Join Date', value: `<t:${joinDateUnix}>`, inline: true },
-                { name: 'Previous IGNs', value: `\`\`\`haskell\n${previousIGNs}\`\`\``, inline: false },
+                { name: 'Previous IGNs', value: `\`\`\`haskell\n${previousIGNs}\`\`\``, inline: false }
             ]);
+        if(userData.otherIGN != null){
+            const otherIGNs = userData.otherIGN.length > 0 ? userData.otherIGN.join('\n') : 'None';
+            embed.addFields([{ name: 'Other IGNs', value:`\`\`\`haskell\n${otherIGNs}\`\`\``, inline: false}])
+        }
 
         await i.reply({ embeds: [embed] });
     },
