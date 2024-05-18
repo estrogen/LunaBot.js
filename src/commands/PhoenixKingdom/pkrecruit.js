@@ -1,5 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const cc = require('../../../config.json');
+const welcomes = require("../../models/dbv2/embed_templates");
 const users = require('../../models/dbv2/usersSchema');
 const moment = require("moment");
 const permission = require('../../functions/funcPermissions.js');
@@ -58,11 +59,12 @@ module.exports = {
                 otherIGN: []
             });
             await userData.save();
+            const welmsg = await welcomes.findOne({ team: "recruiter" });
             const wEmbed = new EmbedBuilder()
                 .setColor('#ee6958')
                 .setTitle(`Welcome to Phoenix Kingdom, ${name}`)
-                .setDescription(`<@!${member.id}>, `)
-                .setFooter({ text: `Recruited by ${i.user.username}` });
+                .setDescription(`<@!${member.id}>, ${welmsg.message}`)
+                .setFooter({ text: `Recruited by $, {i.user.username}` });
             const welcome = await general.send({ content: `Incoming recruit... <@!${member.id}>`});
             await welcome.edit({ content: "\u200B", embeds: [wEmbed] });
         }
