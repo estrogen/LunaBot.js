@@ -2,6 +2,7 @@ const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const moment = require('moment');
 const wallet = require('../../models/dbv2/tokens_universal');
 const getWallet = require('../../functions/funcWallet.js');
+const permission = require('../../functions/funcPermissions.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
