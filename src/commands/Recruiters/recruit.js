@@ -21,7 +21,7 @@ module.exports = {
             .addChoices(
                 //{name: 'Anime', value: cc.Roles.Clan.AnimeK},
                 {name: 'Imouto', value: cc.Roles.Clan.ImoutoK},
-                {name: 'Heaven', value: cc.Roles.Clan.AnimeK},
+                {name: 'Heaven', value: cc.Roles.Clan.HeavensK},
                 {name: 'Tsuki', value: cc.Roles.Clan.TsukiK},
                 {name: 'Waifu', value: cc.Roles.Clan.WaifuK},
                 {name: 'Yuri', value: cc.Roles.Clan.YuriK},
