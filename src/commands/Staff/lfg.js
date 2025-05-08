@@ -119,8 +119,20 @@ module.exports = {
                         .setTitle(`Treasury Run for ${amount}x ${relic}`)
                         .setDescription(`<@${i.member.id}>`)
                         .addFields([
-                            { name: "Fissures", value: `${fissures}`, inline: false}, 
-                            { name: `${relicData.name || `${relic} Data`}`, value: `${codeBlock('ml', relicData.rewards) || 'Unable to acquire data.' }`, inline: false}
+                            {
+                                name: "Fissures",
+                                value: typeof fissures === 'string' && fissures.trim().length > 0
+                                ? fissures : 'No fissures available.',
+                                inline: false
+                            },
+                            {
+                                name: relicData.name || `${relic} Data`,
+                                value:
+                                  relicData.rewards && relicData.rewards.trim().length > 0
+                                    ? codeBlock('ml', relicData.rewards)
+                                    : "Unable to acquire data.",
+                                inline: false
+                            }
                         ])
                         .setColor("#cfa3ff")
                         .setFooter({ text: `Run ID: ${runId}` });
@@ -179,7 +191,13 @@ async function getFissuresForRelic(relic) {
     const url = 'https://api.warframestat.us/pc/fissures/';
   
     try {
-        const response = await axios.get(url);
+        const response = await axios.get(url, {
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+              'Accept': 'application/json',
+              'Referer': 'https://warframestat.us/'
+            }
+        });
         const fissures = response.data;
     
         let fissureString = '';
